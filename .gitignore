@@ -1,0 +1,94 @@
+# ─── Dependencies ───────────────────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+bun.lockb
+
+# ─── Next.js ────────────────────────────────────────────────
+.next/
+out/
+build/
+dist/
+.vercel
+next-env.d.ts
+
+# ─── Production ─────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dev.log
+server.log
+
+# ─── Environment ────────────────────────────────────────────
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# ─── Editor / OS ────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ─── Database / Cache ───────────────────────────────────────
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+prisma/dev.db
+prisma/*.db
+.cache/
+
+# ─── Build artifacts (regenerated) ──────────────────────────
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+.eslintcache
+
+# ─── PDF generation work files ──────────────────────────────
+scripts/ee_pdf_work/
+scripts/__pycache__/
+*.pyc
+__pycache__/
+tool-results/
+
+# ─── Runtime PID / sockets ──────────────────────────────────
+.zscripts/*.pid
+.zscripts/dev.pid
+*.pid
+*.sock
+
+# ─── Uploads / user data (sandbox only) ─────────────────────
+upload/
+worklog.md
+
+# ─── Misc ───────────────────────────────────────────────────
+.turbo
+coverage/
+*.lcov
+.vscode-test/
+playwright-report/
+test-results/
+
+# ─── Sandbox-only artifacts (do NOT push these) ─────────────
+skills/
+examples/
+mini-services/
+.zscripts/
+Caddyfile
+db/
+prisma/custom.db
+upload/
+*.tar.gz
+
+
+# Raw research search results (keep only the .md)
+research/*.json
