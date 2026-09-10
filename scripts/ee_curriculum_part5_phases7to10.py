@@ -26,11 +26,19 @@ def build_phase7():
         "get it wrong."))
 
     s.append(volt_says(
-        'Phase 7 is where the curriculum gets physical. The voltages and currents here '
-        'can kill components, burn fingers, and start fires. Pay attention to ratings. '
-        'Derate by 30%. Use fuses. Never probe a live high-voltage circuit without '
-        'thinking first. The math is the same as Phase 6 — feedback loops, transfer '
-        'functions, Bode plots — but the stakes are higher.',
+        'Phase 7 is where this book gets physical. The voltages and currents here can '
+        'kill components. Burn fingers. Start fires. Pay attention to ratings. Derate '
+        'by 30 percent. Use fuses. Never probe a live high-voltage circuit without '
+        'thinking first. The math is the same as Phase 6. Feedback loops. Transfer '
+        'functions. Bode plots. But the stakes are higher.',
+        mood='warning'))
+
+    s.append(amp_says(
+        'How high are we talking? Like, wall-outlet high?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Sometimes higher. Buck converters step down 400V to 12V. That kind of high.',
         mood='warning'))
 
     # ── Module 7.1 ──
@@ -474,10 +482,10 @@ def build_phase7():
         'Volt, on field-oriented control'))
 
     s.append(volt_says(
-        'Phase 7 is done. You understand switching converters, you can simulate a buck '
-        'and an H-bridge in SPICE, you can drive a BLDC motor with six-step or FOC. '
-        'Phase 8 takes you up in frequency — past the lumped-circuit approximation, '
-        'into the world where wires become transmission lines and signals radiate.',
+        'Phase 7 is done. You understand switching converters. You can simulate a buck '
+        'and an H-bridge in SPICE. You can drive a BLDC motor with six-step or FOC. '
+        'Phase 8 takes you up in frequency. Past the lumped-circuit approximation. Into '
+        'the world where wires become transmission lines and signals radiate.',
         mood='story'))
 
     s.append(PageBreak())
@@ -503,12 +511,20 @@ def build_phase8():
         "wireless."))
 
     s.append(volt_says(
-        'Phase 8 is the boundary where circuits stop being circuits. When the wavelength '
-        'approaches the physical size of your board, wires become transmission lines, '
-        'components radiate, and Ohm’s law quietly stops applying. The new vocabulary — '
-        'Smith chart, S-parameters, VSWR, reflection coefficient — is the price of '
-        'admission to RF. Pay it; the wireless world is worth it.',
+        'Phase 8 is where circuits stop being circuits. When the wavelength gets close '
+        'to the size of your board, wires become transmission lines. Components radiate. '
+        'Ohm\'s law quietly stops working. The new vocabulary is the price of admission '
+        'to RF. Smith chart. S-parameters. VSWR. Reflection coefficient. Pay it. The '
+        'wireless world is worth it.',
         mood='story'))
+
+    s.append(amp_says(
+        'So a wire isn\'t just a wire anymore? It\'s a transmission line?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Above 100 MHz or so. Below that, you can pretend. Above, you can\'t.',
+        mood='tip'))
 
     # ── Module 8.1 ──
     s.append(heading('Module 8.1 — Vector Calculus for EM', 1))
@@ -844,11 +860,19 @@ def build_phase8():
         caption='FM modulation — constant amplitude, varying frequency. Wider bandwidth than AM but much better noise immunity.'))
 
     s.append(volt_says(
-        'Every WiFi packet, every LTE subframe, every Bluetooth ping uses some variant '
-        'of PSK or QAM. The Shannon limit C = B·log₂(1+SNR) tells you the maximum bits/s '
-        'for a given bandwidth and SNR. Modern systems push close to that limit — the '
-        'rest is coding, modulation, and signal processing engineering.',
+        'Every WiFi packet. Every LTE subframe. Every Bluetooth ping. They all use some '
+        'variant of PSK or QAM. The Shannon limit C = B·log₂(1+SNR) tells you the max '
+        'bits per second for a given bandwidth and SNR. Modern systems push close to '
+        'that limit. The rest is coding, modulation, and signal processing.',
         mood='insight'))
+
+    s.append(amp_says(
+        'So Shannon basically defined the speed limit for all wireless?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. In 1948. We\'ve been chasing his limit ever since.',
+        mood='tip'))
 
     s.append(formula_box(
         "Shannon: C = B · log<sub>2</sub>(1 + SNR) &nbsp;&nbsp;|&nbsp;&nbsp; "
@@ -905,10 +929,11 @@ def build_phase8():
     ]))
 
     s.append(volt_says(
-        'Phase 8 is done. You have Maxwell’s four equations, you understand transmission '
-        'lines and impedance matching, you can build an antenna and decode FM with an '
-        'SDR. Phase 9 takes you to the other end of the scale — the nanometer — where '
-        'a single chip holds a billion transistors and the physics is fabrication.',
+        'Phase 8 is done. You have Maxwell\'s four equations. You understand '
+        'transmission lines and impedance matching. You can build an antenna. You can '
+        'decode FM with an SDR. Phase 9 takes you to the other end of the scale. The '
+        'nanometer. Where one chip holds a billion transistors and the physics is '
+        'fabrication.',
         mood='story'))
 
     s.append(PageBreak())
@@ -934,12 +959,21 @@ def build_phase9():
         "they cost and why they fail when they fail."))
 
     s.append(volt_says(
-        'Phase 9 is the chip-designer’s view. The front-end is Verilog — almost the same '
-        'as the FPGA work in Phase 4. The back-end is new: synthesis, place-and-route, '
-        'timing sign-off, layout. The economics are brutal — a leading-edge fab costs '
-        '$15 billion, and a single mask set costs $5 million. That is why only three '
-        'companies on Earth can build a 5 nm chip.',
+        'Phase 9 is the chip-designer\'s view. The front-end is Verilog. Almost the '
+        'same as the FPGA work in Phase 4. The back-end is new. Synthesis. Place-and-'
+        'route. Timing sign-off. Layout. The economics are brutal. A leading-edge fab '
+        'costs 15 billion dollars. A single mask set costs 5 million. That\'s why only '
+        'three companies on Earth can build a 5 nm chip.',
         mood='story'))
+
+    s.append(amp_says(
+        'Only three companies? That doesn\'t sound like a healthy market.',
+        mood='question'))
+
+    s.append(volt_says(
+        'It isn\'t. But that\'s the cost of leading-edge physics. Welcome to modern '
+        'semiconductors.',
+        mood='insight'))
 
     # ── Module 9.1 ──
     s.append(heading('Module 9.1 — CMOS Inverter: Static and Dynamic Behavior', 1))
@@ -1226,11 +1260,11 @@ def build_phase9():
     ]))
 
     s.append(volt_says(
-        'Phase 9 is done. You can write RTL, synthesize it, place-and-route it, sign '
-        'off on timing, and lay out a gate by hand. You understand why chips cost what '
-        'they cost and why Moore’s law has been a MOSFET story for fifty years. Phase '
-        '10 takes you to the largest EE system ever built — the power grid — and asks '
-        'you to ship one of six capstone projects.',
+        'Phase 9 is done. You can write RTL. Synthesize it. Place-and-route it. Sign off '
+        'on timing. Lay out a gate by hand. You understand why chips cost what they '
+        'cost. You understand why Moore\'s law has been a MOSFET story for fifty years. '
+        'Phase 10 takes you to the largest EE system ever built. The power grid. And '
+        'asks you to ship one of six capstone projects.',
         mood='story'))
 
     s.append(PageBreak())
@@ -1254,10 +1288,10 @@ def build_phase10():
         "end-to-end EE fluency."))
 
     s.append(volt_says(
-        'Phase 10 is the closing arc. Nine modules on the power grid — the largest '
-        'machine humans have ever built — followed by six capstones that integrate '
-        'everything you have learned into a shipping hardware project. Pick the capstone '
-        'that scares you most. That is the one that will teach you the most.',
+        'Phase 10 is the closing arc. Nine modules on the power grid. The largest '
+        'machine humans have ever built. Then six capstones. Each one integrates '
+        'everything you\'ve learned into a shipping hardware project. Pick the capstone '
+        'that scares you most. That\'s the one that will teach you the most.',
         mood='story'))
 
     # ── Pixel diagram: grid_topology (generation + T&D + load) ──
@@ -1385,12 +1419,21 @@ def build_phase10():
     ]))
 
     s.append(volt_says(
-        'A blackout cascade is one of the most terrifying phenomena in engineering. A '
-        'fault trips a line; load shifts to parallel lines; they overload and trip; '
-        'generators lose synchronism; frequency plummets; more lines trip; in minutes, '
+        'A blackout cascade is one of the most terrifying things in engineering. A '
+        'fault trips a line. Load shifts to parallel lines. They overload and trip. '
+        'Generators lose synchronism. Frequency plummets. More lines trip. In minutes, '
         'an entire region is dark. The 2003 Northeast blackout took 8 minutes. The '
-        'protection system’s job is to stop the cascade before it starts.',
+        'protection system\'s job is to stop the cascade before it starts.',
         mood='warning'))
+
+    s.append(amp_says(
+        'Like a distributed system cascade failure? One node dies, the load moves, more '
+        'nodes die?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Same exact pattern. Different physics. Same math.',
+        mood='tip'))
 
     s.append(checkpoint_box([
         "Name three power-quality problems and their sources.",
@@ -1674,10 +1717,10 @@ def build_phase10():
         'Volt, closing the curriculum'))
 
     s.append(volt_says(
-        'The curriculum is over. The work begins. Pick something you found fascinating '
-        '— a motor drive, a radio front-end, a solar inverter, a custom chip — and go '
-        'deep. The ten phases gave you the foundation. The next ten thousand hours will '
-        'give you the expertise. I will see you on the bench.',
+        'The curriculum is over. The work begins. Pick something you found fascinating. '
+        'A motor drive. A radio front-end. A solar inverter. A custom chip. Go deep. '
+        'The ten phases gave you the foundation. The next ten thousand hours will give '
+        'you the expertise. I\'ll see you on the bench.',
         mood='story'))
 
     s.append(PageBreak())

@@ -394,6 +394,113 @@ def volt_says(text, mood='tip'):
     ]))
     return outer
 
+# ─── Guide character "Amp" — Volt's friend, asks CS-engineer questions ──────
+# Amp is a second pixel-art character (8x8 grid, amber theme) that appears in
+# callout boxes alongside Volt's, asking the kind of questions a software
+# engineer would actually ask. This turns the curriculum into a dialogue.
+
+# Amp avatar: 8x8 pixel grid. 1=amber body, 2=darker amber (eyes/details), 0=empty
+AMP_AVATAR = [
+    [0,0,0,1,1,1,1,0],  # top of head
+    [0,0,1,1,1,1,1,1],  # head
+    [0,1,1,2,1,2,1,1],  # eyes (2 = darker amber)
+    [1,1,1,1,1,1,1,1],  # face
+    [1,1,1,1,1,1,1,1],  # chin
+    [0,1,1,1,1,1,1,0],  # neck
+    [0,1,0,1,1,0,1,0],  # body sides
+    [0,1,1,1,1,1,1,0],  # body bottom
+]
+
+# Amp color palette (amber/orange theme — distinct from Volt's green)
+AMP_AMBER       = colors.HexColor('#d97706')  # primary amber
+AMP_AMBER_DARK  = colors.HexColor('#92400e')  # eyes/details
+AMP_AMBER_SOFT  = colors.HexColor('#fef6e7')  # very pale amber wash for callout body
+
+def amp_avatar(size=32):
+    """Render Amp as a small pixel-art Drawing flowable (amber theme)."""
+    from reportlab.graphics.shapes import Drawing, Rect
+    cell = size // 8
+    d = Drawing(size, size)
+    for r, row in enumerate(AMP_AVATAR):
+        for c, val in enumerate(row):
+            if val == 1:
+                color = AMP_AMBER
+            elif val == 2:
+                color = AMP_AMBER_DARK
+            else:
+                continue
+            x = c * cell
+            y = size - (r + 1) * cell
+            d.add(Rect(x, y, cell, cell, fillColor=color, strokeColor=None))
+    return d
+
+def amp_says(text, mood='question'):
+    """A callout featuring Amp, Volt's friend. Amp asks the kind of questions
+    a software engineer would ask, turning the curriculum into a dialogue.
+
+    mood: 'question' (amber, 'AMP ASKS') or 'insight' (deeper amber, 'AMP NOTES')
+    Layout mirrors volt_says: [avatar] | [colored label bar on top, body below]
+    """
+    mood_colors = {
+        'question': (AMP_AMBER,       AMP_AMBER_SOFT, '#d97706'),
+        'insight':  (AMP_AMBER_DARK,  AMP_AMBER_SOFT, '#92400e'),
+    }
+    border_color, bg_color, label_bg_hex = mood_colors.get(mood, mood_colors['question'])
+    label_bg = colors.HexColor(label_bg_hex)
+    mood_label = {'question': 'AMP ASKS', 'insight': 'AMP NOTES'}
+    label = mood_label.get(mood, 'AMP ASKS')
+
+    # Avatar
+    avatar = amp_avatar(40)
+
+    # Label bar — white text on amber background
+    label_p = Paragraph(f'<b>{label}</b>', ParagraphStyle(
+        'amp_label', fontName='JetBrainsMono-Bold', fontSize=9, leading=12,
+        textColor=colors.white, alignment=TA_LEFT))
+    label_bar = Table([[label_p]], colWidths=[None])
+    label_bar.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), label_bg),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
+    ]))
+
+    # Body text
+    body_p = Paragraph(text, ParagraphStyle(
+        'amp_body', fontName=BODY_FONT, fontSize=10.5, leading=16,
+        textColor=TEXT_PRIMARY, alignment=TA_LEFT,
+        spaceBefore=6, spaceAfter=2))
+
+    # Inner: label bar on top, body text below
+    inner = Table([[label_bar], [body_p]], colWidths=[None])
+    inner.setStyle(TableStyle([
+        ('LEFTPADDING',(0,0),(-1,-1), 0),
+        ('RIGHTPADDING',(0,0),(-1,-1), 0),
+        ('TOPPADDING',(0,0),(-1,-1), 0),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 0),
+        ('TOPPADDING',(0,1),(0,1), 6),
+    ]))
+
+    # Outer: avatar | inner, with amber left border
+    outer = Table([[avatar, inner]], colWidths=[48, None])
+    outer.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (0,-1), bg_color),
+        ('BACKGROUND', (1,0), (1,-1), bg_color),
+        ('LINEBEFORE', (0,0), (0,-1), 4, border_color),
+        ('VALIGN', (0,0), (0,0), 'TOP'),
+        ('VALIGN', (1,0), (1,0), 'TOP'),
+        ('LEFTPADDING',(0,0), (0,0), 6),
+        ('RIGHTPADDING',(0,0),(0,0), 4),
+        ('TOPPADDING',(0,0), (0,0), 8),
+        ('BOTTOMPADDING',(0,0),(0,0), 8),
+        ('LEFTPADDING',(1,0), (1,0), 0),
+        ('RIGHTPADDING',(1,0),(1,0), 8),
+        ('TOPPADDING',(1,0), (1,0), 0),
+        ('BOTTOMPADDING',(1,0),(1,0), 8),
+    ]))
+    return outer
+
 # ─── Pull quote — large visual quote for emphasis ───────────────────────────
 def pull_quote(text, attribution=None):
     """A large, visually distinct quote — like a magazine pull quote."""
@@ -2244,4 +2351,5 @@ __all__ = [
     'DIAG_CURRENT_MIRROR','DIAG_AND_GATE','DIAG_555_TIMER','DIAG_BANDPASS','DIAG_TREE',
     # Guide character + narrative elements
     'volt_says','volt_avatar','pull_quote',
+    'amp_says','amp_avatar','AMP_AVATAR',
 ]

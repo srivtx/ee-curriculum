@@ -18,15 +18,21 @@ def build_front_matter():
         "or a software-defined radio front-end."))
 
     s.append(volt_says(
-        'Welcome. I am Volt — your guide through the next twelve months. You are '
-        'a computer scientist stepping into a world that, at first, looks nothing like '
-        'the one you know. But beneath the wires and equations, every circuit is a data '
-        'structure, every signal is a function, every feedback loop is a recurrence. I '
-        'will point out those bridges as we cross them. I will also warn you when the '
-        'analogy breaks — that is where the real learning begins. Read my callouts; they '
-        'are not optional decoration. They are the narrative thread that turns ten phases '
-        'of dense engineering into a single story.',
+        'Hi, I\'m Volt. I\'ll be your guide. You\'re a programmer. Now you want to learn '
+        'circuits. Good news: you already know most of it. A circuit is just a data '
+        'structure. A signal is a function. A feedback loop is a recurrence. Same ideas, '
+        'different clothes. I\'ll point out the connections as we go. I\'ll also tell you '
+        'when the analogy stops working. That\'s where the real learning lives. Read my '
+        'callouts. They are not optional.',
         mood='story'))
+
+    s.append(amp_says(
+        'And I\'m Amp. I\'ll ask the dumb questions so you don\'t have to.',
+        mood='question'))
+
+    s.append(volt_says(
+        'They\'re not dumb. They\'re the questions a programmer would actually ask.',
+        mood='tip'))
 
     s.append(p(
         "The structure is hierarchical and consistent. <b>Phases</b> are the ten top-level "
@@ -76,11 +82,15 @@ def build_front_matter():
         "throughput at the cost of latency)."))
 
     s.append(volt_says(
-        'The yellow CS BRIDGE callouts you will see at the start of every module are '
-        'the most important reading aid in this curriculum. They name a CS concept you '
-        'already know and an EE concept it maps to. When an equation looks alien, find '
-        'the bridge first — chances are the math is something you have already coded.',
+        'You\'ll see yellow CS BRIDGE boxes at the start of each module. They are the '
+        'most useful thing in this book. They take a CS idea you already know and pair '
+        'it with an EE idea. When an equation looks weird, find the bridge first. The '
+        'math is probably something you\'ve already coded.',
         mood='tip'))
+
+    s.append(amp_says(
+        'So like a Rosetta Stone? CS on one side, EE on the other?',
+        mood='question'))
 
     s.append(heading('The Project Model — Hardware + Simulation', 1))
     s.append(p(
@@ -192,12 +202,11 @@ def build_phase0():
                'walk across for the next 11 months.', 'kicker'))
 
     s.append(volt_says(
-        'Phase 0 is the boot camp. Four weeks that decide whether the next eleven months '
-        'feel like swimming through mud or gliding on water. You will rebuild the math '
-        'fluency an EE textbook takes for granted — differential equations, complex '
-        'exponentials, linear algebra — and you will install every tool. By the end, you '
-        'will have a working bench, a working simulator, and a working bridge between '
-        'the world you know and the one you are entering.',
+        'Phase 0 is boot camp. Four weeks. It decides whether the next eleven months '
+        'feel like swimming through mud or gliding on water. You\'ll rebuild the math '
+        'an EE book takes for granted. Diffs. Complex exponentials. Linear algebra. '
+        'You\'ll install every tool. By the end, you\'ll have a working bench, a working '
+        'simulator, and a bridge from your world to this one.',
         mood='story'))
 
     s.append(p(
@@ -223,11 +232,20 @@ def build_phase0():
         "know this from Markov chains and PageRank — the math is identical."))
 
     s.append(volt_says(
-        'Differential equations are recurrences with the time step shrunk to zero. The '
-        'homogeneous solution is a sum of complex exponentials whose exponents are the '
-        'eigenvalues — exactly the eigenvectors of the system matrix you learned in '
-        'linear algebra. When you solve an RLC circuit, you are diagonalizing a matrix.',
+        'Differential equations are just recurrences with the time step shrunk to zero. '
+        'The solution is a sum of complex exponentials. The exponents are the '
+        'eigenvalues. Yes, the same eigenvalues from linear algebra. When you solve an '
+        'RLC circuit, you\'re diagonalizing a matrix. You\'ve done this before. You just '
+        'didn\'t know.',
         mood='insight'))
+
+    s.append(amp_says(
+        'Wait. So when I solve a circuit, I\'m doing eigenvalues? Like PCA?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Same math. Different name. That\'s the whole point of this curriculum.',
+        mood='tip'))
 
     s.append(heading('Calculus refresher', 2))
     s.append(p(
@@ -241,10 +259,10 @@ def build_phase0():
         "the entire reason calculus matters in EE — memorize them now and refer back "
         "to them constantly."))
     s.append(volt_says(
-        'The capacitor and the inductor are duals of each other. A capacitor resists '
-        'instant voltage change; an inductor resists instant current change. Both store '
-        'energy reversibly — that is what makes them interesting. Memorize the four '
-        'equations above and the duality will become automatic.',
+        'The capacitor and the inductor are twins. A capacitor hates sudden voltage '
+        'changes. An inductor hates sudden current changes. Both store energy. That\'s '
+        'what makes them useful. Memorize the four equations above. The duality will '
+        'click on its own.',
         mood='insight'))
     s.append(formula_box(
         "i<sub>C</sub>(t) = C · dv<sub>C</sub>/dt &nbsp;&nbsp;&nbsp; "
@@ -253,12 +271,20 @@ def build_phase0():
         "v<sub>C</sub>(t) = (1/C) · ∫ i<sub>C</sub>(τ) dτ &nbsp;&nbsp;&nbsp; "
         "i<sub>L</sub>(t) = (1/L) · ∫ v<sub>L</sub>(τ) dτ"))
     s.append(volt_says(
-        'Before any formula, train your eye on the two waveforms below. The sinusoid is '
-        'the eigenfunction of every linear time-invariant system — feed it in, you get '
-        'the same sinusoid out, scaled and phase-shifted. The square wave is the '
-        'time-domain workhorse of digital electronics. Most of this curriculum is the '
-        'story of these two shapes and how to move between them.',
+        'Before the formulas, look at the two waves below. The sine wave is special. '
+        'Feed it into any linear system, and you get the same sine back. Just bigger or '
+        'smaller, and shifted in time. The square wave is the workhorse of digital '
+        'electronics. Most of this book is about these two shapes. And how to go from '
+        'one to the other.',
         mood='story'))
+
+    s.append(amp_says(
+        'Like how a sine wave goes through a linear filter and stays a sine?',
+        mood='question'))
+
+    s.append(volt_says(
+        'That\'s exactly it. We\'ll come back to this in Phase 4.',
+        mood='tip'))
     # ── Pixel diagram: sine + square wave (the two canonical EE signals) ──
     s.extend(diagram('sine_wave',
         caption='Pixel sinusoid — the eigenfunction of every LTI system. Phase 2 lives here.'))
@@ -429,13 +455,21 @@ def build_phase0():
         "They are the source code of EE. Memorize them in differential form — they are "
         "not optional."))
     s.append(volt_says(
-        'Maxwell’s four equations are the source code of electrical engineering. Every '
-        'circuit law you will ever use — Ohm, Kirchhoff, Faraday — is a special case. Do '
-        'not just memorize them; read each one as a sentence about the world: charges '
-        'make electric fields, currents make magnetic fields, changing magnetic fields '
-        'make electric fields, and changing electric fields make magnetic fields. Light '
-        'is what happens when the last two feed each other.',
+        'Maxwell\'s four equations are the source code of EE. Every law you\'ll ever use. '
+        'Ohm. Kirchhoff. Faraday. They\'re all special cases. Don\'t just memorize them. '
+        'Read each one like a sentence about the world. Charges make electric fields. '
+        'Currents make magnetic fields. Changing magnetic fields make electric fields. '
+        'And changing electric fields make magnetic fields. Light is what happens when '
+        'the last two feed each other.',
         mood='insight'))
+
+    s.append(amp_says(
+        'So light is just E and B fields chasing each other through space?',
+        mood='question'))
+
+    s.append(volt_says(
+        'That\'s exactly what it is. We\'ll come back to this in Phase 9.',
+        mood='tip'))
     s.append(make_table([
         ['Name','Differential form','What it says'],
         ['Gauss’s law (E)','∇·E = ρ/ε₀','Charge creates electric field.'],
@@ -498,11 +532,10 @@ def build_phase0():
         caption='The CS-to-EE concept tree — branches you will climb throughout the curriculum.'))
 
     s.append(volt_says(
-        'The table below is the single most valuable reference in the curriculum. When '
-        'a later module introduces a strange-looking EE concept, come back here and find '
-        'its CS twin. The bridge is your fastest path to fluency — but never confuse the '
-        'map for the territory. The analogy tells you what to expect; the math tells you '
-        'what is actually true.',
+        'The table below is the most useful page in this book. When a later module '
+        'throws a weird EE idea at you, come back here. Find its CS twin. The bridge is '
+        'your fastest path to fluency. But don\'t confuse the map for the territory. The '
+        'analogy tells you what to expect. The math tells you what is true.',
         mood='tip'))
 
     s.append(make_table([
@@ -565,10 +598,18 @@ def build_phase0():
         "you can follow them and focuses on the verification step."))
 
     s.append(volt_says(
-        'Do not start Phase 1 with a broken toolchain. Every hour you spend here '
-        'fighting installers saves five hours of confused debugging later when you '
-        'cannot tell whether a circuit is wrong or your simulator is. Install, '
-        'hello-world, screenshot. Move on.',
+        'Don\'t start Phase 1 with a broken toolchain. Every hour you spend here '
+        'fighting installers saves five hours of confused debugging later. You won\'t '
+        'know if your circuit is wrong or your simulator is. Install. Hello-world. '
+        'Screenshot. Move on.',
+        mood='warning'))
+
+    s.append(amp_says(
+        'This sounds like the "set up your dev environment" step everyone skips.',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Don\'t skip it. It will bite you later.',
         mood='warning'))
 
     # ── Pixel diagram: ohm_law (the first law a toolchain verifies) ──
@@ -631,9 +672,9 @@ def build_phase0():
     ]))
 
     s.append(volt_says(
-        'Phase 0 is done. You have the math, the physics, the tools, and the bridge. '
-        'When you turn the page, you enter Phase 1 — DC circuit analysis. The first '
-        'real circuits are waiting. Take a breath, then go.',
+        'Phase 0 is done. You have the math. You have the physics. You have the tools. '
+        'You have the bridge. Turn the page and you\'re in Phase 1. DC circuits. Real '
+        'circuits. Take a breath. Then go.',
         mood='story'))
 
     s.append(PageBreak())

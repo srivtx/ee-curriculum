@@ -24,11 +24,10 @@ def build_phase4():
 
     s.append(volt_says(
         'This is the phase where you stop translating and start recognizing. Boolean '
-        'algebra is the same algebra you use to optimize boolean expressions in code. '
-        'FSMs are the same FSMs you wrote in your compiler course. Pipelines are the same '
-        'pipelines as your CPU class. The only new things are setup and hold times, '
-        'metastability, and clock domains — the physical reality that flips the clean '
-        'abstraction occasionally into chaos.',
+        'algebra here is the same algebra you use in code. FSMs are the same FSMs from '
+        'your compiler course. Pipelines are the same pipelines from your CPU class. The '
+        'only new things are setup and hold times. Metastability. Clock domains. The '
+        'physical reality that occasionally flips the clean abstraction into chaos.',
         mood='story'))
 
     # ── Module 4.1 ──
@@ -46,10 +45,19 @@ def build_phase4():
 
     s.append(volt_says(
         'When you write <code>a &amp; b</code> in C, the compiler emits an AND '
-        'instruction that the CPU executes in a single cycle using a few hundred '
-        'transistors arranged as a CMOS NAND followed by an inverter. The hardware is '
-        'the boolean algebra. The translation layer is exactly zero.',
+        'instruction. The CPU runs it in one cycle. It uses a few hundred transistors. '
+        'CMOS NAND plus an inverter. The hardware IS the boolean algebra. The '
+        'translation layer is zero.',
         mood='insight'))
+
+    s.append(amp_says(
+        'So when I write code, I\'m literally just describing transistor layouts?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. At the bottom, it\'s all just switches. Code is a high-level view of '
+        'switches.',
+        mood='tip'))
 
     # ── Pixel diagram: nand_gate (the universal gate) ──
     s.extend(diagram('nand_gate',
@@ -351,10 +359,19 @@ def build_phase4():
         "HAL and write directly to registers."))
 
     s.append(volt_says(
-        'When you drop from Arduino to STM32, you cross the same line as moving from a '
-        'managed language to a systems language. The HAL is friendly but slow; the bare '
-        'registers are fast but unforgiving. Real products live in between — HAL for '
-        'setup, direct register access for hot paths.',
+        'When you drop from Arduino to STM32, you cross the same line as moving from '
+        'Python to C. The HAL is friendly but slow. The bare registers are fast but '
+        'unforgiving. Real products live in between. HAL for setup. Direct register '
+        'access for the hot paths.',
+        mood='tip'))
+
+    s.append(amp_says(
+        'Like using a high-level API for the easy stuff and dropping to syscalls for '
+        'performance?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Exactly. Same idea. Same tradeoffs.',
         mood='tip'))
 
     s.append(heading('Clock trees and power management', 2))
@@ -431,11 +448,20 @@ def build_phase4():
         "high-impedance, you need a longer sample time or an op-amp buffer."))
 
     s.append(volt_says(
-        'An ADC without an anti-alias filter is broken by construction. Sample rate alone '
-        'does not prevent aliasing — you must low-pass the signal before sampling, or '
-        'high-frequency noise will fold back into your band of interest and be '
+        'An ADC without an anti-alias filter is broken by design. Sample rate alone does '
+        'not stop aliasing. You have to low-pass the signal before sampling. If you '
+        'don\'t, high-frequency noise folds back into your band. It becomes '
         'indistinguishable from signal.',
         mood='warning'))
+
+    s.append(amp_says(
+        'Like the wagon-wheel effect in movies? Where wheels look like they\'re '
+        'spinning backwards?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Same thing. Same math. Aliasing in any sampled system.',
+        mood='tip'))
 
     s.append(project_box('Bench: STM32 PWM Motor Speed Control', [
         ('Goal:', 'control a small DC motor speed with PWM from an STM32.'),
@@ -599,12 +625,11 @@ def build_phase4():
         'Volt, on digital primitives'))
 
     s.append(volt_says(
-        'Phase 4 is done. You can write Verilog, target an FPGA, drive peripherals over '
-        'SPI and I2C, ship firmware on an STM32, and publish telemetry over WiFi. The '
-        'capstone integrated all of these into one system — exactly the kind of '
-        'integration that distinguishes a working engineer from a student. Phase 5 takes '
-        'you into the frequency domain, where signals become spectra and convolution '
-        'becomes multiplication.',
+        'Phase 4 is done. You can write Verilog. Target an FPGA. Drive peripherals over '
+        'SPI and I2C. Ship firmware on an STM32. Publish telemetry over WiFi. The '
+        'capstone put all of it into one system. That integration is what separates a '
+        'working engineer from a student. Phase 5 takes you into the frequency domain. '
+        'Signals become spectra. Convolution becomes multiplication.',
         mood='story'))
 
     s.append(PageBreak())
@@ -629,11 +654,20 @@ def build_phase5():
         "to connect them to the underlying linear algebra and differential equations."))
 
     s.append(volt_says(
-        'Phase 5 is where the curriculum’s single biggest idea lives: every signal is a '
-        'sum of sinusoids. Once you accept that, half of EE collapses into one fact seen '
-        'from different angles. Filters, modulation, sampling, control — all of it is the '
-        'Fourier transform wearing different costumes.',
+        'Phase 5 has the biggest idea in this book. Every signal is a sum of sine waves. '
+        'Once you accept that, half of EE collapses into one fact seen from different '
+        'angles. Filters. Modulation. Sampling. Control. All of it is the Fourier '
+        'transform wearing different costumes.',
         mood='story'))
+
+    s.append(amp_says(
+        'Like how any function can be written as a Taylor series, but with sine waves '
+        'instead of polynomials?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Same idea. Different basis. Sines instead of powers of x.',
+        mood='tip'))
 
     # ── Module 5.1 ──
     s.append(heading('Module 5.1 — Continuous-Time Signals and Systems', 1))
@@ -984,11 +1018,11 @@ def build_phase5():
         "f<sub>k</sub> = k·f<sub>s</sub>/N"))
 
     s.append(volt_says(
-        'The FFT is the single algorithm most responsible for the digital age. Without '
-        'it, MP3 audio would be impossible, JPEG images would be huge, MRI scans would '
-        'take minutes instead of seconds, and 5G would not exist. Cooley and Tukey '
-        'rediscovered it in 1965; Gauss knew it in 1805. It is mergesort applied to '
-        'complex exponentials.',
+        'The FFT is the one algorithm most responsible for the digital age. Without it, '
+        'MP3 audio would be impossible. JPEG images would be huge. MRI scans would take '
+        'minutes instead of seconds. 5G would not exist. Cooley and Tukey rediscovered '
+        'it in 1965. Gauss knew it in 1805. It\'s mergesort applied to complex '
+        'exponentials.',
         mood='insight'))
 
     # ── Pixel diagrams: sine + square wave (FFT input/output exemplars) ──
@@ -1149,11 +1183,11 @@ def build_phase5():
     ]))
 
     s.append(volt_says(
-        'Phase 5 is done. You can decompose any signal into its spectrum, design '
-        'filters, build a real-time audio analyzer, and ship working DSP code on an '
+        'Phase 5 is done. You can break any signal into its spectrum. You can design '
+        'filters. You can build a real-time audio analyzer. You can ship DSP code on an '
         'ESP32. Phase 6 takes these frequency-domain tools and applies them to the '
-        'hardest problem in engineering: making a physical system behave the way you '
-        'want, despite noise and disturbance, using feedback.',
+        'hardest problem in engineering. Making a physical system behave the way you '
+        'want. Despite noise. Despite disturbance. Using feedback.',
         mood='story'))
 
     s.append(PageBreak())
@@ -1182,9 +1216,18 @@ def build_phase6():
     s.append(volt_says(
         'Feedback is everywhere. TCP congestion control is a feedback loop. Hash table '
         'resizing is a feedback loop. Iterative compilers are feedback loops. Control '
-        'theory gives the math its proper name — and lets you prove a loop will be '
-        'stable, not just hope it converges.',
+        'theory gives the math a proper name. It lets you prove a loop will be stable. '
+        'Not just hope it converges.',
         mood='story'))
+
+    s.append(amp_says(
+        'So control theory is the formal version of what I do intuitively in distributed '
+        'systems?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Same loops. With proofs.',
+        mood='tip'))
 
     # ── Module 6.1 ──
     s.append(heading('Module 6.1 — Feedback, Modeling, Transfer Functions', 1))
@@ -1599,11 +1642,11 @@ def build_phase6():
         'Volt, on duality'))
 
     s.append(volt_says(
-        'Phase 6 is done. You can design a controller in the time domain (root locus), '
-        'the frequency domain (Bode/Nyquist), and the state domain (LQR). You can tune '
-        'a PID, model a physical system, and stabilize an inverted pendulum. The line-'
-        'following robot capstone is the first time the curriculum asks you to ship '
-        'something that moves. Phase 7 takes you into power electronics — where the '
+        'Phase 6 is done. You can design a controller in the time domain with root '
+        'locus. In the frequency domain with Bode and Nyquist. In the state domain with '
+        'LQR. You can tune a PID. Model a physical system. Stabilize an inverted '
+        'pendulum. The line-following robot capstone is the first time we ask you to '
+        'ship something that moves. Phase 7 takes you into power electronics. Where the '
         'voltages and currents get large enough to burn.',
         mood='story'))
 

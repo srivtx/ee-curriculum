@@ -24,11 +24,9 @@ def build_phase1():
         "of this phase is to make that mapping automatic."))
 
     s.append(volt_says(
-        'You are about to enter the world of circuits. Everything you have learned as a '
-        'programmer — data flows, functions, state — has a physical twin here. A wire is a '
-        'variable, a resistor is a throttle, a capacitor is a buffer. By the end of this '
-        'phase, you will see circuits the way you see code: as systems with inputs, '
-        'outputs, and behavior you can predict.',
+        'Welcome to circuits. You already know this stuff. You just don\'t know you '
+        'know it. A wire is a variable. A resistor is a throttle. A capacitor is a '
+        'buffer. By the end of this phase, circuits will feel as natural as code.',
         mood='story'))
 
     # ── Module 1.1 ──
@@ -55,9 +53,17 @@ def build_phase1():
         "circuit-level statement of energy conservation."))
 
     s.append(volt_says(
-        'Always label your reference directions before solving. The math will tell you if '
-        'your guess was right — a negative current just means the actual flow is opposite '
-        'to your arrow. There is no wrong arrow; only undetermined equations.',
+        'Pick a direction for your current arrow. Any direction. It doesn\'t matter. If '
+        'you guess wrong, the answer comes out negative. That\'s fine. Negative just '
+        'means the current goes the other way. The math fixes your guess for you.',
+        mood='tip'))
+
+    s.append(amp_says(
+        'So I can pick directions randomly and the math sorts it out?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. As long as you\'re consistent. The only sin is not labeling at all.',
         mood='tip'))
 
     s.append(formula_box(
@@ -123,11 +129,18 @@ def build_phase1():
         "element constitutive laws (V=IR for resistors) close the system."))
 
     s.append(volt_says(
-        'KCL is literally flow conservation in a graph — the same math as a pipe network '
-        'or a packet-switched router. KVL is the discrete analog of a conservative field. '
-        'You already know this from graph theory; we are just applying it to electrons '
-        'instead of packets.',
+        'KCL is just flow conservation. Same math as a pipe network. Same math as a '
+        'packet-switched router. KVL is the same idea, but for voltage. You already know '
+        'this from graph theory. We\'re just applying it to electrons instead of packets.',
         mood='insight'))
+
+    s.append(amp_says(
+        'So Kirchhoff is just graph theory?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Conservation at the nodes. Conservation around the loops. That\'s it.',
+        mood='tip'))
 
     # ── Pixel diagram: voltage_divider (most-used DC circuit) ──
     s.extend(diagram('voltage_divider',
@@ -145,10 +158,18 @@ def build_phase1():
     s.append(formula_box("V = I · R &nbsp;&nbsp;|&nbsp;&nbsp; I = V / R &nbsp;&nbsp;|&nbsp;&nbsp; R = V / I"))
 
     s.append(volt_says(
-        'The #1 mistake beginners make: forgetting the ground reference. Without a '
-        'ground, node voltages are undefined — the system has infinitely many solutions. '
+        'The number one mistake beginners make: forgetting the ground reference. Without '
+        'a ground, node voltages are undefined. The system has infinitely many solutions. '
         'Always pick one node as ground before writing any equation.',
         mood='warning'))
+
+    s.append(amp_says(
+        'Like picking the origin in a coordinate system?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Exactly. Without it, you can\'t say where anything is.',
+        mood='tip'))
 
     s.append(heading('KCL — current conservation', 2))
     s.append(p(
@@ -279,11 +300,20 @@ def build_phase1():
         "op-amps, signal-source loading, sensor interfaces, and power-supply design."))
 
     s.append(volt_says(
-        'Thevenin’s theorem is the circuit analog of encapsulation. Hide everything '
-        'behind two numbers — V_th and R_th — and the load cannot tell what is inside. '
-        'When you reason about output impedance, sensor loading, or supply design, you '
-        'are computing a Thevenin equivalent whether you call it that or not.',
+        'Thevenin\'s theorem is just encapsulation. Hide everything behind two numbers. '
+        'V_th and R_th. The load can\'t tell what\'s inside. When you think about output '
+        'impedance, sensor loading, or supply design, you\'re computing a Thevenin '
+        'equivalent. You just don\'t call it that.',
         mood='insight'))
+
+    s.append(amp_says(
+        'So it\'s like an interface in code? The rest of the world doesn\'t see the '
+        'implementation?',
+        mood='question'))
+
+    s.append(volt_says(
+        'That\'s exactly what it is. Two-terminal interface. Two numbers.',
+        mood='tip'))
 
     s.append(p(
         "Thevenin’s theorem: any linear two-terminal circuit containing voltage/current "
@@ -392,9 +422,9 @@ def build_phase1():
         "τ = RC is the half-life (more precisely, the 1/e time) of the decay."))
 
     s.append(volt_says(
-        'The capacitor is not a component — it is a promise that the voltage across it '
-        'will not change instantly. The inductor makes the dual promise about current. '
-        'These two continuity conditions are the entire key to transient analysis.',
+        'A capacitor isn\'t really a component. It\'s a promise. A promise that the '
+        'voltage across it won\'t change instantly. An inductor makes the same promise '
+        'about current. These two promises are the whole key to transient analysis.',
         mood='insight'))
 
     # ── Pixel diagram: wheatstone bridge ──
@@ -484,11 +514,10 @@ def build_phase1():
         'Volt, on continuity conditions'))
 
     s.append(volt_says(
-        'Phase 1 is done. You can solve any linear DC circuit, you understand the three '
-        'passive components, and you can predict how a circuit responds when you flip a '
-        'switch. Phase 2 takes these tools into the AC domain — where every signal is '
-        'sinusoidal and impedance replaces resistance. The math is the same; the costumes '
-        'change.',
+        'Phase 1 is done. You can solve any linear DC circuit. You understand the three '
+        'passive components. You can predict what happens when you flip a switch. Phase '
+        '2 takes these tools into the AC domain. Every signal is a sine wave. Impedance '
+        'replaces resistance. The math is the same. Only the costumes change.',
         mood='story'))
 
     s.append(PageBreak())
@@ -516,11 +545,19 @@ def build_phase2():
         "(solving ODEs with sinusoidal forcing) into a routine linear algebra problem."))
 
     s.append(volt_says(
-        'Phase 2 is the payoff for all the complex-analysis prep in Phase 0. Once you '
-        'see that a sinusoid is a single complex number and that differentiation is just '
-        'multiplication by jω, every AC circuit becomes a DC circuit with complex-valued '
-        'resistors. The whole chapter is one trick applied to a hundred variations.',
+        'Phase 2 is the payoff for all the complex-number work in Phase 0. Once you see '
+        'that a sine wave is a single complex number, and that differentiation is just '
+        'multiplication by jω, every AC circuit becomes a DC circuit with complex '
+        'resistors. The whole chapter is one trick. Applied a hundred ways.',
         mood='story'))
+
+    s.append(amp_says(
+        'So a capacitor becomes a complex resistor?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. With a value of 1/(jωC). One number. That\'s the trick.',
+        mood='tip'))
 
     # ── Module 2.1 ──
     s.append(heading('Module 2.1 — Sinusoidal Sources and Phasors', 1))
@@ -718,11 +755,19 @@ def build_phase2():
         "BW = ω<sub>0</sub> / Q"))
 
     s.append(volt_says(
-        'Resonance is the cancellation of inductive and capacitive reactance at a single '
-        'frequency. At ω₀ = 1/√(LC), the imaginary part of the impedance vanishes and '
-        'the circuit behaves as if it were purely resistive. This is the heart of every '
-        'radio receiver — tune the L and C, and you tune which frequency you hear.',
+        'Resonance is when inductive and capacitive reactance cancel out. At one '
+        'frequency. ω₀ = 1/√(LC). The imaginary part of the impedance goes to zero. The '
+        'circuit acts like it\'s purely resistive. This is the heart of every radio. '
+        'Tune the L and C, and you tune which frequency you hear.',
         mood='insight'))
+
+    s.append(amp_says(
+        'Like tuning a guitar string to one note?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Yes. Same idea. Resonance picks out one frequency and amplifies it.',
+        mood='tip'))
 
     # ── Pixel diagram: series_resonance ──
     s.extend(diagram('series_resonance',
@@ -886,11 +931,11 @@ def build_phase2():
         'Volt, on transformers'))
 
     s.append(volt_says(
-        'Phase 2 is done. You can solve any AC circuit with phasors, you understand '
-        'impedance and resonance, and you know why the grid runs on three phases. Phase '
-        '3 introduces the nonlinear elements — diodes, transistors, op-amps — that make '
-        'circuits do useful things like amplify, switch, and modulate. The linear math '
-        'ends; the small-signal approximation begins.',
+        'Phase 2 is done. You can solve any AC circuit with phasors. You understand '
+        'impedance. You understand resonance. You know why the grid runs on three phases. '
+        'Phase 3 introduces the nonlinear parts. Diodes. Transistors. Op-amps. These are '
+        'what make circuits do useful things. Amplify. Switch. Modulate. The linear math '
+        'ends here. The small-signal approximation begins.',
         mood='story'))
 
     s.append(PageBreak())
@@ -916,12 +961,20 @@ def build_phase3():
         "(backprop through a nonlinearity)."))
 
     s.append(volt_says(
-        'Nonlinear is not the same as scary. Diodes, transistors, op-amps — they all '
-        'obey V-I curves you can look up. The trick is to bias them to a known DC '
-        'operating point, then linearize around it. The AC behavior near that point is '
-        'just another linear circuit. Same math as Phase 1, with one extra step at the '
-        'start.',
+        'Nonlinear doesn\'t mean scary. Diodes, transistors, op-amps. They all follow '
+        'V-I curves you can look up. The trick is to bias them to a known DC operating '
+        'point. Then linearize around it. The AC behavior near that point is just '
+        'another linear circuit. Same math as Phase 1. One extra step at the start.',
         mood='story'))
+
+    s.append(amp_says(
+        'Like linearizing a function around a point in calculus? Tangent line '
+        'approximation?',
+        mood='question'))
+
+    s.append(volt_says(
+        'Exactly. Same idea. Different domain.',
+        mood='tip'))
 
     # ── Module 3.1 ──
     s.append(heading('Module 3.1 — Diodes: Rectifiers, Clippers, Clampers', 1))
@@ -1140,11 +1193,21 @@ def build_phase3():
         caption='Inverting amplifier — R_f feedback, R_in input. V_out = −(R_f/R_in)·V_in.'))
 
     s.append(volt_says(
-        'Op-amps are the analog swiss army knife because the feedback network — not the '
-        'op-amp itself — sets the behavior. Swap the feedback and the same chip becomes '
-        'an amplifier, integrator, differentiator, summer, filter, or oscillator. The '
-        'op-amp is the runtime; your feedback network is the program.',
+        'Op-amps are the analog swiss army knife. The feedback network sets the '
+        'behavior. Not the op-amp. Swap the feedback and the same chip becomes an '
+        'amplifier. Or an integrator. Or a filter. Or an oscillator. The op-amp is the '
+        'runtime. Your feedback network is the program.',
         mood='insight'))
+
+    s.append(amp_says(
+        'Like how a CPU just executes instructions, and the program makes it do '
+        'different things?',
+        mood='question'))
+
+    s.append(volt_says(
+        'That\'s a perfect analogy. The op-amp is the CPU. The feedback network is the '
+        'code.',
+        mood='tip'))
 
     # ── Pixel diagram: integrator ──
     s.extend(diagram('integrator',
@@ -1406,11 +1469,11 @@ def build_phase3():
         'Volt, on linearization'))
 
     s.append(volt_says(
-        'Phase 3 is done. You have built real amplifiers from diodes, transistors, and '
+        'Phase 3 is done. You\'ve built real amplifiers from diodes, transistors, and '
         'op-amps. The audio amplifier capstone is the first project big enough to put on '
-        'a resume. Phase 4 crosses into the digital domain — where the signals are 0s '
-        'and 1s, the gates are logic, and your CS background starts doing the heavy '
-        'lifting. The fun part is just beginning.',
+        'a resume. Phase 4 crosses into the digital domain. The signals are 0s and 1s. '
+        'The gates are logic. Your CS background starts doing the heavy lifting. The fun '
+        'part is just beginning.',
         mood='story'))
 
     s.append(PageBreak())
