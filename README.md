@@ -2,7 +2,7 @@
 
 > A rigorous 12-month, project-based master curriculum that takes a working computer scientist from Ohm's law to field-oriented motor control, FPGA prototyping, and grid-tied solar inverters — without skipping the math, the physics, or the bench time.
 
-**Authored by [srivtx](https://github.com/srivtx)** · MIT Licensed · v2.0 (2026)
+**Authored by [srivtx](https://github.com/srivtx)** · MIT Licensed · v2.1 (2026)
 
 ---
 
@@ -11,6 +11,9 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg?style=flat-square&logo=typescript)
 ![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4-38bdf8.svg?style=flat-square&logo=tailwindcss)
 ![Pyodide](https://img.shields.io/badge/Pyodide-0.26-3776AB.svg?style=flat-square&logo=python)
+![Plotly](https://img.shields.io/badge/Plotly.js-interactive-3f4f75.svg?style=flat-square)
+![SPICE](https://img.shields.io/badge/SPICE-in--browser-8c7443.svg?style=flat-square)
+![WebSerial](https://img.shields.io/badge/WebSerial-real%20hardware-507aa4.svg?style=flat-square)
 ![PDF](https://img.shields.io/badge/PDF-97%20pages-c23a3a.svg?style=flat-square)
 ![Phases](https://img.shields.io/badge/Phases-11-1f6c92.svg?style=flat-square)
 ![Modules](https://img.shields.io/badge/Modules-91-507aa4.svg?style=flat-square)
@@ -26,7 +29,7 @@ A complete self-study pathway from computer-science fluency to electrical-engine
 
 1. **A 97-page PDF curriculum** — study material covering 11 phases, ~91 modules, ~140 lessons, ~52 hands-on projects, and 6 capstones. Rigorous math, heavy CS↔EE concept bridges, hardware-plus-simulation projects, checkpoints at the end of every module, and five appendices (toolchain setup, bill of materials, CS↔EE concept map, math reference, 12-month pacing calendar).
 
-2. **An interactive learning website** (Next.js 16 + TypeScript + Tailwind 4 + shadcn/ui) — browse all 11 phases and 91 modules, run real Python code in-browser (Pyodide) for ~14 DSP/control/RF lessons with pre-built numpy/scipy/matplotlib demos, track progress on 52 hands-on projects, drill 146 checkpoint flashcards, and log hours per phase. All progress persists to localStorage.
+2. **An interactive learning website** (Next.js 16 + TypeScript + Tailwind 4 + shadcn/ui) — browse all 11 phases and 91 modules, run real Python code in-browser (Pyodide) for ~14 DSP/control/RF lessons with pre-built numpy/scipy/matplotlib demos, simulate circuits in-browser with `spicey` (pure-JS SPICE), build circuits visually with embedded Falstad, visualize digital timing with WaveDrom, explore transfer functions with interactive Bode plots (Plotly), render formulas with KaTeX, and even connect to real Arduino/ESP32/STM32 hardware over WebSerial. Track progress on 52 hands-on projects, drill 146 checkpoint flashcards, and log hours per phase. All progress persists to localStorage.
 
 The curriculum is calibrated for ~12 months at 12 hours/week (≈ 800 hours total) and covers the full practical core of an EE B.Sc. — DC/AC circuits, analog electronics, digital logic + embedded, signals + DSP, control + robotics, power electronics + machines, EM fields + RF + comms, VLSI, and power systems + renewables.
 
@@ -198,31 +201,40 @@ The fastest path: push to GitHub → import to Vercel → done. No environment v
 | State | React Context + localStorage (no backend) |
 | Theme | next-themes (dark mode) |
 | In-browser Python | Pyodide v0.26.2 (loaded from jsDelivr CDN, lazy) |
+| Math rendering | KaTeX + react-katex |
+| Interactive plots | Plotly.js (Bode plots, lazy-loaded) |
+| Circuit simulation | `spicey` (pure-JS SPICE) + Falstad iframe |
+| Timing diagrams | WaveDrom |
+| Real hardware | WebSerial API (Chrome/Edge) |
 | PDF generation | ReportLab + Playwright (cover HTML → PDF) + pypdf (merge) |
 | Fonts | Geist Sans + Geist Mono (Next.js font loader) |
 | Package manager | bun (preferred) — npm/pnpm/yarn also work |
 
 ## Roadmap
 
-This is a living project. Planned future work (see `research/EE_INTERACTIVE_FEATURES_RECOMMENDATION.md` for the full plan):
+This is a living project. v2.1 shipped six interactive features. Planned future work (see `research/EE_INTERACTIVE_FEATURES_RECOMMENDATION.md` for the full plan):
 
-**Tier 1 — must-have (planned for v2.1)**
-- [ ] In-browser SPICE simulation via `eecircuit-engine` (ngspice WASM, 5.7 MB) for Phases 1–3, 7, 9
-- [ ] Falstad/CircuitJS1 iframe embed for visual circuit building
-- [ ] `spicey` (46 KB pure-JS SPICE) for instant-load quick sims
-- [ ] Verilog playground via `@yowasp/yosys` + `digitaljs` for Phase 4
-- [ ] Interactive Bode/Nyquist/Smith charts via `plotly.js` + `katex` + `wavedrom`
+**Tier 1 — must-have (v2.1, DONE)**
+- [x] KaTeX math rendering for lesson formulas
+- [x] Interactive Bode plot (Plotly.js) with ω_n / ζ sliders and LP/BP/HP selector
+- [x] Falstad/CircuitJS1 iframe embed for visual circuit building
+- [x] WaveDrom timing diagrams for digital logic lessons
+- [x] In-browser SPICE simulation via `spicey` (pure-JS, instant-load)
+- [x] WebSerial hook + floating hardware-connect button (Chrome/Edge)
 
-**Tier 2 — nice-to-have (v2.2)**
-- [ ] KiCad schematic viewer via KiCanvas iframe
+**Tier 1 — remaining (v2.2 target)**
+- [ ] Heavy SPICE via `eecircuit-engine` (ngspice WASM, 5.7 MB) for nonlinear circuits, transistors, full transient analysis
+- [ ] Verilog playground via `@yowasp/yosys` + `digitaljs` (Phase 4 Module 4) — `VerilogPlayground.tsx` skeleton exists, needs Yosys WASM integration
+
+**Tier 2 — nice-to-have (v2.3)**
+- [ ] KiCad schematic viewer via KiCanvas iframe (skeleton component exists)
 - [ ] `@tscircuit/schematic-viewer` for JSX-based circuit snippets
-- [ ] WebSerial API hook for connecting real Arduino/ESP32/STM32 hardware
-- [ ] Web Audio oscilloscope / signal generator (zero bundle, browser-native)
-- [ ] IQEngine iframe for SDR spectrograms
+- [ ] Web Audio oscilloscope / signal generator (browser-native, zero bundle)
+- [ ] IQEngine iframe for SDR spectrograms (Phase 8)
 
 **Tier 3 — aspirational**
 - [ ] QEMU-WASM for full MCU simulation in browser
-- [ ] Self-hosted CircuitJS1 build
+- [ ] Self-hosted CircuitJS1 build (currently iframed from falstad.com)
 - [ ] Full FPGA bitstream flow with `@yowasp/nextpnr`
 
 See the research doc for verified bundle sizes, licenses, integration snippets, and a 4-week implementation plan.
