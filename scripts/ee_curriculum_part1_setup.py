@@ -102,51 +102,53 @@ HEAD_FONT = 'Inter'
 MONO_FONT = 'JetBrainsMono'
 
 styles = {
-    'h1': ParagraphStyle('h1', fontName=f'{HEAD_FONT}-Bold', fontSize=24, leading=30,
-                         textColor=ACCENT, spaceBefore=14, spaceAfter=10,
+    'h1': ParagraphStyle('h1', fontName=f'{HEAD_FONT}-Bold', fontSize=24, leading=32,
+                         textColor=ACCENT, spaceBefore=18, spaceAfter=12,
                          alignment=TA_LEFT),
-    'h2': ParagraphStyle('h2', fontName=f'{HEAD_FONT}-Bold', fontSize=16, leading=22,
-                         textColor=ACCENT, spaceBefore=14, spaceAfter=8,
+    'h2': ParagraphStyle('h2', fontName=f'{HEAD_FONT}-Bold', fontSize=16, leading=24,
+                         textColor=ACCENT, spaceBefore=16, spaceAfter=10,
                          alignment=TA_LEFT),
-    'h3': ParagraphStyle('h3', fontName=f'{HEAD_FONT}-Bold', fontSize=13, leading=18,
-                         textColor=ACCENT_2, spaceBefore=10, spaceAfter=6,
+    'h3': ParagraphStyle('h3', fontName=f'{HEAD_FONT}-Bold', fontSize=13, leading=20,
+                         textColor=ACCENT_2, spaceBefore=12, spaceAfter=8,
                          alignment=TA_LEFT),
-    'h4': ParagraphStyle('h4', fontName=f'{HEAD_FONT}-Bold', fontSize=11, leading=15,
-                         textColor=colors.HexColor('#333333'), spaceBefore=8, spaceAfter=4,
+    'h4': ParagraphStyle('h4', fontName=f'{HEAD_FONT}-Bold', fontSize=11, leading=16,
+                         textColor=colors.HexColor('#333333'), spaceBefore=10, spaceAfter=6,
                          alignment=TA_LEFT),
-    'body': ParagraphStyle('body', fontName=BODY_FONT, fontSize=10.5, leading=15.5,
-                           textColor=TEXT_PRIMARY, spaceBefore=2, spaceAfter=6,
+    'body': ParagraphStyle('body', fontName=BODY_FONT, fontSize=10.5, leading=17,
+                           textColor=TEXT_PRIMARY, spaceBefore=4, spaceAfter=8,
                            alignment=TA_JUSTIFY, firstLineIndent=0),
-    'body_left': ParagraphStyle('body_left', fontName=BODY_FONT, fontSize=10.5, leading=15.5,
-                                textColor=TEXT_PRIMARY, alignment=TA_LEFT),
-    'kicker': ParagraphStyle('kicker', fontName=f'{HEAD_FONT}', fontSize=9, leading=12,
-                             textColor=TEXT_MUTED, alignment=TA_LEFT, spaceAfter=2),
-    'caption': ParagraphStyle('caption', fontName=f'{HEAD_FONT}', fontSize=9, leading=12,
-                              textColor=TEXT_MUTED, alignment=TA_CENTER, spaceBefore=2, spaceAfter=8),
-    'diagram_caption': ParagraphStyle('diagram_caption', fontName=f'{HEAD_FONT}', fontSize=8.5,
-                                       leading=11, textColor=TEXT_MUTED, alignment=TA_CENTER,
-                                       spaceBefore=2, spaceAfter=10, fontStyle='italic'),
-    'bullet': ParagraphStyle('bullet', fontName=BODY_FONT, fontSize=10.5, leading=15,
+    'body_left': ParagraphStyle('body_left', fontName=BODY_FONT, fontSize=10.5, leading=17,
+                                textColor=TEXT_PRIMARY, alignment=TA_LEFT,
+                                spaceBefore=4, spaceAfter=8),
+    'kicker': ParagraphStyle('kicker', fontName=f'{HEAD_FONT}', fontSize=9, leading=13,
+                             textColor=TEXT_MUTED, alignment=TA_LEFT, spaceAfter=3),
+    'caption': ParagraphStyle('caption', fontName=f'{HEAD_FONT}', fontSize=9, leading=13,
+                              textColor=TEXT_MUTED, alignment=TA_CENTER, spaceBefore=3, spaceAfter=10),
+    'diagram_caption': ParagraphStyle('diagram_caption', fontName=f'{HEAD_FONT}', fontSize=9,
+                                       leading=13, textColor=TEXT_MUTED, alignment=TA_CENTER,
+                                       spaceBefore=4, spaceAfter=12, fontStyle='italic'),
+    'bullet': ParagraphStyle('bullet', fontName=BODY_FONT, fontSize=10.5, leading=16,
                              textColor=TEXT_PRIMARY, alignment=TA_LEFT,
-                             leftIndent=18, bulletIndent=4, spaceBefore=1, spaceAfter=2),
-    'code': ParagraphStyle('code', fontName=MONO_FONT, fontSize=9, leading=12,
+                             leftIndent=18, bulletIndent=4, spaceBefore=2, spaceAfter=4),
+    'code': ParagraphStyle('code', fontName=MONO_FONT, fontSize=9, leading=13,
                            textColor=TEXT_PRIMARY, alignment=TA_LEFT,
-                           leftIndent=10, rightIndent=10, spaceBefore=4, spaceAfter=4,
+                           leftIndent=10, rightIndent=10, spaceBefore=6, spaceAfter=6,
                            backColor=CARD_BG, borderColor=BORDER, borderWidth=0.4,
-                           borderPadding=6),
+                           borderPadding=8),
     'callout_title': ParagraphStyle('callout_title', fontName=f'{HEAD_FONT}-Bold', fontSize=10,
                                     textColor=colors.white, alignment=TA_LEFT, leading=13),
-    'callout_body': ParagraphStyle('callout_body', fontName=BODY_FONT, fontSize=10, leading=14,
-                                   textColor=TEXT_PRIMARY, alignment=TA_LEFT),
-    'formula': ParagraphStyle('formula', fontName=BODY_FONT, fontSize=11, leading=15,
+    'callout_body': ParagraphStyle('callout_body', fontName=BODY_FONT, fontSize=10, leading=15,
+                                   textColor=TEXT_PRIMARY, alignment=TA_LEFT,
+                                   spaceBefore=4, spaceAfter=2),
+    'formula': ParagraphStyle('formula', fontName=BODY_FONT, fontSize=11, leading=16,
                               textColor=TEXT_PRIMARY, alignment=TA_CENTER,
-                              spaceBefore=4, spaceAfter=6),
-    'toc1': ParagraphStyle('toc1', fontName=f'{HEAD_FONT}-Bold', fontSize=11, leading=16,
-                           textColor=ACCENT, leftIndent=0, spaceBefore=4),
-    'toc2': ParagraphStyle('toc2', fontName=BODY_FONT, fontSize=10, leading=14,
-                           textColor=TEXT_PRIMARY, leftIndent=18, spaceBefore=1),
-    'toc3': ParagraphStyle('toc3', fontName=BODY_FONT, fontSize=9.5, leading=13,
-                           textColor=TEXT_MUTED, leftIndent=36, spaceBefore=0),
+                              spaceBefore=6, spaceAfter=8),
+    'toc1': ParagraphStyle('toc1', fontName=f'{HEAD_FONT}-Bold', fontSize=11, leading=18,
+                           textColor=ACCENT, leftIndent=0, spaceBefore=6),
+    'toc2': ParagraphStyle('toc2', fontName=BODY_FONT, fontSize=10, leading=15,
+                           textColor=TEXT_PRIMARY, leftIndent=18, spaceBefore=2),
+    'toc3': ParagraphStyle('toc3', fontName=BODY_FONT, fontSize=9.5, leading=14,
+                           textColor=TEXT_MUTED, leftIndent=36, spaceBefore=1),
 }
 
 # ─── Helpers ────────────────────────────────────────────────────────────────
@@ -210,10 +212,12 @@ def cs_bridge(text):
         ('BACKGROUND', (0,0), (-1,0), SEM_WARNING),
         ('BACKGROUND', (0,1), (-1,1), colors.HexColor('#fef6e7')),
         ('TEXTCOLOR',  (0,0), (-1,0), colors.white),
-        ('LEFTPADDING',(0,0), (-1,-1), 8),
-        ('RIGHTPADDING',(0,0),(-1,-1), 8),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING',(0,0),(-1,-1),5),
+        ('LEFTPADDING',(0,0), (-1,-1), 10),
+        ('RIGHTPADDING',(0,0),(-1,-1), 10),
+        ('TOPPADDING', (0,0), (-1,0), 6),
+        ('BOTTOMPADDING',(0,0),(-1,0), 6),
+        ('TOPPADDING', (0,1), (-1,1), 8),
+        ('BOTTOMPADDING',(0,1),(-1,1), 8),
         ('LINEBEFORE', (0,0), (0,-1), 3, SEM_WARNING),
     ]))
     return inner
@@ -242,10 +246,12 @@ def project_box(title, spec_lines):
     inner.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), ACCENT),
         ('BACKGROUND', (0,1), (-1,1), ACCENT_SOFT),
-        ('LEFTPADDING',(0,0), (-1,-1), 8),
-        ('RIGHTPADDING',(0,0),(-1,-1), 8),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING',(0,0),(-1,-1),5),
+        ('LEFTPADDING',(0,0), (-1,-1), 10),
+        ('RIGHTPADDING',(0,0),(-1,-1), 10),
+        ('TOPPADDING', (0,0), (-1,0), 6),
+        ('BOTTOMPADDING',(0,0),(-1,0), 6),
+        ('TOPPADDING', (0,1), (-1,1), 8),
+        ('BOTTOMPADDING',(0,1),(-1,1), 8),
         ('LINEBEFORE', (0,0), (0,-1), 3, ACCENT),
     ]))
     return inner
@@ -265,10 +271,12 @@ def checkpoint_box(items):
     inner.setStyle(TableStyle([
         ('BACKGROUND', (0,0), (-1,0), SEM_SUCCESS),
         ('BACKGROUND', (0,1), (-1,1), ACCENT_SOFT),
-        ('LEFTPADDING',(0,0), (-1,-1), 8),
-        ('RIGHTPADDING',(0,0),(-1,-1), 8),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING',(0,0),(-1,-1),5),
+        ('LEFTPADDING',(0,0), (-1,-1), 10),
+        ('RIGHTPADDING',(0,0),(-1,-1), 10),
+        ('TOPPADDING', (0,0), (-1,0), 6),
+        ('BOTTOMPADDING',(0,0),(-1,0), 6),
+        ('TOPPADDING', (0,1), (-1,1), 8),
+        ('BOTTOMPADDING',(0,1),(-1,1), 8),
         ('LINEBEFORE', (0,0), (0,-1), 3, SEM_SUCCESS),
     ]))
     return inner
@@ -314,43 +322,75 @@ def volt_avatar(size=32):
 
 def volt_says(text, mood='tip'):
     """A narrative callout featuring Volt the guide character.
-    mood: 'tip' (green), 'warning' (amber), 'insight' (blue), 'story' (purple-ish)
-    Gives the curriculum a story/narrative feel."""
-    avatar = volt_avatar(36)
+    mood: 'tip' (green), 'warning' (amber), 'insight' (blue), 'story' (purple)
+    Gives the curriculum a story/narrative feel.
+
+    Layout: [avatar] | [colored label bar on top, body text below]
+    The label bar gets the mood color as background with white text —
+    this fixes the contrast issue where white label text was invisible
+    on the pale body background.
+    """
+    from reportlab.graphics.shapes import Drawing, Rect
+
     mood_colors = {
-        'tip':     (ACCENT, ACCENT_SOFT),
-        'warning': (SEM_WARNING, colors.HexColor('#fef6e7')),
-        'insight': (SEM_INFO, colors.HexColor('#eff6ff')),
-        'story':   (colors.HexColor('#7c3aed'), colors.HexColor('#f5f0ff')),
+        'tip':     (ACCENT, ACCENT_SOFT, '#1f8a3d'),
+        'warning': (SEM_WARNING, colors.HexColor('#fef6e7'), '#d97706'),
+        'insight': (SEM_INFO, colors.HexColor('#eff6ff'), '#2563eb'),
+        'story':   (colors.HexColor('#7c3aed'), colors.HexColor('#f5f0ff'), '#7c3aed'),
     }
-    border_color, bg_color = mood_colors.get(mood, mood_colors['tip'])
+    border_color, bg_color, label_bg_hex = mood_colors.get(mood, mood_colors['tip'])
+    label_bg = colors.HexColor(label_bg_hex)
     mood_label = {'tip': 'VOLT SAYS', 'warning': 'VOLT WARNS', 'insight': 'VOLT INSIGHT', 'story': 'VOLT NARRATES'}
     label = mood_label.get(mood, 'VOLT SAYS')
 
-    label_p = Paragraph(f'<b>{label}</b>', ParagraphStyle(
-        'volt_label', fontName='JetBrainsMono-Bold', fontSize=8, leading=10,
-        textColor=colors.white, alignment=TA_LEFT))
-    body_p = Paragraph(text, ParagraphStyle(
-        'volt_body', fontName=BODY_FONT, fontSize=10, leading=14,
-        textColor=TEXT_PRIMARY, alignment=TA_LEFT))
+    # Avatar — render at a good size
+    avatar = volt_avatar(40)
 
-    # Two-column table: avatar | (label + body)
-    inner = Table([[label_p], [body_p]], colWidths=[None])
-    inner.setStyle(TableStyle([
-        ('LEFTPADDING',(0,0),(-1,-1),0),
-        ('RIGHTPADDING',(0,0),(-1,-1),0),
-        ('TOPPADDING',(0,0),(-1,-1),2),
-        ('BOTTOMPADDING',(0,0),(-1,-1),2),
+    # Label bar — white text on COLORED background (the mood color)
+    label_p = Paragraph(f'<b>{label}</b>', ParagraphStyle(
+        'volt_label', fontName='JetBrainsMono-Bold', fontSize=9, leading=12,
+        textColor=colors.white, alignment=TA_LEFT))
+    label_bar = Table([[label_p]], colWidths=[None])
+    label_bar.setStyle(TableStyle([
+        ('BACKGROUND', (0,0), (-1,-1), label_bg),
+        ('LEFTPADDING', (0,0), (-1,-1), 8),
+        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
     ]))
-    outer = Table([[avatar, inner]], colWidths=[44, None])
+
+    # Body text — dark on pale background, generous spacing
+    body_p = Paragraph(text, ParagraphStyle(
+        'volt_body', fontName=BODY_FONT, fontSize=10.5, leading=16,
+        textColor=TEXT_PRIMARY, alignment=TA_LEFT,
+        spaceBefore=6, spaceAfter=2))
+
+    # Inner: label bar on top, body text below
+    inner = Table([[label_bar], [body_p]], colWidths=[None])
+    inner.setStyle(TableStyle([
+        ('LEFTPADDING',(0,0),(-1,-1), 0),
+        ('RIGHTPADDING',(0,0),(-1,-1), 0),
+        ('TOPPADDING',(0,0),(-1,-1), 0),
+        ('BOTTOMPADDING',(0,0),(-1,-1), 0),
+        ('TOPPADDING',(0,1),(0,1), 6),  # space above body text
+    ]))
+
+    # Outer: avatar | inner, with mood-colored left border
+    outer = Table([[avatar, inner]], colWidths=[48, None])
     outer.setStyle(TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), bg_color),
-        ('LINEBEFORE', (0,0), (0,-1), 3, border_color),
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('LEFTPADDING',(0,0),(-1,-1), 8),
-        ('RIGHTPADDING',(0,0),(-1,-1), 8),
-        ('TOPPADDING',(0,0),(-1,-1), 8),
-        ('BOTTOMPADDING',(0,0),(-1,-1), 8),
+        ('BACKGROUND', (0,0), (0,-1), bg_color),     # avatar cell gets pale bg
+        ('BACKGROUND', (1,0), (1,-1), bg_color),     # text cell gets pale bg
+        ('LINEBEFORE', (0,0), (0,-1), 4, border_color),  # thick colored left border
+        ('VALIGN', (0,0), (0,0), 'TOP'),             # avatar top-aligned
+        ('VALIGN', (1,0), (1,0), 'TOP'),
+        ('LEFTPADDING',(0,0), (0,0), 6),             # avatar cell padding
+        ('RIGHTPADDING',(0,0),(0,0), 4),
+        ('TOPPADDING',(0,0), (0,0), 8),
+        ('BOTTOMPADDING',(0,0),(0,0), 8),
+        ('LEFTPADDING',(1,0), (1,0), 0),             # text cell no extra padding (inner handles it)
+        ('RIGHTPADDING',(1,0),(1,0), 8),
+        ('TOPPADDING',(1,0), (1,0), 0),
+        ('BOTTOMPADDING',(1,0),(1,0), 8),
     ]))
     return outer
 
