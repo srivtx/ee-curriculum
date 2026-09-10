@@ -352,6 +352,13 @@ def build_phase1():
         "i<sub>C</sub> = C·dv<sub>C</sub>/dt &nbsp;&nbsp;|&nbsp;&nbsp; "
         "v<sub>L</sub> = L·di<sub>L</sub>/dt &nbsp;&nbsp;|&nbsp;&nbsp; "
         "W<sub>C</sub> = ½·C·V² &nbsp;&nbsp;|&nbsp;&nbsp; W<sub>L</sub> = ½·L·I²"))
+    # ── Pixel diagrams: the three passive components ──
+    s.extend(diagram('resistor',
+        caption='Resistor (American rectangle symbol) — V = IR, dissipates P = I²R as heat.'))
+    s.extend(diagram('capacitor',
+        caption='Capacitor (parallel-plate symbol) — i = C·dv/dt, stores energy in E-field.'))
+    s.extend(diagram('inductor',
+        caption='Inductor (coil symbol) — v = L·di/dt, stores energy in B-field.'))
 
     s.append(heading('First-order transients — the RC and RL step response', 2))
     s.append(p(
@@ -611,6 +618,12 @@ def build_phase2():
         "frequencies and rejects the rest — the basis of every radio receiver and every "
         "analog filter. A low-Q resonator passes a wide band. The damping ratio ζ = 1/(2Q)."))
 
+    # ── Pixel diagrams: RLC series resonance + Bode low-pass ──
+    s.extend(diagram('rlc',
+        caption='Series RLC resonator — R, L, C in a string. At ω₀ = 1/√(LC), XL and XC cancel.'))
+    s.extend(diagram('bode_low_pass',
+        caption='Bode magnitude of an RC low-pass — flat to f_c, then −20 dB/decade rolloff.'))
+
     s.append(heading('Bode plots — the frequency-domain picture', 2))
     s.append(p(
         "A Bode plot is the magnitude (in dB) and phase (in degrees) of a transfer "
@@ -668,6 +681,10 @@ def build_phase2():
         "industrial motors. A balanced Δ load draws √3 times the line current of an "
         "equivalent Y load at the same line voltage. Three-phase rectifiers produce "
         "smoother DC than single-phase — six pulses per cycle instead of two."))
+
+    # ── Pixel diagram: three-phase phasors (revisited for power context) ──
+    s.extend(diagram('three_phase',
+        caption='Three-phase phasor diagram — phases A, B, C separated by 120°. V_a + V_b + V_c = 0.'))
 
     s.append(project_box('Python: Three-Phase Phasor Visualizer', [
         ('Goal:', 'see three-phase phasors rotating.'),
@@ -777,6 +794,12 @@ def build_phase3():
         "10<sup>−15</sup>–10<sup>−12</sup> A)."))
     s.append(formula_box("I = I<sub>S</sub>·(e<sup>V/(nV<sub>T</sub>)</sup> − 1) &nbsp;&nbsp;|&nbsp;&nbsp; V<sub>T</sub> = kT/q ≈ 26 mV"))
 
+    # ── Pixel diagrams: diode symbol + half-wave rectifier ──
+    s.extend(diagram('diode',
+        caption='Diode (anode left, cathode right) — one-way current valve. V_f ≈ 0.7 V (Si).'))
+    s.extend(diagram('half_wave',
+        caption='Half-wave rectifier — AC source → diode → load → ground. Passes only positive half-cycles.'))
+
     s.append(heading('Three classic diode circuits', 2))
     s.append(bullet_list([
         "<b>Half-wave rectifier:</b> a single diode in series with the load. Passes only the positive half-cycles. Output average = V_m/π. Ripple frequency = line frequency.",
@@ -819,6 +842,10 @@ def build_phase3():
         "in saturation). Conceptually, a BJT is a current amplifier; a MOSFET is a "
         "transconductance amplifier. Both have a small-signal model that linearizes them "
         "around a DC operating point — same idea as Newton’s method."))
+
+    # ── Pixel diagram: NPN BJT transistor symbol ──
+    s.extend(diagram('transistor_npn',
+        caption='NPN BJT — base (left), collector (top), emitter (bottom). I_C = β · I_B.'))
 
     s.append(heading('BJT regions of operation', 2))
     s.append(make_table([
@@ -894,6 +921,10 @@ def build_phase3():
         "I<sub>D</sub> = ½·k<sub>n</sub>·(V<sub>GS</sub> − V<sub>th</sub>)²·(1 + λ·V<sub>DS</sub>) &nbsp;&nbsp; "
         "(saturation)"))
 
+    # ── Pixel diagram: MOSFET symbol ──
+    s.extend(diagram('mosfet',
+        caption='n-channel MOSFET — gate (left), drain (top), source (bottom). Voltage-controlled current source.'))
+
     s.append(heading('Small-signal model', 2))
     s.append(p(
         "Linearize around the Q point: g_m = ∂I_D/∂V_GS = k_n·(V_GS − V_th) = √(2·k_n·I_D). "
@@ -946,6 +977,12 @@ def build_phase3():
         "the op-amp is the ‘runtime’. This is why op-amp circuits are so composable: "
         "swap the feedback network and you get a different function — inverting amp, "
         "integrator, differentiator, summer, subtractor, filter, oscillator."))
+
+    # ── Pixel diagram: op-amp symbol + inverting amplifier ──
+    s.extend(diagram('opamp',
+        caption='Op-amp triangle — inverting input (−) top, non-inverting input (+) bottom, output right.'))
+    s.extend(diagram('opamp_inv',
+        caption='Inverting amplifier — R_f feedback, R_in input. V_out = −(R_f/R_in)·V_in.'))
 
     s.append(heading('The two golden rules', 2))
     s.append(p(
@@ -1032,6 +1069,10 @@ def build_phase3():
         "H(s) = ω<sub>0</sub>² / (s² + (ω<sub>0</sub>/Q)·s + ω<sub>0</sub>²) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "ω<sub>0</sub> = 1/√(R<sub>1</sub>R<sub>2</sub>C<sub>1</sub>C<sub>2</sub>)"))
 
+    # ── Pixel diagram: band-pass filter response ──
+    s.extend(diagram('bandpass',
+        caption='Band-pass magnitude response — peaks at ω₀, falls off on both sides at ±20 dB/dec.'))
+
     s.append(heading('Butterworth, Chebyshev, Bessel — choosing the response', 2))
     s.append(p(
         "Three classic filter responses, each optimizing a different property. "
@@ -1073,6 +1114,10 @@ def build_phase3():
         "oscillation decays; if |Aβ| &gt; 1 it grows until nonlinearity limits it. Real "
         "oscillators start with |Aβ| slightly &gt; 1 (so noise can build up) and rely on "
         "nonlinearity (clipping, AGC) to stabilize at |Aβ| = 1."))
+
+    # ── Pixel diagram: 555 timer block ──
+    s.extend(diagram('555_timer',
+        caption='555 timer — internal block view: comparators + flip-flop + discharge transistor. The most-sold IC ever.'))
 
     s.append(heading('Three classic oscillators', 2))
     s.append(bullet_list([

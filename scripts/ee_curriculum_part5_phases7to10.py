@@ -81,6 +81,10 @@ def build_phase7():
         "Boost: V<sub>o</sub> = V<sub>in</sub> / (1 − D) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Buck-boost: V<sub>o</sub> = −D/(1−D) · V<sub>in</sub>"))
 
+    # ── Pixel diagram: buck converter topology ──
+    s.extend(diagram('buck',
+        caption='Buck converter — switch + diode + inductor + capacitor. V_o = D · V_in (D = duty cycle).'))
+
     s.append(heading('Buck converter — the canonical design', 2))
     s.append(p(
         "Switch Q (MOSFET), diode D (or synchronous FET), inductor L, cap C, load R. "
@@ -356,6 +360,10 @@ def build_phase7():
         "Park: i<sub>d</sub>, i<sub>q</sub> = [i<sub>α</sub>·cos θ + i<sub>β</sub>·sin θ, "
         "−i<sub>α</sub>·sin θ + i<sub>β</sub>·cos θ]"))
 
+    # ── Pixel diagram: FOC motor control block diagram ──
+    s.extend(diagram('foc',
+        caption='FOC block diagram — Clarke+Park transform → PI controllers (i_d, i_q) → inverse Park+Clarke → 3-phase inverter.'))
+
     s.append(project_box('Python: Simulate FOC of a PMSM', [
         ('Goal:', 'simulate FOC and verify smooth torque.'),
         ('Plant:', 'PMSM with R_s = 0.5 Ω, L_d = L_q = 1 mH, K_t = 0.1 Nm/A, J = 0.001 kg·m².'),
@@ -602,6 +610,10 @@ def build_phase8():
         "v<sub>p</sub> = 1/√(LC) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Γ = (Z<sub>L</sub> − Z<sub>0</sub>) / (Z<sub>L</sub> + Z<sub>0</sub>)"))
 
+    # ── Pixel diagram: Smith chart ──
+    s.extend(diagram('smith',
+        caption='Smith chart — the RF engineer’s slide rule. The full impedance plane folded into a unit circle.'))
+
     s.append(heading('Reflections and matching', 2))
     s.append(p(
         "If the load impedance Z_L ≠ Z_0, part of the wave reflects back. The reflection "
@@ -651,6 +663,10 @@ def build_phase8():
         "Input impedance ~73 Ω (close to 75 Ω coax). The patch antenna is a flat "
         "rectangle of metal λ/4 above a ground plane — used in PCBs, GPS, WiFi arrays. "
         "Compact but narrowband (~1% bandwidth)."))
+
+    # ── Pixel diagram: dipole antenna with radiation lobes ──
+    s.extend(diagram('dipole',
+        caption='Half-wave dipole — vertical conductor (λ/2) with doughnut-shaped radiation pattern (broadside max).'))
 
     s.append(heading('Antenna parameters', 2))
     s.append(bullet_list([
@@ -841,6 +857,12 @@ def build_phase9():
         "PMOS conducts, NMOS is off, output is V_DD. When input is high, NMOS conducts, "
         "PMOS is off, output is 0. No DC current flows in either steady state — this is "
         "why CMOS dominates: static power is essentially zero."))
+
+    # ── Pixel diagrams: CMOS inverter + current mirror ──
+    s.extend(diagram('cmos_inverter',
+        caption='CMOS inverter — PMOS pull-up (top), NMOS pull-down (bottom), input left, output at midpoint.'))
+    s.extend(diagram('current_mirror',
+        caption='Current mirror — two matched transistors. Reference current on left is mirrored to the load on the right.'))
 
     s.append(heading('Voltage transfer characteristic (VTC)', 2))
     s.append(p(
@@ -1300,6 +1322,10 @@ def build_phase10():
         "depends on irradiance and temperature — it moves continuously as the sun and "
         "weather change. <b>MPPT</b> (maximum power point tracking) is the algorithm "
         "that adjusts the converter duty cycle to keep the panel at its MPP."))
+
+    # ── Pixel diagram: solar PV + MPPT ──
+    s.extend(diagram('solar_mppt',
+        caption='Solar PV + MPPT — panel on left, MPPT controller in middle, DC-DC converter, battery/load on right.'))
 
     s.append(cs_bridge(
         "<b>MPPT ↔ hill climbing.</b> The most common MPPT algorithm, perturb & observe "

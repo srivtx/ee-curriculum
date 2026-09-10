@@ -26,6 +26,17 @@ def build_front_matter():
         "Six <b>capstone projects</b> in Phase 10 integrate everything you have learned "
         "into shipping-grade hardware."))
 
+    # Visual pedagogy callout — pixel-art diagrams
+    s.append(p(
+        "<b>A note on the visual style.</b> Throughout the curriculum you will see "
+        "small green pixel-art diagrams — Minecraft-style voxel renderings of resistors, "
+        "capacitors, op-amps, Smith charts, Bode plots, PID loops, and so on. These are "
+        "not decorations. They are schematic icons that give you a fast visual handle on "
+        "the circuit or concept being discussed. Treat each one as a one-glance mental "
+        "model: when you see the pixel rectifier, recall the diode+load topology; when "
+        "you see the pixel Bode plot, recall the flat-then-rolloff shape. The cover "
+        "uses the same voxel language at large scale; the body uses it as inline iconography."))
+
     s.append(heading('The CS-Bridge Pattern', 1))
     s.append(p(
         "You are a computer scientist. That is not a handicap — it is leverage. Almost every "
@@ -195,6 +206,11 @@ def build_phase0():
     s.append(formula_box(
         "v<sub>C</sub>(t) = (1/C) · ∫ i<sub>C</sub>(τ) dτ &nbsp;&nbsp;&nbsp; "
         "i<sub>L</sub>(t) = (1/L) · ∫ v<sub>L</sub>(τ) dτ"))
+    # ── Pixel diagram: sine + square wave (the two canonical EE signals) ──
+    s.extend(diagram('sine_wave',
+        caption='Pixel sinusoid — the eigenfunction of every LTI system. Phase 2 lives here.'))
+    s.extend(diagram('square_wave',
+        caption='Pixel square wave — the time-domain workhorse of digital electronics (Phase 4).'))
     s.append(p(
         "Worked example: a 1 μF capacitor has a constant 2 mA flowing into it. The "
         "voltage rises at <i>dv/dt = i/C = (2 mA)/(1 μF) = 2000 V/s</i>. After 5 ms, "
@@ -377,6 +393,10 @@ def build_phase0():
         "physical dimensions are tiny compared to the wavelength, so the ∂B/∂t and ∂E/∂t "
         "terms are negligible — this is the lumped-circuit approximation."))
 
+    # ── Pixel diagram: three-phase phasors (power-systems preview) ──
+    s.extend(diagram('three_phase',
+        caption='Three-phase phasors — 120° apart. The geometric heart of every power grid (Phase 2, 7, 10).'))
+
     s.append(project_box('Maxwell to Circuits', [
         ('Goal:', 'see how KCL, KVL, and Ohm’s law fall out of Maxwell.'),
         ('Tasks:', '(a) Derive KCL from ∇·J + ∂ρ/∂t = 0 (charge conservation). '
@@ -405,6 +425,10 @@ def build_phase0():
         "This module is a single, dense reference: the side-by-side mapping of CS concepts "
         "to EE concepts. Refer back to this table throughout the curriculum. Every module’s "
         "CS BRIDGE callout is a pointer back to one of these mappings."))
+
+    # ── Pixel diagram: tree (the CS-to-EE concept tree) ──
+    s.extend(diagram('tree',
+        caption='The CS-to-EE concept tree — branches you will climb throughout the curriculum.'))
 
     s.append(make_table([
         ['CS concept','EE concept','Why they are the same'],

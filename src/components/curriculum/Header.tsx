@@ -40,14 +40,14 @@ export function Header({
         'bg-canvas/85 backdrop-blur supports-[backdrop-filter]:bg-canvas/70'
       )}
     >
-      <div className="mx-auto flex h-16 max-w-7xl items-center gap-3 px-4 sm:px-6">
+      <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-4 sm:h-16 sm:gap-3 sm:px-6">
         {/* Logo + brand */}
         <button
           onClick={() => onView('curriculum')}
-          className="group flex items-center gap-2.5 pr-2"
+          className="group flex items-center gap-2 pr-1 sm:gap-2.5 sm:pr-2"
           aria-label="EE Curriculum home"
         >
-          <EEMonogram size={32} />
+          <EEMonogram size={28} />
           <span className="hidden flex-col items-start leading-tight sm:flex">
             <span className="text-sm font-medium tracking-[-0.01em] text-ink">
               EE Curriculum
@@ -58,9 +58,9 @@ export function Header({
           </span>
         </button>
 
-        {/* Nav tabs — pill buttons */}
+        {/* Nav tabs — pill buttons (desktop only; mobile uses the row below) */}
         <nav
-          className="ml-2 hidden items-center gap-1 md:flex"
+          className="ml-1 hidden items-center gap-1 md:flex"
           aria-label="Primary"
         >
           {NAV.map((n) => (
@@ -88,7 +88,7 @@ export function Header({
           <ProgressIndicator value={overallPct} showLabel />
         </div>
 
-        {/* PDF download */}
+        {/* PDF download — desktop only */}
         <Button
           asChild
           variant="ghost"
@@ -106,12 +106,12 @@ export function Header({
           </Link>
         </Button>
 
-        {/* GitHub */}
+        {/* GitHub — always visible (icon-only) */}
         <Button
           asChild
           variant="ghost"
           size="icon"
-          className="hidden sm:inline-flex rounded-full"
+          className="rounded-full"
           aria-label="GitHub"
         >
           <Link
@@ -124,7 +124,7 @@ export function Header({
           </Link>
         </Button>
 
-        {/* Theme toggle */}
+        {/* Theme toggle — always visible */}
         <Button
           variant="ghost"
           size="icon"
@@ -144,31 +144,39 @@ export function Header({
         </Button>
       </div>
 
-      {/* Mobile nav row — pill buttons */}
-      <nav
-        className="flex items-center gap-1 overflow-x-auto border-t border-hairline/40 px-3 py-2 md:hidden ee-scroll"
-        aria-label="Primary mobile"
-      >
-        {NAV.map((n) => (
-          <button
-            key={n.key}
-            onClick={() => onView(n.key)}
-            aria-current={view === n.key ? 'page' : undefined}
-            className={cn(
-              'shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors duration-150',
-              view === n.key
-                ? 'bg-accent/10 text-accent border border-accent/30'
-                : 'text-body-mid hover:bg-canvas-soft'
-            )}
-          >
-            {n.label}
-          </button>
-        ))}
-        <div className="ml-auto flex items-center gap-2 pl-3">
-          <span className="eyebrow text-[11px] text-body-mid">Progress</span>
-          <ProgressIndicator value={overallPct} />
+      {/* Mobile nav row — horizontally scrollable pill buttons.
+          The progress indicator lives OUTSIDE the scroll container so it
+          doesn't get pushed off-screen by `ml-auto` semantics inside an
+          overflow-x-auto parent. */}
+      <div className="flex items-center gap-3 border-t border-hairline/40 px-3 py-2 md:hidden">
+        <nav
+          className="ee-scroll flex flex-1 items-center gap-1 overflow-x-auto"
+          aria-label="Primary mobile"
+          style={{ scrollbarWidth: 'none' }}
+        >
+          {NAV.map((n) => (
+            <button
+              key={n.key}
+              onClick={() => onView(n.key)}
+              aria-current={view === n.key ? 'page' : undefined}
+              className={cn(
+                'shrink-0 rounded-full px-3 py-1.5 text-sm transition-colors duration-150',
+                view === n.key
+                  ? 'bg-accent/10 text-accent border border-accent/30'
+                  : 'text-body-mid hover:bg-canvas-soft'
+              )}
+            >
+              {n.label}
+            </button>
+          ))}
+        </nav>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <span className="eyebrow text-[10px] text-body-mid">%</span>
+          <span className="ee-mono text-sm tabular-nums text-accent">
+            {Math.round(overallPct)}
+          </span>
         </div>
-      </nav>
+      </div>
     </header>
   );
 }

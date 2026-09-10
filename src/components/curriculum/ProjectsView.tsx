@@ -94,9 +94,9 @@ export function ProjectsView() {
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       {/* Header + stats */}
       <section className="mb-6">
-        <div className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-accent" aria-hidden />
-          <h1 className="text-xl font-normal tracking-[-0.3px] text-ink sm:text-2xl">
+        <div className="flex flex-wrap items-center gap-2">
+          <Target className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+          <h1 className="text-lg font-normal tracking-[-0.3px] text-ink sm:text-xl md:text-2xl">
             Project Tracker
           </h1>
           <span className="ml-2 inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent">
@@ -145,85 +145,87 @@ export function ProjectsView() {
 
       {/* Filters */}
       <section className="mb-4 rounded-sm border border-hairline bg-canvas-card p-3">
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="flex items-center gap-1.5 text-xs text-body-mid">
             <Filter className="h-3.5 w-3.5" />
             <span className="eyebrow text-[11px]">Filters</span>
           </div>
 
-          <Select value={phaseFilter} onValueChange={setPhaseFilter}>
-            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 rounded-sm text-xs">
-              <SelectValue placeholder="Phase" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All phases</SelectItem>
-              {CURRICULUM.map((p) => (
-                <SelectItem key={p.id} value={p.id}>
-                  P{p.index} · {p.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+            <Select value={phaseFilter} onValueChange={setPhaseFilter}>
+              <SelectTrigger className="h-8 w-full min-w-32 gap-1 rounded-sm text-xs sm:w-auto">
+                <SelectValue placeholder="Phase" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All phases</SelectItem>
+                {CURRICULUM.map((p) => (
+                  <SelectItem key={p.id} value={p.id}>
+                    P{p.index} · {p.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={diffFilter}
-            onValueChange={(v) => setDiffFilter(v as DiffFilter)}
-          >
-            <SelectTrigger className="h-8 w-auto min-w-36 gap-1 rounded-sm text-xs">
-              <SelectValue placeholder="Difficulty" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All difficulties</SelectItem>
-              {(['Foundation', 'Intermediate', 'Advanced'] as const).map((d) => (
-                <SelectItem key={d} value={d}>
-                  {d}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select
+              value={diffFilter}
+              onValueChange={(v) => setDiffFilter(v as DiffFilter)}
+            >
+              <SelectTrigger className="h-8 w-full min-w-36 gap-1 rounded-sm text-xs sm:w-auto">
+                <SelectValue placeholder="Difficulty" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All difficulties</SelectItem>
+                {(['Foundation', 'Intermediate', 'Advanced'] as const).map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={hoursFilter}
-            onValueChange={(v) => setHoursFilter(v as HoursFilter)}
-          >
-            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 rounded-sm text-xs">
-              <SelectValue placeholder="Hours" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Any hours</SelectItem>
-              <SelectItem value="lt2">&lt; 2 h</SelectItem>
-              <SelectItem value="2to5">2 – 5 h</SelectItem>
-              <SelectItem value="gt5">&gt; 5 h</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              value={hoursFilter}
+              onValueChange={(v) => setHoursFilter(v as HoursFilter)}
+            >
+              <SelectTrigger className="h-8 w-full min-w-32 gap-1 rounded-sm text-xs sm:w-auto">
+                <SelectValue placeholder="Hours" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Any hours</SelectItem>
+                <SelectItem value="lt2">&lt; 2 h</SelectItem>
+                <SelectItem value="2to5">2 – 5 h</SelectItem>
+                <SelectItem value="gt5">&gt; 5 h</SelectItem>
+              </SelectContent>
+            </Select>
 
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => setStatusFilter(v as StatusFilter)}
-          >
-            <SelectTrigger className="h-8 w-auto min-w-28 gap-1 rounded-sm text-xs">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="todo">To do</SelectItem>
-              <SelectItem value="done">Completed</SelectItem>
-            </SelectContent>
-          </Select>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => setStatusFilter(v as StatusFilter)}
+            >
+              <SelectTrigger className="h-8 w-full min-w-28 gap-1 rounded-sm text-xs sm:w-auto">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="todo">To do</SelectItem>
+                <SelectItem value="done">Completed</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           {hasActiveFilters && (
             <Button
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="h-8 gap-1 rounded-full px-2 text-xs text-body-mid"
+              className="h-8 gap-1 self-start rounded-full px-2 text-xs text-body-mid sm:self-auto"
             >
               <X className="h-3 w-3" />
               Clear
             </Button>
           )}
 
-          <span className="ml-auto text-xs text-body-mid">
+          <span className="text-xs text-body-mid sm:ml-auto">
             {filtered.length} of {ALL_PROJECTS.length}
           </span>
         </div>
@@ -289,7 +291,9 @@ function StatTile({
   return (
     <div className="rounded-sm border border-hairline bg-canvas-card p-3">
       <Icon className={cn('h-4 w-4', color)} aria-hidden />
-      <div className="mt-1.5 ee-mono text-lg text-ink tabular-nums">{value}</div>
+      <div className="mt-1.5 ee-mono text-base text-ink tabular-nums sm:text-lg">
+        {value}
+      </div>
       <div className="text-[11px] text-body">{label}</div>
       <div className="text-[10px] text-body-mid">{sub}</div>
     </div>

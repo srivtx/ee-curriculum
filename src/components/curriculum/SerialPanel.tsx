@@ -53,8 +53,8 @@ export function SerialPanel() {
       {/* FAB + label wrapper.
           The label "Connect hardware" sits to the LEFT of the FAB (so the FAB
           stays pinned to the corner) and is hidden on very small screens to
-          avoid covering content. */}
-      <div className="fixed bottom-5 right-5 z-30 flex items-end gap-2">
+          avoid covering content. FAB is 40px on mobile, 48px on desktop. */}
+      <div className="fixed bottom-4 right-4 z-30 flex items-end gap-2 sm:bottom-5 sm:right-5">
         <div
           className={cn(
             'hidden sm:flex flex-col items-end gap-0.5 mb-0.5',
@@ -77,7 +77,8 @@ export function SerialPanel() {
           type="button"
           onClick={() => setOpen(true)}
           className={cn(
-            'inline-flex h-12 w-12 items-center justify-center rounded-full',
+            'relative inline-flex h-10 w-10 items-center justify-center rounded-full',
+            'sm:h-12 sm:w-12',
             'border border-accent/40 bg-canvas/95 text-accent backdrop-blur',
             'transition-colors duration-150 hover:bg-accent/10',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent',
@@ -86,10 +87,10 @@ export function SerialPanel() {
           aria-label="Connect to hardware via WebSerial — opens the serial monitor"
           title="Connect to hardware (Arduino, ESP32, STM32, …) via WebSerial"
         >
-          <Usb className="h-5 w-5" aria-hidden />
+          <Usb className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
           {serial.isConnected && (
             <span
-              className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-accent ring-2 ring-canvas"
+              className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-accent ring-2 ring-canvas sm:h-3 sm:w-3"
               aria-hidden
             />
           )}

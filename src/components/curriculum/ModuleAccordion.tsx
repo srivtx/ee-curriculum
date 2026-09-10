@@ -59,7 +59,7 @@ export function ModuleAccordion({
     >
       <AccordionTrigger
         className={cn(
-          'ee-accordion-trigger group relative grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 text-left hover:bg-canvas-soft',
+          'ee-accordion-trigger group relative grid grid-cols-[auto_1fr] items-center gap-3 px-4 py-3 text-left hover:bg-canvas-soft sm:grid-cols-[auto_1fr_auto]',
           '[&[data-state=open]]:bg-canvas-soft'
         )}
       >
@@ -94,7 +94,7 @@ export function ModuleAccordion({
           <p className="mt-0.5 line-clamp-1 text-xs text-body-mid">
             {module.description}
           </p>
-          <div className="mt-1.5 flex items-center gap-3 text-[11px] text-body-mid">
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-body-mid">
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {formatHours(module.duration_hours)}
@@ -198,10 +198,13 @@ export function ModuleAccordion({
                             <span>{formatDuration(lesson.duration_min)}</span>
                           </span>
                         </span>
-                        {/* Feature badges — compact icon pills with tooltips */}
+                        {/* Feature badges — compact icon pills with tooltips.
+                            Hidden on mobile to prevent horizontal overflow
+                            on lesson rows; the lesson view itself surfaces the
+                            full feature list prominently at the top. */}
                         <FeatureBadges
                           features={feats}
-                          className="shrink-0"
+                          className="hidden shrink-0 sm:flex"
                         />
                         {done ? (
                           <CheckCircle2

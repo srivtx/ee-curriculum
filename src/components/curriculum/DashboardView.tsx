@@ -130,7 +130,7 @@ export function DashboardView({
             <div className="eyebrow text-[14px] text-accent">
               {'// DASHBOARD'}
             </div>
-            <h1 className="mt-3 text-2xl font-normal tracking-[-0.6px] text-ink sm:text-3xl md:tracking-[-1.0px]">
+            <h1 className="mt-3 text-xl font-normal tracking-[-0.3px] text-ink sm:text-2xl md:text-3xl md:tracking-[-0.6px]">
               Curriculum Progress
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-body">
@@ -291,7 +291,7 @@ export function DashboardView({
                     </div>
 
                     {/* hours input */}
-                    <div className="flex items-center gap-2 border-t border-hairline pt-2">
+                    <div className="flex flex-wrap items-center gap-2 border-t border-hairline pt-2">
                       <label
                         htmlFor={`hours-${phase.id}`}
                         className="eyebrow text-[11px] text-body-mid"
@@ -584,7 +584,7 @@ function KpiTile({
           </span>
         </div>
         <div className="mt-2 flex items-baseline gap-1">
-          <span className="ee-mono text-2xl text-ink tabular-nums">
+          <span className="ee-mono text-xl text-ink tabular-nums sm:text-2xl">
             {value}
           </span>
           <span className="text-xs text-body-mid">{total}</span>

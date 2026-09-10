@@ -16,6 +16,7 @@ from ee_curriculum_part1_setup import (
     heading, p, hr, A4, mm, LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, BOTTOM_MARGIN,
     build_cover_pdf, WORK_DIR, DOWNLOAD_DIR, styles, HEADER_FILL, BORDER, ACCENT,
     TEXT_PRIMARY, TEXT_MUTED, colors, TA_LEFT, TA_CENTER,
+    pixel_divider, diagram, pixel_diagram_block,
 )
 from ee_curriculum_part2_phase0 import build_front_matter, build_phase0
 from ee_curriculum_part3_phases1to3 import build_phase1, build_phase2, build_phase3
@@ -46,26 +47,37 @@ def build_body_pdf():
     # ── Content sections ──────────────────────────────────────────────────
     print("[build]   front matter + phase 0")
     story.extend(build_front_matter())
+    story.append(pixel_divider())
     print("[build]   phase 1 (DC circuits)")
     story.extend(build_phase1())
+    story.append(pixel_divider())
     print("[build]   phase 2 (AC circuits)")
     story.extend(build_phase2())
+    story.append(pixel_divider())
     print("[build]   phase 3 (analog)")
     story.extend(build_phase3())
+    story.append(pixel_divider())
     print("[build]   phase 4 (digital/embedded)")
     story.extend(build_phase4())
+    story.append(pixel_divider())
     print("[build]   phase 5 (signals/DSP)")
     story.extend(build_phase5())
+    story.append(pixel_divider())
     print("[build]   phase 6 (control/robotics)")
     story.extend(build_phase6())
+    story.append(pixel_divider())
     print("[build]   phase 7 (power electronics)")
     story.extend(build_phase7())
+    story.append(pixel_divider())
     print("[build]   phase 8 (EM/RF)")
     story.extend(build_phase8())
+    story.append(pixel_divider())
     print("[build]   phase 9 (VLSI)")
     story.extend(build_phase9())
+    story.append(pixel_divider())
     print("[build]   phase 10 (capstones)")
     story.extend(build_phase10())
+    story.append(pixel_divider())
     print("[build]   appendices")
     story.extend(build_appendices())
 

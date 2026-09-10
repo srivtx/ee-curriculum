@@ -98,9 +98,9 @@ export function CheckpointsView() {
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       {/* Header */}
       <section className="mb-6">
-        <div className="flex items-center gap-2">
-          <ListChecks className="h-5 w-5 text-accent" aria-hidden />
-          <h1 className="text-xl font-normal tracking-[-0.3px] text-ink sm:text-2xl">
+        <div className="flex flex-wrap items-center gap-2">
+          <ListChecks className="h-5 w-5 shrink-0 text-accent" aria-hidden />
+          <h1 className="text-lg font-normal tracking-[-0.3px] text-ink sm:text-xl md:text-2xl">
             Checkpoint Flashcards
           </h1>
           <span className="ml-2 inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent">
@@ -116,9 +116,9 @@ export function CheckpointsView() {
       {/* Phase selector + summary */}
       <section className="mb-5 flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-card p-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <Layers className="h-4 w-4 text-accent" aria-hidden />
+          <Layers className="h-4 w-4 shrink-0 text-accent" aria-hidden />
           <Select value={phaseId} onValueChange={setPhaseId}>
-            <SelectTrigger className="h-9 w-auto min-w-56 gap-1 rounded-sm text-sm">
+            <SelectTrigger className="h-9 w-full gap-1 rounded-sm text-sm sm:w-auto sm:min-w-56">
               <SelectValue placeholder="Pick a phase" />
             </SelectTrigger>
             <SelectContent>

@@ -82,6 +82,10 @@ def build_phase4():
         "carry-skip and carry-select (in between). Modern FPGAs and CPUs use prefix adders "
         "(Kogge–Stone, Brent–Kung) for log-time addition."))
 
+    # ── Pixel diagram: AND gate (combinational primitive) ──
+    s.extend(diagram('and_gate',
+        caption='AND gate — two inputs (left) feed the D-shape, output (right) is high only when both inputs are high.'))
+
     s.append(heading('Combinational hazards', 2))
     s.append(p(
         "A static-1 hazard occurs when an input change should leave the output at 1 but "
@@ -119,6 +123,10 @@ def build_phase4():
         "A register file is a bank of flip-flops with read/write ports — exactly the "
         "register file in a CPU. The only thing that is new in EE is the timing: "
         "setup, hold, and clock-to-Q constraints."))
+
+    # ── Pixel diagram: D flip-flop ──
+    s.extend(diagram('d_flip_flop',
+        caption='D flip-flop — D input on left, CLK input middle, Q output right. Edge-triggered.'))
 
     s.append(heading('Four flip-flop types', 2))
     s.append(make_table([
@@ -816,6 +824,10 @@ def build_phase5():
         "z = e<sup>sT</sup> &nbsp;&nbsp;|&nbsp;&nbsp; "
         "X(z) = Σ<sub>n=−∞</sub><sup>+∞</sup> x[n]·z<sup>−n</sup>"))
 
+    # ── Pixel diagram: band-pass filter response (digital filter context) ──
+    s.extend(diagram('bandpass',
+        caption='Digital band-pass response — poles near the unit circle at angle ±ω₀ produce this shape.'))
+
     s.append(heading('Difference equations and transfer functions', 2))
     s.append(p(
         "A discrete LTI system is described by a linear constant-coefficient difference "
@@ -870,6 +882,12 @@ def build_phase5():
     s.append(formula_box(
         "X[k] = Σ<sub>n=0</sub><sup>N−1</sup> x[n]·e<sup>−j2πkn/N</sup> &nbsp;&nbsp;|&nbsp;&nbsp; "
         "f<sub>k</sub> = k·f<sub>s</sub>/N"))
+
+    # ── Pixel diagrams: sine + square wave (FFT input/output exemplars) ──
+    s.extend(diagram('sine_wave',
+        caption='A pure sinusoid in time → a single peak in the FFT. The eigenfunction of every LTI system.'))
+    s.extend(diagram('square_wave',
+        caption='A square wave decomposes into odd harmonics (Fourier series): f, 3f, 5f, 7f, ... at amplitudes 1, 1/3, 1/5, ...'))
 
     s.append(heading('FFT — the algorithm', 2))
     s.append(p(
@@ -1229,6 +1247,12 @@ def build_phase6():
         "error. I (integral) removes steady-state error but slows response and reduces "
         "stability. D (derivative) damps oscillation but amplifies noise. The art is "
         "tuning the three gains."))
+
+    # ── Pixel diagrams: PID feedback loop + Bode low-pass ──
+    s.extend(diagram('pid_loop',
+        caption='PID feedback loop — setpoint → error → PID → plant → output. Sensor feeds back to the summing junction.'))
+    s.extend(diagram('bode_low_pass',
+        caption='Open-loop Bode magnitude — used to read gain margin (GM) and phase margin (PM) for stability.'))
 
     s.append(heading('Ziegler-Nichols tuning', 2))
     s.append(p(
