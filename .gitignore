@@ -92,3 +92,6 @@ upload/
 
 # Raw research search results (keep only the .md)
 research/*.json
+
+# Sandbox agent context (internal)
+agent-ctx/

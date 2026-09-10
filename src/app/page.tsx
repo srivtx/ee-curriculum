@@ -9,6 +9,7 @@ import { CurriculumView } from '@/components/curriculum/CurriculumView';
 import { DashboardView } from '@/components/curriculum/DashboardView';
 import { ProjectsView } from '@/components/curriculum/ProjectsView';
 import { CheckpointsView } from '@/components/curriculum/CheckpointsView';
+import { SerialPanel } from '@/components/curriculum/SerialPanel';
 import {
   LessonDrawer,
   type LessonDrawerPayload,
@@ -84,6 +85,8 @@ export default function Home() {
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
       />
+
+      <SerialPanel />
     </div>
   );
 }

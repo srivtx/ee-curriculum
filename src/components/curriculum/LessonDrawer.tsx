@@ -16,8 +16,10 @@ import {
   Clock,
   CircuitBoard,
   Lightbulb,
+  Sigma,
   Sparkles,
   Target,
+  Waves,
 } from 'lucide-react';
 import type { Lesson, Module } from '@/lib/curriculum';
 import { useProgress } from '@/hooks/useProgress';
@@ -27,6 +29,13 @@ import {
   formatDuration,
 } from './helpers';
 import { PythonPlayground } from './PythonPlayground';
+import { KatexFormulaList } from './KatexRenderer';
+import { FalstadEmbed } from './FalstadEmbed';
+import { WaveDromDiagram } from './WaveDromDiagram';
+import { BodePlot } from './BodePlot';
+import { SpicePlayground } from './SpicePlayground';
+import { VerilogPlayground } from './VerilogPlayground';
+import { KiCanvasEmbed } from './KiCanvasEmbed';
 import { cn } from '@/lib/utils';
 
 export interface LessonDrawerPayload {
@@ -218,6 +227,90 @@ function DrawerInner({
               <p className="ee-mono px-3 py-2.5 text-[13px] leading-relaxed text-foreground/85">
                 {csBridge}
               </p>
+            </section>
+          )}
+
+          {/* Key Formulas (KaTeX) */}
+          {lesson.formulas && lesson.formulas.length > 0 && (
+            <section>
+              <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <Sigma className="h-3.5 w-3.5 text-ee-teal" aria-hidden />
+                Key Formulas
+              </h3>
+              <KatexFormulaList items={lesson.formulas} />
+            </section>
+          )}
+
+          {/* Falstad circuit simulator */}
+          {lesson.falstad_url && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Try this circuit
+              </h3>
+              <FalstadEmbed
+                circuitUrl={lesson.falstad_url}
+                title={lesson.title}
+                caption="Click and drag in the simulator to interact. Use the scopes to see waveforms."
+              />
+            </section>
+          )}
+
+          {/* WaveDrom timing diagram */}
+          {lesson.wavedrom && (
+            <section>
+              <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                <Waves className="h-3.5 w-3.5 text-ee-teal" aria-hidden />
+                Timing Diagram
+              </h3>
+              <WaveDromDiagram wavejson={lesson.wavedrom} />
+            </section>
+          )}
+
+          {/* Bode Plot Playground */}
+          {(lesson.bode || lesson.has_bode) && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Interactive Bode Plot
+              </h3>
+              <BodePlot
+                numerator={lesson.bode?.numerator}
+                denominator={lesson.bode?.denominator}
+                label={lesson.bode?.label}
+                note={lesson.bode?.note}
+              />
+            </section>
+          )}
+
+          {/* SPICE Playground */}
+          {lesson.spice_netlist && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                SPICE Playground
+              </h3>
+              <SpicePlayground
+                netlist={lesson.spice_netlist}
+                title={`SPICE · ${lesson.title}`}
+              />
+            </section>
+          )}
+
+          {/* Verilog Playground */}
+          {lesson.verilog && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Verilog Playground
+              </h3>
+              <VerilogPlayground />
+            </section>
+          )}
+
+          {/* KiCanvas (KiCad schematic viewer) */}
+          {lesson.kicanvas_url && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                KiCad Schematic
+              </h3>
+              <KiCanvasEmbed src={lesson.kicanvas_url} />
             </section>
           )}
 
