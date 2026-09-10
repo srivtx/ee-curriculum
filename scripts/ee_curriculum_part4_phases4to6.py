@@ -22,6 +22,15 @@ def build_phase4():
         "signals, and the dozen other ways real hardware differs from an idealized HDL "
         "simulation."))
 
+    s.append(volt_says(
+        'This is the phase where you stop translating and start recognizing. Boolean '
+        'algebra is the same algebra you use to optimize boolean expressions in code. '
+        'FSMs are the same FSMs you wrote in your compiler course. Pipelines are the same '
+        'pipelines as your CPU class. The only new things are setup and hold times, '
+        'metastability, and clock domains — the physical reality that flips the clean '
+        'abstraction occasionally into chaos.',
+        mood='story'))
+
     # ── Module 4.1 ──
     s.append(heading('Module 4.1 — Boolean Algebra and K-maps', 1))
     s.append(p('<b>Duration:</b> 4–6 h · <b>Difficulty:</b> Foundation', 'kicker'))
@@ -34,6 +43,20 @@ def build_phase4():
         "K-maps are a visual trick for minimizing SOP expressions; algorithmically "
         "they are a special case of the Quine–McCluskey algorithm, which is itself a "
         "graph-based prime-implicant search."))
+
+    s.append(volt_says(
+        'When you write <code>a &amp; b</code> in C, the compiler emits an AND '
+        'instruction that the CPU executes in a single cycle using a few hundred '
+        'transistors arranged as a CMOS NAND followed by an inverter. The hardware is '
+        'the boolean algebra. The translation layer is exactly zero.',
+        mood='insight'))
+
+    # ── Pixel diagram: nand_gate (the universal gate) ──
+    s.extend(diagram('nand_gate',
+        caption='NAND gate — AND followed by an inverter bubble. Universal: any logic function can be built from NANDs alone.'))
+    # ── Pixel diagram: nor_gate ──
+    s.extend(diagram('nor_gate',
+        caption='NOR gate — OR followed by an inverter bubble. Also universal; the natural CMOS gate (series PMOS, parallel NMOS).'))
 
     s.append(p(
         "Every Boolean function can be written as a sum of products (OR of ANDs) or a "
@@ -82,6 +105,13 @@ def build_phase4():
         "carry-skip and carry-select (in between). Modern FPGAs and CPUs use prefix adders "
         "(Kogge–Stone, Brent–Kung) for log-time addition."))
 
+    # ── Pixel diagram: mux ──
+    s.extend(diagram('mux',
+        caption='Multiplexer (mux) — 2ⁿ inputs, n select lines, one output. A FPGA LUT is a mux with a truth table stored in SRAM.'))
+    # ── Pixel diagram: decoder ──
+    s.extend(diagram('decoder',
+        caption='Decoder — n inputs, 2ⁿ outputs (one-hot). The address decoder in every memory and peripheral.'))
+
     # ── Pixel diagram: AND gate (combinational primitive) ──
     s.extend(diagram('and_gate',
         caption='AND gate — two inputs (left) feed the D-shape, output (right) is high only when both inputs are high.'))
@@ -112,6 +142,8 @@ def build_phase4():
         "Why do modern FPGAs use LUTs instead of muxes?",
     ]))
 
+    s.append(pixel_divider())
+
     # ── Module 4.3 ──
     s.append(heading('Module 4.3 — Sequential Logic: Flip-Flops, Counters, Registers', 1))
     s.append(p('<b>Duration:</b> 6–8 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -127,6 +159,13 @@ def build_phase4():
     # ── Pixel diagram: D flip-flop ──
     s.extend(diagram('d_flip_flop',
         caption='D flip-flop — D input on left, CLK input middle, Q output right. Edge-triggered.'))
+
+    # ── Pixel diagram: counter_4bit ──
+    s.extend(diagram('counter_4bit',
+        caption='4-bit synchronous counter — four D flip-flops sharing a clock, with combinational next-state logic.'))
+    # ── Pixel diagram: shift_register ──
+    s.extend(diagram('shift_register',
+        caption='Shift register — chain of D flip-flops passing data on each clock. The hardware behind UART, SPI, I2C.'))
 
     s.append(heading('Four flip-flop types', 2))
     s.append(make_table([
@@ -174,6 +213,8 @@ def build_phase4():
         "Why is a ripple counter slower than a synchronous counter?",
         "Convert a Moore FSM to a Mealy FSM. When does Mealy use fewer states?",
     ]))
+
+    s.append(pixel_divider())
 
     # ── Module 4.4 ──
     s.append(heading('Module 4.4 — HDL Intro: Verilog and FSMs', 1))
@@ -309,6 +350,13 @@ def build_phase4():
         "or the lower-level LL (Low-Layer) libraries. For real-time work, you often bypass "
         "HAL and write directly to registers."))
 
+    s.append(volt_says(
+        'When you drop from Arduino to STM32, you cross the same line as moving from a '
+        'managed language to a systems language. The HAL is friendly but slow; the bare '
+        'registers are fast but unforgiving. Real products live in between — HAL for '
+        'setup, direct register access for hot paths.',
+        mood='tip'))
+
     s.append(heading('Clock trees and power management', 2))
     s.append(p(
         "An MCU has an internal clock tree that distributes the system clock to the CPU, "
@@ -382,6 +430,13 @@ def build_phase4():
         "capacitor that must charge through the source impedance; if the source is "
         "high-impedance, you need a longer sample time or an op-amp buffer."))
 
+    s.append(volt_says(
+        'An ADC without an anti-alias filter is broken by construction. Sample rate alone '
+        'does not prevent aliasing — you must low-pass the signal before sampling, or '
+        'high-frequency noise will fold back into your band of interest and be '
+        'indistinguishable from signal.',
+        mood='warning'))
+
     s.append(project_box('Bench: STM32 PWM Motor Speed Control', [
         ('Goal:', 'control a small DC motor speed with PWM from an STM32.'),
         ('Hardware:', 'STM32 Nucleo, L298N motor driver, 6 V DC motor, 12 V supply.'),
@@ -414,6 +469,13 @@ def build_phase4():
         "bus with priority arbitration and error detection — like a contention-based "
         "LAN. The same design trade-offs (latency vs throughput, complexity vs robustness) "
         "appear in every protocol you already know."))
+
+    # ── Pixel diagram: spi_bus ──
+    s.extend(diagram('spi_bus',
+        caption='SPI bus — shared SCK/MOSI/MISO plus a dedicated CS per slave. Full-duplex, fast, but pin-hungry.'))
+    # ── Pixel diagram: i2c_bus ──
+    s.extend(diagram('i2c_bus',
+        caption='I2C bus — 2 wires (SDA, SCL), 7-bit addressing, multi-master arbitration. Slow but beautifully pin-frugal.'))
 
     s.append(make_table([
         ['Protocol','Wires','Topology','Speed','Typical use'],
@@ -530,6 +592,21 @@ def build_phase4():
         "What is the difference between a Moore and Mealy FSM in Verilog implementation?",
     ]))
 
+    s.append(pull_quote(
+        'A flip-flop is a register. A shift register is a queue. A counter is an '
+        'accumulator. A memory is an array. The hardware you are about to design is the '
+        'data structures you already know — made of silicon instead of software.',
+        'Volt, on digital primitives'))
+
+    s.append(volt_says(
+        'Phase 4 is done. You can write Verilog, target an FPGA, drive peripherals over '
+        'SPI and I2C, ship firmware on an STM32, and publish telemetry over WiFi. The '
+        'capstone integrated all of these into one system — exactly the kind of '
+        'integration that distinguishes a working engineer from a student. Phase 5 takes '
+        'you into the frequency domain, where signals become spectra and convolution '
+        'becomes multiplication.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -550,6 +627,13 @@ def build_phase5():
         "math-heavy of the curriculum — but as a CS engineer, you already know the core "
         "algorithm (FFT) and the core data structure (a discrete sequence). The work is "
         "to connect them to the underlying linear algebra and differential equations."))
+
+    s.append(volt_says(
+        'Phase 5 is where the curriculum’s single biggest idea lives: every signal is a '
+        'sum of sinusoids. Once you accept that, half of EE collapses into one fact seen '
+        'from different angles. Filters, modulation, sampling, control — all of it is the '
+        'Fourier transform wearing different costumes.',
+        mood='story'))
 
     # ── Module 5.1 ──
     s.append(heading('Module 5.1 — Continuous-Time Signals and Systems', 1))
@@ -572,6 +656,13 @@ def build_phase5():
         "y(t) = (x * h)(t) = ∫x(τ)·h(t−τ)dτ. This is the central theorem of LTI theory."))
     s.append(formula_box(
         "y(t) = (x ∗ h)(t) = ∫<sub>−∞</sub><sup>+∞</sup> x(τ)·h(t − τ) dτ"))
+
+    # ── Pixel diagram: impulse_response ──
+    s.extend(diagram('impulse_response',
+        caption='Impulse response h(t) of an LTI system. Convolve it with any input x(t) and you get the output y(t). The system’s complete fingerprint.'))
+    # ── Pixel diagram: convolution_demo ──
+    s.extend(diagram('convolution_demo',
+        caption='Convolution demo — two signals sliding across each other. The overlap area at each shift is one output sample.'))
 
     s.append(cs_bridge(
         "<b>Convolution ↔ 1D image filter.</b> A 3×3 image convolution kernel and a 1D "
@@ -862,6 +953,12 @@ def build_phase5():
     s.append(heading('Module 5.7 — DTFT, DFT, and FFT', 1))
     s.append(p('<b>Duration:</b> 8–10 h · <b>Difficulty:</b> Intermediate', 'kicker'))
 
+    s.append(pull_quote(
+        'Every signal is a sum of sinusoids. This is the single most important sentence '
+        'in electrical engineering — every other topic in the second half of the '
+        'curriculum is a corollary.',
+        'Volt, on Fourier'))
+
     s.append(cs_bridge(
         "<b>FFT ↔ divide-and-conquer sorting.</b> The FFT is the divide-and-conquer "
         "algorithm for the DFT, exactly as mergesort is for sorting. The DFT is O(N²); "
@@ -871,6 +968,9 @@ def build_phase5():
         " Walsh-Hadamard transforms, in JPEG’s DCT, and in number-theoretic transforms "
         "for cryptographic multiplication."))
 
+    # ── Pixel diagram: fft_butterfly ──
+    s.extend(diagram('fft_butterfly',
+        caption='FFT butterfly — the radix-2 Cooley-Tukey diagram. O(N log N) instead of O(N²); the most important algorithm in DSP.'))
     s.append(heading('DFT definition', 2))
     s.append(p(
         "The DFT of an N-point sequence x[n] is X[k] = Σ<sub>n=0</sub><sup>N−1</sup> x[n]·e<sup>−j2πkn/N</sup>, "
@@ -882,6 +982,14 @@ def build_phase5():
     s.append(formula_box(
         "X[k] = Σ<sub>n=0</sub><sup>N−1</sup> x[n]·e<sup>−j2πkn/N</sup> &nbsp;&nbsp;|&nbsp;&nbsp; "
         "f<sub>k</sub> = k·f<sub>s</sub>/N"))
+
+    s.append(volt_says(
+        'The FFT is the single algorithm most responsible for the digital age. Without '
+        'it, MP3 audio would be impossible, JPEG images would be huge, MRI scans would '
+        'take minutes instead of seconds, and 5G would not exist. Cooley and Tukey '
+        'rediscovered it in 1965; Gauss knew it in 1805. It is mergesort applied to '
+        'complex exponentials.',
+        mood='insight'))
 
     # ── Pixel diagrams: sine + square wave (FFT input/output exemplars) ──
     s.extend(diagram('sine_wave',
@@ -970,6 +1078,13 @@ def build_phase5():
         "Why do IIR filters risk instability when implemented with fixed-point arithmetic?",
     ]))
 
+    # ── Pixel diagram: fir_filter ──
+    s.extend(diagram('fir_filter',
+        caption='FIR filter — tapped delay line, weighted sum. Always stable; exactly linear phase if symmetric.'))
+    # ── Pixel diagram: iir_filter ──
+    s.extend(diagram('iir_filter',
+        caption='IIR filter — like FIR but with feedback. Fewer coefficients for same selectivity, but check pole stability.'))
+
     # ── Module 5.9 ──
     s.append(heading('Module 5.9 — Adaptive Filters (Intro)', 1))
     s.append(p('<b>Duration:</b> 5–7 h · <b>Difficulty:</b> Advanced', 'kicker'))
@@ -1033,6 +1148,14 @@ def build_phase5():
         "Why 50% overlap on the FFT windows?",
     ]))
 
+    s.append(volt_says(
+        'Phase 5 is done. You can decompose any signal into its spectrum, design '
+        'filters, build a real-time audio analyzer, and ship working DSP code on an '
+        'ESP32. Phase 6 takes these frequency-domain tools and applies them to the '
+        'hardest problem in engineering: making a physical system behave the way you '
+        'want, despite noise and disturbance, using feedback.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -1056,6 +1179,13 @@ def build_phase6():
         "feedback in error-correcting codes, in TCP congestion control, and in iterative "
         "optimization; control theory is the same idea applied to physical systems."))
 
+    s.append(volt_says(
+        'Feedback is everywhere. TCP congestion control is a feedback loop. Hash table '
+        'resizing is a feedback loop. Iterative compilers are feedback loops. Control '
+        'theory gives the math its proper name — and lets you prove a loop will be '
+        'stable, not just hope it converges.',
+        mood='story'))
+
     # ── Module 6.1 ──
     s.append(heading('Module 6.1 — Feedback, Modeling, Transfer Functions', 1))
     s.append(p('<b>Duration:</b> 5–7 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -1070,6 +1200,10 @@ def build_phase6():
     s.append(formula_box(
         "T(s) = C(s)·P(s) / (1 + C(s)·P(s)·H(s)) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "L(s) = C(s)·P(s)·H(s) (loop gain)"))
+
+    # ── Pixel diagram: feedback_loop ──
+    s.extend(diagram('feedback_loop',
+        caption='Negative feedback loop — setpoint → error → controller → plant → output. Sensor closes the loop. Stability depends on the loop gain L(s).'))
 
     s.append(heading('Modeling physical systems', 2))
     s.append(p(
@@ -1181,6 +1315,10 @@ def build_phase6():
         "1 + K · G(s)·H(s) = 0 &nbsp;&nbsp;|&nbsp;&nbsp; "
         "asymptote angle = (2k+1)π / (n<sub>p</sub> − n<sub>z</sub>)"))
 
+    # ── Pixel diagram: root_locus ──
+    s.extend(diagram('root_locus',
+        caption='Root locus — closed-loop poles trace curves in the s-plane as K varies from 0 to ∞. Cross into the right-half-plane and the system goes unstable.'))
+
     s.append(project_box('Python: Root Locus Plotter', [
         ('Goal:', 'use Python control library to plot root locus.'),
         ('Tasks:', 'use control.root_locus on a few example plants: '
@@ -1215,6 +1353,10 @@ def build_phase6():
         "GM = 1 / |L(jω<sub>pc</sub>)| &nbsp;&nbsp;|&nbsp;&nbsp; "
         "PM = 180° + ∠L(jω<sub>gc</sub>) &nbsp;&nbsp; "
         "(ω<sub>pc</sub>: phase crossover, ω<sub>gc</sub>: gain crossover)"))
+
+    # ── Pixel diagram: nyquist_plot ──
+    s.extend(diagram('nyquist_plot',
+        caption='Nyquist plot — polar plot of L(jω). Encirclements of −1 tell you how many unstable closed-loop poles you have.'))
 
     s.append(p(
         "Rules of thumb: PM ≈ 30° → ~20% overshoot, PM ≈ 60° → ~8% overshoot, "
@@ -1253,6 +1395,10 @@ def build_phase6():
         caption='PID feedback loop — setpoint → error → PID → plant → output. Sensor feeds back to the summing junction.'))
     s.extend(diagram('bode_low_pass',
         caption='Open-loop Bode magnitude — used to read gain margin (GM) and phase margin (PM) for stability.'))
+
+    # ── Pixel diagram: pid_block ──
+    s.extend(diagram('pid_block',
+        caption='PID controller block — three parallel paths (P, I, D) summed. The most-deployed controller in industrial automation.'))
 
     s.append(heading('Ziegler-Nichols tuning', 2))
     s.append(p(
@@ -1307,6 +1453,10 @@ def build_phase6():
     s.append(formula_box(
         "ẋ = A·x + B·u &nbsp;&nbsp;|&nbsp;&nbsp; y = C·x + D &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Controllable iff rank([B, AB, ..., A<sup>n−1</sup>B]) = n"))
+
+    # ── Pixel diagram: state_space ──
+    s.extend(diagram('state_space',
+        caption='State-space block diagram — A matrix is the dynamics, B is the input coupling, C is the output mapping. Eigenvalues of A are the system poles.'))
 
     s.append(heading('LQR — Linear Quadratic Regulator', 2))
     s.append(p(
@@ -1435,6 +1585,27 @@ def build_phase6():
         "How do you estimate line position from 5 binary sensor readings?",
         "Tune K_p, K_i, K_d in what order? What symptom does each address?",
     ]))
+
+    s.append(pull_quote(
+        'Stability is not a property of the plant. It is a property of the loop. A '
+        'well-designed controller stabilizes an unstable plant; a poorly-designed one '
+        'destabilizes a stable plant.',
+        'Volt, on feedback'))
+
+    s.append(pull_quote(
+        'LQR and the Kalman filter are dual. Optimal control and optimal estimation '
+        'are the same Riccati equation read forward and backward in time. That symmetry '
+        'is one of the most beautiful results in engineering mathematics.',
+        'Volt, on duality'))
+
+    s.append(volt_says(
+        'Phase 6 is done. You can design a controller in the time domain (root locus), '
+        'the frequency domain (Bode/Nyquist), and the state domain (LQR). You can tune '
+        'a PID, model a physical system, and stabilize an inverted pendulum. The line-'
+        'following robot capstone is the first time the curriculum asks you to ship '
+        'something that moves. Phase 7 takes you into power electronics — where the '
+        'voltages and currents get large enough to burn.',
+        mood='story'))
 
     s.append(PageBreak())
     return s

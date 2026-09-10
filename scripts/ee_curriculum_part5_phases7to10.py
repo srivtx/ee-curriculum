@@ -25,6 +25,14 @@ def build_phase7():
         "currents here will kill components (and occasionally burn fingers) if you "
         "get it wrong."))
 
+    s.append(volt_says(
+        'Phase 7 is where the curriculum gets physical. The voltages and currents here '
+        'can kill components, burn fingers, and start fires. Pay attention to ratings. '
+        'Derate by 30%. Use fuses. Never probe a live high-voltage circuit without '
+        'thinking first. The math is the same as Phase 6 — feedback loops, transfer '
+        'functions, Bode plots — but the stakes are higher.',
+        mood='warning'))
+
     # ── Module 7.1 ──
     s.append(heading('Module 7.1 — Power Semiconductor Devices', 1))
     s.append(p('<b>Duration:</b> 5–7 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -84,6 +92,12 @@ def build_phase7():
     # ── Pixel diagram: buck converter topology ──
     s.extend(diagram('buck',
         caption='Buck converter — switch + diode + inductor + capacitor. V_o = D · V_in (D = duty cycle).'))
+    # ── Pixel diagram: boost_converter (step-up) ──
+    s.extend(diagram('boost_converter',
+        caption='Boost converter — V_o = V_in / (1−D). The output is higher than the input. Used in PFC stages, LED drivers, EV chargers.'))
+    # ── Pixel diagram: buck_boost (inverting, step up or down) ──
+    s.extend(diagram('buck_boost',
+        caption='Buck-boost converter — V_o = −D/(1−D) · V_in. Inverts polarity; can step up or down. Used in LED drivers and battery regulators.'))
 
     s.append(heading('Buck converter — the canonical design', 2))
     s.append(p(
@@ -199,6 +213,13 @@ def build_phase7():
     s.append(formula_box(
         "V<sub>o,avg</sub> = m<sub>a</sub> · V<sub>dc</sub> · sin(ω<sub>m</sub>t) &nbsp;&nbsp; "
         "(m<sub>a</sub> = modulation index, m<sub>a</sub> ≤ 1)"))
+
+    # ── Pixel diagram: h_bridge (inverter topology) ──
+    s.extend(diagram('h_bridge',
+        caption='H-bridge — four switches arranged in an H. Drive S1/S4 for positive output, S2/S3 for negative. The heart of every DC-AC inverter.'))
+    # ── Pixel diagram: spwm (sine-triangle PWM) ──
+    s.extend(diagram('spwm',
+        caption='SPWM — sine reference vs triangle carrier. Comparator output drives the H-bridge. Average output = scaled sine.'))
 
     s.append(heading('Space Vector PWM (SVPWM) — the three-level trick', 2))
     s.append(p(
@@ -364,6 +385,13 @@ def build_phase7():
     s.extend(diagram('foc',
         caption='FOC block diagram — Clarke+Park transform → PI controllers (i_d, i_q) → inverse Park+Clarke → 3-phase inverter.'))
 
+    # ── Pixel diagram: bldc_6step (six-step commutation) ──
+    s.extend(diagram('bldc_6step',
+        caption='BLDC six-step commutation — Hall sensors detect rotor sector; two phases conduct at a time. Simple, robust, but with torque ripple.'))
+    # ── Pixel diagram: induction_motor (rotating field + cage rotor) ──
+    s.extend(diagram('induction_motor',
+        caption='Induction motor — three-phase stator windings produce a rotating field; cage rotor is dragged along at sub-synchronous speed (slip).'))
+
     s.append(project_box('Python: Simulate FOC of a PMSM', [
         ('Goal:', 'simulate FOC and verify smooth torque.'),
         ('Plant:', 'PMSM with R_s = 0.5 Ω, L_d = L_q = 1 mH, K_t = 0.1 Nm/A, J = 0.001 kg·m².'),
@@ -438,6 +466,20 @@ def build_phase7():
         "What happens if i_d* is not zero? (Hint: field weakening.)",
     ]))
 
+    s.append(pull_quote(
+        'FOC is the trick that turns a PMSM into a DC motor. Rotate the reference frame '
+        'to align with the rotor flux, and the three AC currents collapse into two '
+        'DC quantities: one for flux, one for torque. The math is two transforms; the '
+        'payoff is the smoothest torque you can get from an electric motor.',
+        'Volt, on field-oriented control'))
+
+    s.append(volt_says(
+        'Phase 7 is done. You understand switching converters, you can simulate a buck '
+        'and an H-bridge in SPICE, you can drive a BLDC motor with six-step or FOC. '
+        'Phase 8 takes you up in frequency — past the lumped-circuit approximation, '
+        'into the world where wires become transmission lines and signals radiate.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -459,6 +501,14 @@ def build_phase8():
         "This phase teaches you the tools to handle that: Smith charts, scattering "
         "parameters, antenna theory, and the analog signal chain that drives modern "
         "wireless."))
+
+    s.append(volt_says(
+        'Phase 8 is the boundary where circuits stop being circuits. When the wavelength '
+        'approaches the physical size of your board, wires become transmission lines, '
+        'components radiate, and Ohm’s law quietly stops applying. The new vocabulary — '
+        'Smith chart, S-parameters, VSWR, reflection coefficient — is the price of '
+        'admission to RF. Pay it; the wireless world is worth it.',
+        mood='story'))
 
     # ── Module 8.1 ──
     s.append(heading('Module 8.1 — Vector Calculus for EM', 1))
@@ -565,6 +615,10 @@ def build_phase8():
         "wave. The ratio |E|/|B| = c. The Poynting vector <b>S</b> = (1/μ₀)·<b>E</b>×<b>B</b> "
         "gives the power flow per unit area."))
 
+    # ── Pixel diagram: em_wave (E and B fields propagating) ──
+    s.extend(diagram('em_wave',
+        caption='EM wave — E and B perpendicular to each other and to the direction of propagation. Light is exactly this, at ~500 THz.'))
+
     s.append(heading('Plane waves and polarization', 2))
     s.append(p(
         "A plane wave E(z, t) = E₀·cos(kz − ωt)·x̂ has wavelength λ = 2π/k, frequency "
@@ -610,9 +664,12 @@ def build_phase8():
         "v<sub>p</sub> = 1/√(LC) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Γ = (Z<sub>L</sub> − Z<sub>0</sub>) / (Z<sub>L</sub> + Z<sub>0</sub>)"))
 
-    # ── Pixel diagram: Smith chart ──
-    s.extend(diagram('smith',
-        caption='Smith chart — the RF engineer’s slide rule. The full impedance plane folded into a unit circle.'))
+    # ── Pixel diagram: transmission_line (distributed L and C) ──
+    s.extend(diagram('transmission_line',
+        caption='Transmission line — distributed L per meter and C per meter. Characteristic impedance Z₀ = √(L/C); 50 Ω is the RF standard.'))
+    # ── Pixel diagram: matching_network (L-network to cancel reflection) ──
+    s.extend(diagram('matching_network',
+        caption='Matching network — series + shunt L/C arrangement. Goal: transform Z_load to Z₀ so Γ → 0 and no power reflects.'))
 
     s.append(heading('Reflections and matching', 2))
     s.append(p(
@@ -776,6 +833,23 @@ def build_phase8():
         "points (sets BER), peak-to-average power ratio (sets amplifier backoff), and "
         "spectral efficiency (bits/s/Hz)."))
 
+    # ── Pixel diagram: qam_constellation (16-QAM grid) ──
+    s.extend(diagram('qam_constellation',
+        caption='16-QAM constellation — 16 points in a 4×4 I-Q grid. 4 bits per symbol. Spectral efficiency = 4 bits/s/Hz.'))
+    # ── Pixel diagram: am_modulation (carrier × envelope) ──
+    s.extend(diagram('am_modulation',
+        caption='AM modulation — carrier × envelope. Bandwidth = 2·f_m. Simple to modulate and demodulate but vulnerable to noise.'))
+    # ── Pixel diagram: fm_modulation (constant amplitude, varying frequency) ──
+    s.extend(diagram('fm_modulation',
+        caption='FM modulation — constant amplitude, varying frequency. Wider bandwidth than AM but much better noise immunity.'))
+
+    s.append(volt_says(
+        'Every WiFi packet, every LTE subframe, every Bluetooth ping uses some variant '
+        'of PSK or QAM. The Shannon limit C = B·log₂(1+SNR) tells you the maximum bits/s '
+        'for a given bandwidth and SNR. Modern systems push close to that limit — the '
+        'rest is coding, modulation, and signal processing engineering.',
+        mood='insight'))
+
     s.append(formula_box(
         "Shannon: C = B · log<sub>2</sub>(1 + SNR) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Spectral efficiency: η = log<sub>2</sub>(M) [bits/symbol for M-QAM]"))
@@ -818,12 +892,24 @@ def build_phase8():
                   'is unlicensed. Above that you need a license. Check your local rules.'),
     ]))
 
+    s.append(pull_quote(
+        'The grid is the largest machine ever built by humans. You are about to '
+        'understand how it works.',
+        'Volt, on power systems'))
+
     s.append(checkpoint_box([
         "Sketch the FM transmitter and SDR receiver block diagrams.",
         "How does the SDR demodulate FM? What is the role of the discriminator?",
         "What is the legal limit for unlicensed FM transmission in your country?",
         "How would you extend this to send digital data?",
     ]))
+
+    s.append(volt_says(
+        'Phase 8 is done. You have Maxwell’s four equations, you understand transmission '
+        'lines and impedance matching, you can build an antenna and decode FM with an '
+        'SDR. Phase 9 takes you to the other end of the scale — the nanometer — where '
+        'a single chip holds a billion transistors and the physics is fabrication.',
+        mood='story'))
 
     s.append(PageBreak())
     return s
@@ -847,6 +933,14 @@ def build_phase9():
         "more EE-specific). Both are essential to understanding why chips cost what "
         "they cost and why they fail when they fail."))
 
+    s.append(volt_says(
+        'Phase 9 is the chip-designer’s view. The front-end is Verilog — almost the same '
+        'as the FPGA work in Phase 4. The back-end is new: synthesis, place-and-route, '
+        'timing sign-off, layout. The economics are brutal — a leading-edge fab costs '
+        '$15 billion, and a single mask set costs $5 million. That is why only three '
+        'companies on Earth can build a 5 nm chip.',
+        mood='story'))
+
     # ── Module 9.1 ──
     s.append(heading('Module 9.1 — CMOS Inverter: Static and Dynamic Behavior', 1))
     s.append(p('<b>Duration:</b> 6–8 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -863,6 +957,19 @@ def build_phase9():
         caption='CMOS inverter — PMOS pull-up (top), NMOS pull-down (bottom), input left, output at midpoint.'))
     s.extend(diagram('current_mirror',
         caption='Current mirror — two matched transistors. Reference current on left is mirrored to the load on the right.'))
+
+    # ── Pixel diagram: nand_cmos (2 PMOS parallel + 2 NMOS series) ──
+    s.extend(diagram('nand_cmos',
+        caption='CMOS NAND — 2 PMOS in parallel (pull-up), 2 NMOS in series (pull-down). The natural CMOS gate; smallest area.'))
+    # ── Pixel diagram: nor_cmos (2 PMOS series + 2 NMOS parallel) ──
+    s.extend(diagram('nor_cmos',
+        caption='CMOS NOR — 2 PMOS in series (pull-up), 2 NMOS in parallel (pull-down). Slower than NAND due to weaker PMOS.'))
+    # ── Pixel diagram: d_flip_flop_cmos (master-slave transmission-gate) ──
+    s.extend(diagram('d_flip_flop_cmos',
+        caption='CMOS D flip-flop — master-slave with transmission gates. The register element of every digital chip.'))
+    # ── Pixel diagram: layout_inverter (top-down mask view) ──
+    s.extend(diagram('layout_inverter',
+        caption='Inverter layout — top-down mask view. PMOS in n-well (top), NMOS in p-substrate (bottom), poly gate crosses both.'))
 
     s.append(heading('Voltage transfer characteristic (VTC)', 2))
     s.append(p(
@@ -1008,6 +1115,10 @@ def build_phase9():
         "edges = wires). STA tools (PrimeTime, Tempus) do these graph traversals with "
         "delay models that account for wire capacitance, input slew, and coupling."))
 
+    # ── Pixel diagram: sta_paths (launch flop → cloud → capture flop) ──
+    s.extend(diagram('sta_paths',
+        caption='STA paths — launch flop → combinational cloud → capture flop. Setup = longest path; hold = shortest path. Slack ≥ 0 is mandatory.'))
+
     s.append(p(
         "STA is exhaustive — it checks every path in the design, not just the ones you "
         "thought to simulate. It is the standard sign-off for digital tape-out. Setup "
@@ -1114,6 +1225,14 @@ def build_phase9():
         "What would you do differently if you were targeting an ASIC tape-out?",
     ]))
 
+    s.append(volt_says(
+        'Phase 9 is done. You can write RTL, synthesize it, place-and-route it, sign '
+        'off on timing, and lay out a gate by hand. You understand why chips cost what '
+        'they cost and why Moore’s law has been a MOSFET story for fifty years. Phase '
+        '10 takes you to the largest EE system ever built — the power grid — and asks '
+        'you to ship one of six capstone projects.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -1133,6 +1252,17 @@ def build_phase10():
         "projects — pick one or two, budget 4–6 weeks each, and ship a working hardware "
         "demo. By the time you finish, you will have a portfolio that demonstrates "
         "end-to-end EE fluency."))
+
+    s.append(volt_says(
+        'Phase 10 is the closing arc. Nine modules on the power grid — the largest '
+        'machine humans have ever built — followed by six capstones that integrate '
+        'everything you have learned into a shipping hardware project. Pick the capstone '
+        'that scares you most. That is the one that will teach you the most.',
+        mood='story'))
+
+    # ── Pixel diagram: grid_topology (generation + T&D + load) ──
+    s.extend(diagram('grid_topology',
+        caption='Grid topology — generation → transmission → distribution → load. The largest machine ever built by humans.'))
 
     # ── Module 10.1 ──
     s.append(heading('Module 10.1 — Power Generation', 1))
@@ -1175,6 +1305,10 @@ def build_phase10():
         "substations. Primary distribution (10–30 kV) feeds neighborhoods. Secondary "
         "distribution (120/240 V or 230/400 V) feeds homes. Each transition is a "
         "transformer substation."))
+
+    # ── Pixel diagram: transformer_substation (HV → transformer → LV) ──
+    s.extend(diagram('transformer_substation',
+        caption='Transformer substation — HV bus → step-down transformer → LV bus with breakers. The grid’s interconnection points.'))
 
     s.append(heading('Why high voltage for transmission?', 2))
     s.append(p(
@@ -1249,6 +1383,14 @@ def build_phase10():
         "<b>Frequency stability (seconds to minutes):</b> load and generation must balance. Imbalance causes frequency drift. Primary control (governor), secondary (AGC), tertiary (dispatch).",
         "<b>Voltage stability (minutes):</b> reactive power balance. Insufficient reactive power → voltage collapse.",
     ]))
+
+    s.append(volt_says(
+        'A blackout cascade is one of the most terrifying phenomena in engineering. A '
+        'fault trips a line; load shifts to parallel lines; they overload and trip; '
+        'generators lose synchronism; frequency plummets; more lines trip; in minutes, '
+        'an entire region is dark. The 2003 Northeast blackout took 8 minutes. The '
+        'protection system’s job is to stop the cascade before it starts.',
+        mood='warning'))
 
     s.append(checkpoint_box([
         "Name three power-quality problems and their sources.",
@@ -1326,6 +1468,16 @@ def build_phase10():
     # ── Pixel diagram: solar PV + MPPT ──
     s.extend(diagram('solar_mppt',
         caption='Solar PV + MPPT — panel on left, MPPT controller in middle, DC-DC converter, battery/load on right.'))
+
+    # ── Pixel diagram: pv_system (panel + inverter + grid/load) ──
+    s.extend(diagram('pv_system',
+        caption='PV system — solar panel → MPPT charge controller → battery → inverter → AC load. The standard off-grid topology.'))
+    # ── Pixel diagram: wind_turbine (tower + blades + nacelle) ──
+    s.extend(diagram('wind_turbine',
+        caption='Wind turbine — rotor blades capture kinetic energy; nacelle houses the generator. Power = ½·ρ·A·v³·C_p (Betz limit 0.593).'))
+    # ── Pixel diagram: ev_charger (AC → rectifier → DC/DC → battery) ──
+    s.extend(diagram('ev_charger',
+        caption='EV charger — AC input → rectifier (PFC) → DC-DC converter → battery. Level 2 (7-22 kW) or DCFC (50-350 kW).'))
 
     s.append(cs_bridge(
         "<b>MPPT ↔ hill climbing.</b> The most common MPPT algorithm, perturb & observe "
@@ -1514,6 +1666,19 @@ def build_phase10():
         "domain that interested you most (motors, RF, power, VLSI, control) and go "
         "deeper. The curriculum is the foundation; the work that follows is the "
         "career."))
+
+    s.append(pull_quote(
+        'You started as a computer scientist curious about circuits. You are finishing '
+        'as an engineer who can ship hardware. That is not a small thing — it is the '
+        'rarest skill combination in the technology industry.',
+        'Volt, closing the curriculum'))
+
+    s.append(volt_says(
+        'The curriculum is over. The work begins. Pick something you found fascinating '
+        '— a motor drive, a radio front-end, a solar inverter, a custom chip — and go '
+        'deep. The ten phases gave you the foundation. The next ten thousand hours will '
+        'give you the expertise. I will see you on the bench.',
+        mood='story'))
 
     s.append(PageBreak())
     return s

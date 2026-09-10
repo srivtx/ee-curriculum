@@ -16,6 +16,18 @@ def build_front_matter():
         "build, debug, and document a real electrical system — a motor controller, a "
         "solar inverter, a custom PCB product, a robotics platform, a smart-grid demo, "
         "or a software-defined radio front-end."))
+
+    s.append(volt_says(
+        'Welcome. I am Volt — your guide through the next twelve months. You are '
+        'a computer scientist stepping into a world that, at first, looks nothing like '
+        'the one you know. But beneath the wires and equations, every circuit is a data '
+        'structure, every signal is a function, every feedback loop is a recurrence. I '
+        'will point out those bridges as we cross them. I will also warn you when the '
+        'analogy breaks — that is where the real learning begins. Read my callouts; they '
+        'are not optional decoration. They are the narrative thread that turns ten phases '
+        'of dense engineering into a single story.',
+        mood='story'))
+
     s.append(p(
         "The structure is hierarchical and consistent. <b>Phases</b> are the ten top-level "
         "blocks; each phase runs four to eight weeks. A phase contains several <b>modules</b>; "
@@ -37,6 +49,11 @@ def build_front_matter():
         "you see the pixel Bode plot, recall the flat-then-rolloff shape. The cover "
         "uses the same voxel language at large scale; the body uses it as inline iconography."))
 
+    s.append(pull_quote(
+        'A computer scientist learning EE is not starting from zero — you are starting '
+        'from a vantage point most EE freshmen never reach: you already think in systems.',
+        'Volt, opening the curriculum'))
+
     s.append(heading('The CS-Bridge Pattern', 1))
     s.append(p(
         "You are a computer scientist. That is not a handicap — it is leverage. Almost every "
@@ -57,6 +74,13 @@ def build_front_matter():
         "transients (both are solutions to a linear recurrence relation), and for "
         "pipelining ↔ CPU pipeline (both are registered data-flow graphs optimizing "
         "throughput at the cost of latency)."))
+
+    s.append(volt_says(
+        'The yellow CS BRIDGE callouts you will see at the start of every module are '
+        'the most important reading aid in this curriculum. They name a CS concept you '
+        'already know and an EE concept it maps to. When an equation looks alien, find '
+        'the bridge first — chances are the math is something you have already coded.',
+        mood='tip'))
 
     s.append(heading('The Project Model — Hardware + Simulation', 1))
     s.append(p(
@@ -167,6 +191,15 @@ def build_phase0():
                'patch the physics, install the tools, and build the CS↔EE bridge you will '
                'walk across for the next 11 months.', 'kicker'))
 
+    s.append(volt_says(
+        'Phase 0 is the boot camp. Four weeks that decide whether the next eleven months '
+        'feel like swimming through mud or gliding on water. You will rebuild the math '
+        'fluency an EE textbook takes for granted — differential equations, complex '
+        'exponentials, linear algebra — and you will install every tool. By the end, you '
+        'will have a working bench, a working simulator, and a working bridge between '
+        'the world you know and the one you are entering.',
+        mood='story'))
+
     s.append(p(
         "Phase 0 is not optional. Even if you remember your calculus, you almost certainly "
         "do not remember it in the form an EE textbook uses it: differential equations as "
@@ -189,6 +222,13 @@ def build_phase0():
         "plane (continuous) or inside the unit circle (discrete). You already "
         "know this from Markov chains and PageRank — the math is identical."))
 
+    s.append(volt_says(
+        'Differential equations are recurrences with the time step shrunk to zero. The '
+        'homogeneous solution is a sum of complex exponentials whose exponents are the '
+        'eigenvalues — exactly the eigenvectors of the system matrix you learned in '
+        'linear algebra. When you solve an RLC circuit, you are diagonalizing a matrix.',
+        mood='insight'))
+
     s.append(heading('Calculus refresher', 2))
     s.append(p(
         "EE lives and dies by the derivative and the integral. The derivative is the "
@@ -200,12 +240,25 @@ def build_phase0():
         "inductor current is <i>i(t) = (1/L)·∫v(τ)dτ</i>. These four equations are "
         "the entire reason calculus matters in EE — memorize them now and refer back "
         "to them constantly."))
+    s.append(volt_says(
+        'The capacitor and the inductor are duals of each other. A capacitor resists '
+        'instant voltage change; an inductor resists instant current change. Both store '
+        'energy reversibly — that is what makes them interesting. Memorize the four '
+        'equations above and the duality will become automatic.',
+        mood='insight'))
     s.append(formula_box(
         "i<sub>C</sub>(t) = C · dv<sub>C</sub>/dt &nbsp;&nbsp;&nbsp; "
         "v<sub>L</sub>(t) = L · di<sub>L</sub>/dt"))
     s.append(formula_box(
         "v<sub>C</sub>(t) = (1/C) · ∫ i<sub>C</sub>(τ) dτ &nbsp;&nbsp;&nbsp; "
         "i<sub>L</sub>(t) = (1/L) · ∫ v<sub>L</sub>(τ) dτ"))
+    s.append(volt_says(
+        'Before any formula, train your eye on the two waveforms below. The sinusoid is '
+        'the eigenfunction of every linear time-invariant system — feed it in, you get '
+        'the same sinusoid out, scaled and phase-shifted. The square wave is the '
+        'time-domain workhorse of digital electronics. Most of this curriculum is the '
+        'story of these two shapes and how to move between them.',
+        mood='story'))
     # ── Pixel diagram: sine + square wave (the two canonical EE signals) ──
     s.extend(diagram('sine_wave',
         caption='Pixel sinusoid — the eigenfunction of every LTI system. Phase 2 lives here.'))
@@ -375,6 +428,14 @@ def build_phase0():
         "Maxwell’s equations are the four PDEs that govern all of classical electromagnetism. "
         "They are the source code of EE. Memorize them in differential form — they are "
         "not optional."))
+    s.append(volt_says(
+        'Maxwell’s four equations are the source code of electrical engineering. Every '
+        'circuit law you will ever use — Ohm, Kirchhoff, Faraday — is a special case. Do '
+        'not just memorize them; read each one as a sentence about the world: charges '
+        'make electric fields, currents make magnetic fields, changing magnetic fields '
+        'make electric fields, and changing electric fields make magnetic fields. Light '
+        'is what happens when the last two feed each other.',
+        mood='insight'))
     s.append(make_table([
         ['Name','Differential form','What it says'],
         ['Gauss’s law (E)','∇·E = ρ/ε₀','Charge creates electric field.'],
@@ -396,6 +457,12 @@ def build_phase0():
     # ── Pixel diagram: three-phase phasors (power-systems preview) ──
     s.extend(diagram('three_phase',
         caption='Three-phase phasors — 120° apart. The geometric heart of every power grid (Phase 2, 7, 10).'))
+
+    s.append(pull_quote(
+        'Light is a self-propagating disturbance in the electric and magnetic fields. '
+        'That single sentence is the payoff of nineteenth-century physics — and the '
+        'foundation of every wireless system you will ever build.',
+        'Volt, on Maxwell'))
 
     s.append(project_box('Maxwell to Circuits', [
         ('Goal:', 'see how KCL, KVL, and Ohm’s law fall out of Maxwell.'),
@@ -429,6 +496,14 @@ def build_phase0():
     # ── Pixel diagram: tree (the CS-to-EE concept tree) ──
     s.extend(diagram('tree',
         caption='The CS-to-EE concept tree — branches you will climb throughout the curriculum.'))
+
+    s.append(volt_says(
+        'The table below is the single most valuable reference in the curriculum. When '
+        'a later module introduces a strange-looking EE concept, come back here and find '
+        'its CS twin. The bridge is your fastest path to fluency — but never confuse the '
+        'map for the territory. The analogy tells you what to expect; the math tells you '
+        'what is actually true.',
+        mood='tip'))
 
     s.append(make_table([
         ['CS concept','EE concept','Why they are the same'],
@@ -489,6 +564,29 @@ def build_phase0():
         "instructions for every operating system are in Appendix A; this module assumes "
         "you can follow them and focuses on the verification step."))
 
+    s.append(volt_says(
+        'Do not start Phase 1 with a broken toolchain. Every hour you spend here '
+        'fighting installers saves five hours of confused debugging later when you '
+        'cannot tell whether a circuit is wrong or your simulator is. Install, '
+        'hello-world, screenshot. Move on.',
+        mood='warning'))
+
+    # ── Pixel diagram: ohm_law (the first law a toolchain verifies) ──
+    s.extend(diagram('ohm_law',
+        caption='Ohm’s law V = I·R — the first equation your toolchain will verify on the bench.'))
+    # ── Pixel diagram: kvl_loop (Kirchhoff’s voltage law) ──
+    s.extend(diagram('kvl_loop',
+        caption='Kirchhoff’s voltage law — the closed loop sum-to-zero identity. Phase 1 lives here.'))
+    # ── Pixel diagram: kcl_node (Kirchhoff’s current law) ──
+    s.extend(diagram('kcl_node',
+        caption='Kirchhoff’s current law — flow conservation at a node. Same math as a packet-switched graph.'))
+    # ── Pixel diagram: thevenin_equiv (encapsulation) ──
+    s.extend(diagram('thevenin_equiv',
+        caption='Thevenin equivalent — the circuit analog of an API. Hide the box, expose V_th and R_th.'))
+    # ── Pixel diagram: superposition (linearity) ──
+    s.extend(diagram('superposition',
+        caption='Superposition — in a linear circuit, the response to multiple sources equals the sum of individual responses.'))
+
     s.append(make_table([
         ['Tool','Purpose','Hello-world'],
         ['LTspice','SPICE simulation of analog circuits','Transient sim of an RC low-pass driven by a 1 kHz square wave. Verify the time constant matches RC.'],
@@ -531,6 +629,12 @@ def build_phase0():
         "Why is the LED voltage drop about 2 V regardless of supply voltage?",
         "In your FFT hello-world, what is the relationship between the sine frequency, the sample rate, and the FFT bin where the peak appears?",
     ]))
+
+    s.append(volt_says(
+        'Phase 0 is done. You have the math, the physics, the tools, and the bridge. '
+        'When you turn the page, you enter Phase 1 — DC circuit analysis. The first '
+        'real circuits are waiting. Take a breath, then go.',
+        mood='story'))
 
     s.append(PageBreak())
     return s

@@ -23,6 +23,14 @@ def build_phase1():
         "this picture is graph theory plus linear algebra, which you already know. The work "
         "of this phase is to make that mapping automatic."))
 
+    s.append(volt_says(
+        'You are about to enter the world of circuits. Everything you have learned as a '
+        'programmer — data flows, functions, state — has a physical twin here. A wire is a '
+        'variable, a resistor is a throttle, a capacitor is a buffer. By the end of this '
+        'phase, you will see circuits the way you see code: as systems with inputs, '
+        'outputs, and behavior you can predict.',
+        mood='story'))
+
     # ── Module 1.1 ──
     s.append(heading('Module 1.1 — Charge, Current, Voltage, Power, Energy', 1))
     s.append(p('<b>Duration:</b> 4–6 h · <b>Difficulty:</b> Foundation', 'kicker'))
@@ -46,9 +54,21 @@ def build_phase1():
         "elements in a circuit and you must get zero — this is Tellegen’s theorem, the "
         "circuit-level statement of energy conservation."))
 
+    s.append(volt_says(
+        'Always label your reference directions before solving. The math will tell you if '
+        'your guess was right — a negative current just means the actual flow is opposite '
+        'to your arrow. There is no wrong arrow; only undetermined equations.',
+        mood='tip'))
+
     s.append(formula_box(
         "Q = ∫ i dt &nbsp;&nbsp;|&nbsp;&nbsp; V = W/Q &nbsp;&nbsp;|&nbsp;&nbsp; "
         "P = V·I = I²·R = V²/R &nbsp;&nbsp;|&nbsp;&nbsp; W = ∫ P dt"))
+
+    s.append(pull_quote(
+        'Voltage is energy per unit charge. Current is charge per unit time. Power is '
+        'energy per unit time. Everything else in circuit analysis is bookkeeping on '
+        'these three definitions.',
+        'Volt, on the five fundamental quantities'))
 
     s.append(heading('Reference directions and the sign convention', 2))
     s.append(p(
@@ -86,6 +106,8 @@ def build_phase1():
         "Why is the sum of powers in any circuit exactly zero?",
     ]))
 
+    s.append(pixel_divider())
+
     # ── Module 1.2 ──
     s.append(heading('Module 1.2 — Ohm’s Law and Kirchhoff’s Laws', 1))
     s.append(p('<b>Duration:</b> 6–8 h · <b>Difficulty:</b> Foundation', 'kicker'))
@@ -100,6 +122,17 @@ def build_phase1():
         "(unknowns), edges have currents (unknowns), and the two Kirchhoff laws plus the "
         "element constitutive laws (V=IR for resistors) close the system."))
 
+    s.append(volt_says(
+        'KCL is literally flow conservation in a graph — the same math as a pipe network '
+        'or a packet-switched router. KVL is the discrete analog of a conservative field. '
+        'You already know this from graph theory; we are just applying it to electrons '
+        'instead of packets.',
+        mood='insight'))
+
+    # ── Pixel diagram: voltage_divider (most-used DC circuit) ──
+    s.extend(diagram('voltage_divider',
+        caption='Voltage divider — V_in → R1 → midpoint → R2 → ground. V_out = V_in · R2/(R1+R2).'))
+
     s.append(heading('Ohm’s law — the constitutive relation', 2))
     s.append(p(
         "Ohm’s law <i>V = I·R</i> is the constitutive relation of an ideal resistor. It "
@@ -110,6 +143,12 @@ def build_phase1():
         "low-frequency work, all of these are negligible. They will start to matter in "
         "Phase 2 (AC) and Phase 8 (RF)."))
     s.append(formula_box("V = I · R &nbsp;&nbsp;|&nbsp;&nbsp; I = V / R &nbsp;&nbsp;|&nbsp;&nbsp; R = V / I"))
+
+    s.append(volt_says(
+        'The #1 mistake beginners make: forgetting the ground reference. Without a '
+        'ground, node voltages are undefined — the system has infinitely many solutions. '
+        'Always pick one node as ground before writing any equation.',
+        mood='warning'))
 
     s.append(heading('KCL — current conservation', 2))
     s.append(p(
@@ -169,6 +208,8 @@ def build_phase1():
         "When is mesh analysis more convenient than nodal? When is it impossible?",
         "Set up and solve a 3-node circuit with two voltage sources by nodal analysis.",
     ]))
+
+    s.append(pixel_divider())
 
     # ── Module 1.3 ──
     s.append(heading('Module 1.3 — Node Voltage & Mesh Current Methods', 1))
@@ -237,6 +278,13 @@ def build_phase1():
         "circuit theorem in practice — it is how you reason about output impedance of "
         "op-amps, signal-source loading, sensor interfaces, and power-supply design."))
 
+    s.append(volt_says(
+        'Thevenin’s theorem is the circuit analog of encapsulation. Hide everything '
+        'behind two numbers — V_th and R_th — and the load cannot tell what is inside. '
+        'When you reason about output impedance, sensor loading, or supply design, you '
+        'are computing a Thevenin equivalent whether you call it that or not.',
+        mood='insight'))
+
     s.append(p(
         "Thevenin’s theorem: any linear two-terminal circuit containing voltage/current "
         "sources and resistors can be replaced by an equivalent circuit consisting of a "
@@ -285,6 +333,8 @@ def build_phase1():
         "Thevenize a voltage divider with a load. What is the practical implication for sensor readout?",
     ]))
 
+    s.append(pixel_divider())
+
     # ── Module 1.5 ──
     s.append(heading('Module 1.5 — Superposition & Source Transformation', 1))
     s.append(p('<b>Duration:</b> 4–6 h · <b>Difficulty:</b> Foundation', 'kicker'))
@@ -298,6 +348,10 @@ def build_phase1():
         "a current source I = V/R in parallel with R, and vice versa. Both techniques are "
         "tools for simplifying a circuit before solving; they are not strictly necessary, "
         "but they often turn a 20-minute nodal analysis into a 2-minute back-of-envelope."))
+
+    # ── Pixel diagram: superposition (linearity in action) ──
+    s.extend(diagram('superposition',
+        caption='Superposition — turn off sources one at a time, sum the individual responses. Linearity is the whole game.'))
 
     s.append(heading('Linearity is the whole game', 2))
     s.append(p(
@@ -336,6 +390,25 @@ def build_phase1():
         "simulated annealing, the convergence of gradient descent on a quadratic, and "
         "the cooling of a Markov chain to its stationary distribution. The time constant "
         "τ = RC is the half-life (more precisely, the 1/e time) of the decay."))
+
+    s.append(volt_says(
+        'The capacitor is not a component — it is a promise that the voltage across it '
+        'will not change instantly. The inductor makes the dual promise about current. '
+        'These two continuity conditions are the entire key to transient analysis.',
+        mood='insight'))
+
+    # ── Pixel diagram: wheatstone bridge ──
+    s.extend(diagram('wheatstone_bridge',
+        caption='Wheatstone bridge — four resistors in a diamond. Tiny changes in R cause large changes in V_out (sensor readout).'))
+    # ── Pixel diagram: rc_charging curve ──
+    s.extend(diagram('rc_charging',
+        caption='RC charging curve — V_C(t) = V_s · (1 − e^(−t/τ)). After τ, 63% charged; after 5τ, ~99%.'))
+    # ── Pixel diagram: rl_charging curve ──
+    s.extend(diagram('rl_charging',
+        caption='RL charging curve — I_L(t) = (V_s/R) · (1 − e^(−t/τ)), τ = L/R. Dual of the RC response.'))
+    # ── Pixel diagram: rlc_damped response ──
+    s.extend(diagram('rlc_damped',
+        caption='RLC damped response — underdamped ringing decays exponentially. ζ < 1 means complex poles.'))
 
     s.append(heading('Capacitors and inductors as energy stores', 2))
     s.append(p(
@@ -405,6 +478,19 @@ def build_phase1():
         "Sketch the step response of an underdamped second-order system. Label rise time, overshoot, settling time.",
     ]))
 
+    s.append(pull_quote(
+        'The capacitor is not a component — it is a promise that the voltage across it '
+        'will not change instantly. The inductor makes the dual promise about current.',
+        'Volt, on continuity conditions'))
+
+    s.append(volt_says(
+        'Phase 1 is done. You can solve any linear DC circuit, you understand the three '
+        'passive components, and you can predict how a circuit responds when you flip a '
+        'switch. Phase 2 takes these tools into the AC domain — where every signal is '
+        'sinusoidal and impedance replaces resistance. The math is the same; the costumes '
+        'change.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -429,6 +515,13 @@ def build_phase2():
         "by complex impedance Z. This single mathematical move turns a hard problem "
         "(solving ODEs with sinusoidal forcing) into a routine linear algebra problem."))
 
+    s.append(volt_says(
+        'Phase 2 is the payoff for all the complex-analysis prep in Phase 0. Once you '
+        'see that a sinusoid is a single complex number and that differentiation is just '
+        'multiplication by jω, every AC circuit becomes a DC circuit with complex-valued '
+        'resistors. The whole chapter is one trick applied to a hundred variations.',
+        mood='story'))
+
     # ── Module 2.1 ──
     s.append(heading('Module 2.1 — Sinusoidal Sources and Phasors', 1))
     s.append(p('<b>Duration:</b> 5–7 h · <b>Difficulty:</b> Foundation', 'kicker'))
@@ -441,6 +534,10 @@ def build_phase2():
         "sinusoids at the same frequency is complex addition; differentiation is "
         "multiplication by jω. This is the engineer’s version of representing a 2D "
         "vector as a complex number — you already do this in graphics code."))
+
+    # ── Pixel diagram: ac_phasor ──
+    s.extend(diagram('ac_phasor',
+        caption='AC phasor — a rotating complex number. At a fixed ω, only amplitude and phase matter; the e^(jωt) factor is common and dropped.'))
 
     s.append(heading('The phasor transform', 2))
     s.append(p(
@@ -495,6 +592,10 @@ def build_phase2():
         "Z<sub>R</sub> = R &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Z<sub>L</sub> = jωL &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Z<sub>C</sub> = 1 / (jωC) = −j / (ωC)"))
+
+    # ── Pixel diagram: impedance_triangle ──
+    s.extend(diagram('impedance_triangle',
+        caption='Impedance triangle — R (real) horizontal, X (reactive) vertical, Z (magnitude) hypotenuse. |Z| = √(R²+X²).'))
 
     s.append(p(
         "Admittance <b>Y</b> = 1/<b>Z</b> is the dual. <b>Y</b><sub>R</sub> = 1/R = G "
@@ -562,6 +663,10 @@ def build_phase2():
         "|S| = V<sub>rms</sub>·I<sub>rms</sub> [VA] &nbsp;&nbsp;|&nbsp;&nbsp; "
         "PF = cos(φ) = P / |S|"))
 
+    # ── Pixel diagram: power_triangle ──
+    s.extend(diagram('power_triangle',
+        caption='Power triangle — P (real) horizontal, Q (reactive) vertical, S (apparent) hypotenuse. PF = P/|S| = cos(φ).'))
+
     s.append(p(
         "RMS (root-mean-square) is the equivalent DC value that would deliver the same "
         "average power to a resistor. For a sinusoid, V<sub>rms</sub> = V<sub>m</sub>/√2. "
@@ -611,6 +716,20 @@ def build_phase2():
         "ω<sub>0</sub> = 1 / √(LC) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "Q = ω<sub>0</sub>·L / R = 1 / (ω<sub>0</sub>·R·C) &nbsp;&nbsp;|&nbsp;&nbsp; "
         "BW = ω<sub>0</sub> / Q"))
+
+    s.append(volt_says(
+        'Resonance is the cancellation of inductive and capacitive reactance at a single '
+        'frequency. At ω₀ = 1/√(LC), the imaginary part of the impedance vanishes and '
+        'the circuit behaves as if it were purely resistive. This is the heart of every '
+        'radio receiver — tune the L and C, and you tune which frequency you hear.',
+        mood='insight'))
+
+    # ── Pixel diagram: series_resonance ──
+    s.extend(diagram('series_resonance',
+        caption='Series resonance — at ω₀, L and C cancel. Current peaks. Used in tuners and notch filters.'))
+    # ── Pixel diagram: parallel_resonance (tank circuit) ──
+    s.extend(diagram('parallel_resonance',
+        caption='Parallel resonance (tank) — at ω₀, impedance peaks. The basis of every LC oscillator.'))
 
     s.append(p(
         "The quality factor Q measures how sharp the resonance is. Q = ω<sub>0</sub>/BW "
@@ -703,6 +822,8 @@ def build_phase2():
         "Why is three-phase transmission more efficient than single-phase?",
     ]))
 
+    s.append(pixel_divider())
+
     # ── Module 2.6 ──
     s.append(heading('Module 2.6 — Mutual Inductance & Transformers', 1))
     s.append(p('<b>Duration:</b> 4–6 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -758,6 +879,20 @@ def build_phase2():
         "Name three parasitic effects in real transformers and how each manifests in circuit behavior.",
     ]))
 
+    s.append(pull_quote(
+        'An ideal transformer is a lossless impedance converter. The turns ratio does '
+        'not just scale voltage — it scales impedance by the square, and that is the '
+        'reason the entire power grid can move gigawatts across a thousand kilometers.',
+        'Volt, on transformers'))
+
+    s.append(volt_says(
+        'Phase 2 is done. You can solve any AC circuit with phasors, you understand '
+        'impedance and resonance, and you know why the grid runs on three phases. Phase '
+        '3 introduces the nonlinear elements — diodes, transistors, op-amps — that make '
+        'circuits do useful things like amplify, switch, and modulate. The linear math '
+        'ends; the small-signal approximation begins.',
+        mood='story'))
+
     s.append(PageBreak())
     return s
 
@@ -780,6 +915,14 @@ def build_phase3():
         "linearization you do in optimization (Newton’s method) and in machine learning "
         "(backprop through a nonlinearity)."))
 
+    s.append(volt_says(
+        'Nonlinear is not the same as scary. Diodes, transistors, op-amps — they all '
+        'obey V-I curves you can look up. The trick is to bias them to a known DC '
+        'operating point, then linearize around it. The AC behavior near that point is '
+        'just another linear circuit. Same math as Phase 1, with one extra step at the '
+        'start.',
+        mood='story'))
+
     # ── Module 3.1 ──
     s.append(heading('Module 3.1 — Diodes: Rectifiers, Clippers, Clampers', 1))
     s.append(p('<b>Duration:</b> 5–7 h · <b>Difficulty:</b> Intermediate', 'kicker'))
@@ -799,6 +942,10 @@ def build_phase3():
         caption='Diode (anode left, cathode right) — one-way current valve. V_f ≈ 0.7 V (Si).'))
     s.extend(diagram('half_wave',
         caption='Half-wave rectifier — AC source → diode → load → ground. Passes only positive half-cycles.'))
+
+    # ── Pixel diagram: full-wave bridge rectifier ──
+    s.extend(diagram('full_wave',
+        caption='Full-wave bridge rectifier — four diodes route both half-cycles to the load. Output average = 2·V_m/π. Ripple freq = 2× line.'))
 
     s.append(heading('Three classic diode circuits', 2))
     s.append(bullet_list([
@@ -846,6 +993,10 @@ def build_phase3():
     # ── Pixel diagram: NPN BJT transistor symbol ──
     s.extend(diagram('transistor_npn',
         caption='NPN BJT — base (left), collector (top), emitter (bottom). I_C = β · I_B.'))
+
+    # ── Pixel diagram: ce_amplifier ──
+    s.extend(diagram('ce_amplifier',
+        caption='Common-emitter amplifier — BJT with R_C and R_E. Inverts the input; voltage gain A_v = −g_m · R_C.'))
 
     s.append(heading('BJT regions of operation', 2))
     s.append(make_table([
@@ -925,6 +1076,10 @@ def build_phase3():
     s.extend(diagram('mosfet',
         caption='n-channel MOSFET — gate (left), drain (top), source (bottom). Voltage-controlled current source.'))
 
+    # ── Pixel diagram: cs_amplifier ──
+    s.extend(diagram('cs_amplifier',
+        caption='Common-source amplifier — MOSFET with R_D. Inverts the input; gain A_v = −g_m · (R_D ∥ r_o). The CMOS analog workhorse.'))
+
     s.append(heading('Small-signal model', 2))
     s.append(p(
         "Linearize around the Q point: g_m = ∂I_D/∂V_GS = k_n·(V_GS − V_th) = √(2·k_n·I_D). "
@@ -983,6 +1138,17 @@ def build_phase3():
         caption='Op-amp triangle — inverting input (−) top, non-inverting input (+) bottom, output right.'))
     s.extend(diagram('opamp_inv',
         caption='Inverting amplifier — R_f feedback, R_in input. V_out = −(R_f/R_in)·V_in.'))
+
+    s.append(volt_says(
+        'Op-amps are the analog swiss army knife because the feedback network — not the '
+        'op-amp itself — sets the behavior. Swap the feedback and the same chip becomes '
+        'an amplifier, integrator, differentiator, summer, filter, or oscillator. The '
+        'op-amp is the runtime; your feedback network is the program.',
+        mood='insight'))
+
+    # ── Pixel diagram: integrator ──
+    s.extend(diagram('integrator',
+        caption='Op-amp integrator — cap in feedback. V_o = −(1/RC)·∫V_in dt. The analog computer of the 1960s; still everywhere today.'))
 
     s.append(heading('The two golden rules', 2))
     s.append(p(
@@ -1072,6 +1238,10 @@ def build_phase3():
     # ── Pixel diagram: band-pass filter response ──
     s.extend(diagram('bandpass',
         caption='Band-pass magnitude response — peaks at ω₀, falls off on both sides at ±20 dB/dec.'))
+
+    # ── Pixel diagram: sallen_key filter topology ──
+    s.extend(diagram('sallen_key',
+        caption='Sallen-Key 2nd-order low-pass — two RC sections + unity-gain buffer. The classic active-filter building block.'))
 
     s.append(heading('Butterworth, Chebyshev, Bessel — choosing the response', 2))
     s.append(p(
@@ -1227,6 +1397,21 @@ def build_phase3():
         "Compute the efficiency of a class-B amp at full output sine. (Hint: 78.5%.)",
         "How would you protect the output stage against a short circuit?",
     ]))
+
+    s.append(pull_quote(
+        'Small-signal linearization is the bridge between the nonlinear physical world '
+        'and the linear analytical world. Every transistor model — every backprop '
+        'gradient, every Newton step — is the same trick: zoom in until the curve looks '
+        'like a line.',
+        'Volt, on linearization'))
+
+    s.append(volt_says(
+        'Phase 3 is done. You have built real amplifiers from diodes, transistors, and '
+        'op-amps. The audio amplifier capstone is the first project big enough to put on '
+        'a resume. Phase 4 crosses into the digital domain — where the signals are 0s '
+        'and 1s, the gates are logic, and your CS background starts doing the heavy '
+        'lifting. The fun part is just beginning.',
+        mood='story'))
 
     s.append(PageBreak())
     return s
