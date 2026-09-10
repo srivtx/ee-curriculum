@@ -36,8 +36,14 @@ export interface Lesson {
     note?: string;
   };
   spice_netlist?: string;          // Pre-filled SPICE netlist for SpicePlayground
-  verilog?: boolean;               // Show the Verilog (Yosys) playground
+  has_heavy_spice?: boolean;       // Show the Heavy SPICE (ngspice WASM) playground
+  heavy_spice_starter?: string;    // Pre-filled netlist for HeavySpicePlayground (needs real semiconductor models)
+  verilog?: boolean;               // Show the Verilog (Yosys) playground (legacy flag)
+  has_verilog?: boolean;            // Show the Verilog HDL playground (Yosys WASM + digitaljs)
+  verilog_starter?: string;         // Pre-filled Verilog source for VerilogPlayground
   kicanvas_url?: string;           // KiCanvas iframe src for KiCad schematics
+  has_scope?: boolean;              // Show the Web Audio oscilloscope + FFT spectrum
+  iqengine_url?: string;           // Optional SigMF recording URL for IQEngine embed (empty string = homepage)
 }
 
 export interface Project {
@@ -163,7 +169,7 @@ export const CURRICULUM: Phase[] = [
         duration_hours: 7,
         difficulty: 'Foundation',
         lessons: [
-          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'] },
+          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch' },
           { id: 'p0m4l2', title: 'Arduino + ESP32 + STM32: three MCU families', type: 'exercise', duration_min: 90, summary: 'Arduino Uno (intro), ESP32 devkit (wireless), STM32 Nucleo (real MCU). Hello-worlds: blink, WiFi hello, GPIO toggle.', key_takeaways: ['Arduino abstracts away register-level details', 'ESP32 adds WiFi/BLE and FreeRTOS', 'STM32 is closer to bare-metal embedded Linux'] },
           { id: 'p0m4l3', title: 'Python (NumPy/SciPy) + Octave: math tools', type: 'exercise', duration_min: 60, summary: 'Python with NumPy/SciPy/matplotlib/control. Octave as MATLAB clone. Hello-worlds: sine + FFT plot; solve linear system.', key_takeaways: ['Python leverages your CS skills for DSP/control/analysis', 'Octave gives MATLAB compatibility for EE literature'] },
           { id: 'p0m4l4', title: 'Vivado + Magic + GNU Radio: FPGA, VLSI, SDR', type: 'exercise', duration_min: 90, summary: 'Vivado WebPACK (FPGA), Magic VLSI (IC layout), GNU Radio (SDR). Hello-worlds: 4-bit counter synth; NMOS layout+DRC; source→LP→sink flowgraph.', key_takeaways: ['Vivado WebPACK is free for Artix-7', 'Magic is the open-source VLSI layout editor', 'GNU Radio is the SDR visual programming environment'] },
@@ -501,6 +507,14 @@ R1 out 0 1k
 .model 1N4148 D
 .tran 100u 50m
 .print tran v(in) v(out)
+.end`, has_heavy_spice: true, heavy_spice_starter: `* Half-wave rectifier with 1N4148
+V1 in 0 SINE(0 10 60)
+D1 in out 1N4148
+C1 out 0 100u
+R1 out 0 1k
+.model 1N4148 D(Is=2.52n N=1.752 Cjo=4p M=0.4 Bv=100 Ibv=100u)
+.tran 100u 50m
+.print tran v(in) v(out) i(V1)
 .end` },
           { id: 'p3m1l3', title: 'Clippers, clampers, and Zener references', type: 'reading', duration_min: 45, summary: 'Clippers limit voltage swing (input protection). Clampers add DC offset (DC restore after AC coupling). Zener diodes operate in reverse breakdown safely — stable voltage reference.', key_takeaways: ['Zener reverse breakdown is well-controlled', 'Every linear regulator uses a Zener or bandgap reference', 'Schottky for low-drop rectification, Si for general purpose'] },
         ],
@@ -519,7 +533,18 @@ R1 out 0 1k
         cs_bridge: 'BJT ↔ current-controlled current source (I_C=β·I_B). MOSFET ↔ voltage-controlled current source (I_D=f(V_GS)). Both have small-signal models that linearize them around a DC operating point — same idea as Newton’s method in optimization.',
         lessons: [
           { id: 'p3m2l1', title: 'BJT regions: cut-off, active, saturation', type: 'reading', duration_min: 60, summary: 'Cut-off: V_BE<0.6V, I_C≈0 (off switch). Active: V_BE≈0.7V, V_CE>V_CE(sat), I_C=β·I_B (amplifier). Saturation: V_CE≈0.2V, I_C<β·I_B (on switch).', key_takeaways: ['Active region for amplification', 'Saturation for switching (on)', 'Cut-off for switching (off)'] },
-          { id: 'p3m2l2', title: 'Four-resistor bias network', type: 'reading', duration_min: 75, summary: 'R1/R2 divider sets V_B. V_E=V_B−0.7. I_E≈I_C=V_E/R_E. V_C=V_CC−I_C·R_C. Rule: divider current 10× base current for β stability.', key_takeaways: ['Bias to a stable Q point in active region', 'Emitter resistor provides negative feedback (stabilizes I_C against β variation)', 'Bypass R_E with cap for AC gain without losing DC stability'] },
+          { id: 'p3m2l2', title: 'Four-resistor bias network', type: 'reading', duration_min: 75, summary: 'R1/R2 divider sets V_B. V_E=V_B−0.7. I_E≈I_C=V_E/R_E. V_C=V_CC−I_C·R_C. Rule: divider current 10× base current for β stability.', key_takeaways: ['Bias to a stable Q point in active region', 'Emitter resistor provides negative feedback (stabilizes I_C against β variation)', 'Bypass R_E with cap for AC gain without losing DC stability'], has_heavy_spice: true, heavy_spice_starter: `* Common-emitter amplifier
+V1 VCC 0 12
+R1 VCC b 50k
+R2 b 0 10k
+RC VCC c 5k
+RE e 0 1k
+CE e 0 100u
+Q1 c b e 0 2N3904
+.model 2N3904 NPN(Is=6.734f Xti=3 Eg=1.11 Vaf=74.03 Bf=416.4 Ne=1.259 Ise=6.734f Ikf=66.78m Xtb=1.5 Br=0.7371 Nc=2 Isc=0 Ikr=0 Rc=1 Cjc=3.638p Mjc=0.3085 Vjc=0.75 Fc=0.5 Cje=4.493p Mje=0.2593 Vje=0.75 Tr=239.5n Tf=301.2p Itf=0.4 Vtf=4 Xtf=2)
+.op
+.print dc v(b) v(c) v(e) i(RC) i(RE)
+.end` },
           { id: 'p3m2l3', title: 'Hybrid-π small-signal model', type: 'reading', duration_min: 75, summary: 'g_m=I_C/V_T≈40·I_C [A/V]. r_π=β/g_m. r_o=V_A/I_C. Voltage-controlled current source g_m·v_be from C to E. A_v=−g_m·R_C for common-emitter.', key_takeaways: ['g_m=I_C/V_T (transconductance)', 'r_π=β/g_m (input resistance)', 'A_v=−g_m·R_C (CE voltage gain)'] },
         ],
         projects: [
@@ -536,7 +561,14 @@ R1 out 0 1k
       { id: 'p3m3', title: 'MOSFET Biasing and Small-Signal Model', description: 'Cut-off, triode, saturation. I_D=½·k_n·(V_GS−V_th)²·(1+λ·V_DS). g_m=√(2·k_n·I_D). Infinite gate impedance.',
         duration_hours: 7, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p3m3l1', title: 'MOSFET regions and I-V equation', type: 'reading', duration_min: 60, summary: 'Cut-off: V_GS<V_th. Triode: V_DS<V_GS−V_th (resistor). Saturation: V_DS>V_GS−V_th (current source). I_D=½·k_n·(V_GS−V_th)²·(1+λ·V_DS).', key_takeaways: ['Saturation region for amplification', 'Triode region for switching (low R_DS(on))', 'k_n=μ_n·C_ox·W/L sets the device strength'] },
+          { id: 'p3m3l1', title: 'MOSFET regions and I-V equation', type: 'reading', duration_min: 60, summary: 'Cut-off: V_GS<V_th. Triode: V_DS<V_GS−V_th (resistor). Saturation: V_DS>V_GS−V_th (current source). I_D=½·k_n·(V_GS−V_th)²·(1+λ·V_DS).', key_takeaways: ['Saturation region for amplification', 'Triode region for switching (low R_DS(on))', 'k_n=μ_n·C_ox·W/L sets the device strength'], has_heavy_spice: true, heavy_spice_starter: `* MOSFET output characteristic
+VDS d 0 5
+VGS g 0 2
+M1 d g 0 0 2N7000
+.model 2N7000 NMOS(Vto=2.0 Kp=0.1 Lambda=0.02)
+.dc VDS 0 5 0.1 VGS 1 5 1
+.print dc i(VDS)
+.end` },
           { id: 'p3m3l2', title: 'Why MOSFETs dominate modern electronics', type: 'reading', duration_min: 60, summary: 'Gate draws no DC current — input impedance is infinite at DC. This is why CMOS dominates digital: a billion gates draw near-zero static current. BJTs always draw base current.', key_takeaways: ['MOSFET gate = infinite DC input impedance', 'CMOS = complementary MOS, near-zero static power', 'This is why Moore’s law has been a MOSFET story'] },
         ],
         projects: [
@@ -553,7 +585,22 @@ R1 out 0 1k
         duration_hours: 9, difficulty: 'Intermediate',
         cs_bridge: 'Op-amp ↔ functional-programming pure function. Ideal op-amp: infinite gain, infinite Z_in, zero Z_out, infinite BW. Output determined entirely by feedback network — op-amp is pure gain block, feedback network is the "program". Composable like pure functions.',
         lessons: [
-          { id: 'p3m4l1', title: 'Two golden rules and five canonical circuits', type: 'reading', duration_min: 90, summary: 'Rule 1: V_+=V_- (virtual short). Rule 2: no current into inputs. Five circuits: inverting (A_v=−R_f/R_1), non-inverting (A_v=1+R_f/R_1), follower (A_v=1), summing (V_o=−R_f·ΣV_i/R_i), difference (V_o=(R_f/R_1)·(V_2−V_1)).', key_takeaways: ['Virtual short and no input current — analyze any op-amp circuit', 'Inverting and non-inverting are the two building blocks', 'Follower = buffer, high-Z to low-Z transformation'], formulas: [{ label: 'Golden rule 1', latex: 'V_+ = V_-' }, { label: 'Golden rule 2', latex: 'I_+ = I_- = 0' }, { label: 'Inverting amp', latex: 'A_v = -\\dfrac{R_f}{R_1}' }, { label: 'Non-inverting amp', latex: 'A_v = 1 + \\dfrac{R_f}{R_1}' }, { label: 'Follower (buffer)', latex: 'A_v = 1' }], falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Aa+240+144+336+144+0+15+-15+1000000+0.00005+0%0Ar+144+128+240+128+0+1000%0Ar+240+128+336+128+0+10000%0Ag+240+160+240+192+0%0Aw+336+144+384+144+0%0Aw+144+128+144+144+0%0Av+144+144+144+208+0+0+1+1+0+0+0.5%0Ag+144+208+144+240+0%0A' },
+          { id: 'p3m4l1', title: 'Two golden rules and five canonical circuits', type: 'reading', duration_min: 90, summary: 'Rule 1: V_+=V_- (virtual short). Rule 2: no current into inputs. Five circuits: inverting (A_v=−R_f/R_1), non-inverting (A_v=1+R_f/R_1), follower (A_v=1), summing (V_o=−R_f·ΣV_i/R_i), difference (V_o=(R_f/R_1)·(V_2−V_1)).', key_takeaways: ['Virtual short and no input current — analyze any op-amp circuit', 'Inverting and non-inverting are the two building blocks', 'Follower = buffer, high-Z to low-Z transformation'], formulas: [{ label: 'Golden rule 1', latex: 'V_+ = V_-' }, { label: 'Golden rule 2', latex: 'I_+ = I_- = 0' }, { label: 'Inverting amp', latex: 'A_v = -\\dfrac{R_f}{R_1}' }, { label: 'Non-inverting amp', latex: 'A_v = 1 + \\dfrac{R_f}{R_1}' }, { label: 'Follower (buffer)', latex: 'A_v = 1' }], falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Aa+240+144+336+144+0+15+-15+1000000+0.00005+0%0Ar+144+128+240+128+0+1000%0Ar+240+128+336+128+0+10000%0Ag+240+160+240+192+0%0Aw+336+144+384+144+0%0Aw+144+128+144+144+0%0Av+144+144+144+208+0+0+1+1+0+0+0.5%0Ag+144+208+144+240+0%0A', has_heavy_spice: true, heavy_spice_starter: `* Inverting amplifier with uA741
+V1 in 0 SINE(0 0.1 1000)
+R1 in neg 1k
+Rf neg out 10k
+X1 neg 0 out vcc vee uA741
+VCC vcc 0 15
+VEE vee 0 -15
+.subckt uA741 inp inn out vp vm
+* simplified 741 model
+Rin inp inn 2meg
+E1 int 0 inp inn 200000
+Rout int out 75
+.ends
+.tran 10u 5m
+.print tran v(in) v(out)
+.end` },
           { id: 'p3m4l2', title: 'Integrator and differentiator', type: 'reading', duration_min: 60, summary: 'Replace R_f with C: integrator, V_o=−(1/RC)·∫V_in dt. Replace R_1 with C: differentiator, V_o=−RC·dV_in/dt. Integrator is everywhere (PID, active filters, charge amps). Differentiator is noise-amplifying, rarely used pure.', key_takeaways: ['Integrator = analog computer integration', 'Differentiator amplifies noise — usually filtered', 'Both are the basis of active filters'] },
           { id: 'p3m4l3', title: 'Real op-amp non-idealities', type: 'reading', duration_min: 60, summary: 'Finite open-loop gain (10⁵–10⁶). GBW (1–10 MHz typical). Slew rate (V/μs). Input offset voltage (1–10 mV). Input bias current. Noise. The two that bite most: GBW and slew rate.', key_takeaways: ['GBW=f_t / A_cl (closed-loop bandwidth)', 'Slew rate limits large-signal bandwidth: f_max=SR/(2π·V_peak)', 'Always check GBW and slew rate for your application'] },
         ],
@@ -618,7 +665,9 @@ R1 out 0 1k
       },
       { id: 'p3m8', title: 'Phase 3 Capstone: Audio Power Amplifier', description: 'Three-stage class-AB: diff pair input, CE voltage-amp with Miller comp, class-AB output. 20W into 8Ω, 20Hz–20kHz, THD<1%.',
         duration_hours: 12, difficulty: 'Intermediate',
-        lessons: [],
+        lessons: [
+          { id: 'p3m8l1', title: 'Class-AB audio amplifier: topology walkthrough', type: 'reading', duration_min: 45, summary: 'Three-stage class-AB topology: (1) differential input pair for low offset and high CMRR, (2) common-emitter voltage-amp with Miller compensation capacitor for dominant pole, (3) class-AB output stage (Darlington or MOSFET follower) with bias network for quiescent current. Feedback closes the loop and sets the closed-loop gain. The KiCad schematic below shows a representative example of this topology — pan and zoom in the KiCanvas viewer.', key_takeaways: ['Three-stage topology: diff pair → VA → class-AB output', 'Miller comp capacitor creates the dominant pole for stability', 'Class-AB bias network sets quiescent current to avoid crossover distortion', 'Closed-loop gain = 1 + R_f/R_in'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch' },
+        ],
         projects: [
           { id: 'p3m8pr1', title: 'Audio Power Amplifier (Class-AB)', goal: 'Design and build complete audio power amp: 20W into 8Ω, 20Hz–20kHz, THD<1%.', tools: ['KiCad', 'BJTs (NPN/PNP power)', 'op-amp', 'resistors', 'caps', 'heatsink', 'PCB (JLCPCB)'], steps: ['Three-stage: (1) differential input pair for low offset, (2) common-emitter voltage-amp with Miller comp, (3) class-AB output stage (Darlington or MOSFET follower)', 'V_CC=±25V rails, quiescent 20mA in output stage', 'Feedback: closed-loop gain=1+R_f/R_in=23 (28dB), input sensitivity 700mV RMS for full output', 'Schematic in KiCad, order PCB from JLCPCB (~$10 for 5)', 'Solder, test: drive with Wien bridge sine, measure THD vs freq and level, bandwidth, output impedance'], pass_criteria: '20W into 8Ω, bandwidth 20Hz–20kHz (±1dB), THD<1% at 1W.', difficulty: 'Intermediate', estimated_hours: 12 },
         ],
@@ -661,7 +710,19 @@ R1 out 0 1k
       { id: 'p4m2', title: 'Combinational Logic: Mux, Decoder, Adder', description: 'Mux (2ⁿ inputs, n select). Decoder (n inputs, 2ⁿ outputs). Ripple-carry, carry-lookahead, prefix adders (Kogge-Stone).',
         duration_hours: 6, difficulty: 'Foundation',
         lessons: [
-          { id: 'p4m2l1', title: 'Mux, decoder, adder topologies', type: 'reading', duration_min: 75, summary: 'Mux: 2ⁿ inputs, n select, 1 output — LUT in FPGA is just a mux. Decoder: n inputs, 2ⁿ outputs — address decoding, 7-seg. Adder: ripple (slow), CLA (fast), Kogge-Stone (log time).', key_takeaways: ['A LUT is a mux — universal logic element in FPGAs', 'Carry-lookahead: log(n) delay vs ripple’s O(n)', 'Prefix adders (Kogge-Stone) for high-performance CPUs'] },
+          { id: 'p4m2l1', title: 'Mux, decoder, adder topologies', type: 'reading', duration_min: 75, summary: 'Mux: 2ⁿ inputs, n select, 1 output — LUT in FPGA is just a mux. Decoder: n inputs, 2ⁿ outputs — address decoding, 7-seg. Adder: ripple (slow), CLA (fast), Kogge-Stone (log time).', key_takeaways: ['A LUT is a mux — universal logic element in FPGAs', 'Carry-lookahead: log(n) delay vs ripple’s O(n)', 'Prefix adders (Kogge-Stone) for high-performance CPUs'], has_verilog: true, verilog_starter: `// 4-to-1 multiplexer — the universal logic element.
+// A 6-input FPGA LUT is the same idea, just wider.
+// Hit Synthesize: Yosys flattens this to a single $bmux cell; the
+// Circuit tab shows the select bits switching the output between
+// in[0..3]. Toggle sel[1:0] in the schematic to verify the truth table.
+module mux4(
+    input  wire [1:0] sel,
+    input  wire [3:0] in,
+    output wire       out
+);
+    assign out = in[sel];
+endmodule
+` },
           { id: 'p4m2l2', title: 'Combinational hazards', type: 'reading', duration_min: 45, summary: 'Static-1 hazard: output should stay 1 but momentarily drops to 0 due to unequal path delays. Fix: add consensus term (extra product term covering the hazardous transition).', key_takeaways: ['Hazards rarely matter in synchronous designs (clock masks them)', 'Hazards bite hard in asynchronous logic and clock-domain crossings', 'Fix with consensus term or synchronous design'] },
         ],
         projects: [
@@ -679,7 +740,18 @@ R1 out 0 1k
         cs_bridge: 'Flip-flop ↔ register in a CPU. D flop is 1-bit register. Shift register is a queue of flops. Counter is a register that increments. Register file is a flop bank — exactly the register file in a CPU. Only new: setup/hold/metastability.',
         lessons: [
           { id: 'p4m3l1', title: 'Four flip-flop types and their use', type: 'reading', duration_min: 60, summary: 'D (universal — most logic uses D), T (counters), JK (general-purpose legacy), SR (basic latch, rarely used standalone). D flop samples input on clock edge and holds until next.', key_takeaways: ['D flop is the universal sequential element', 'JK is the legacy general-purpose flop', 'SR forbidden when S=R=1'], wavedrom: `{ signal: [\n  { name: 'clk', wave: 'p.........' },\n  { name: 'D',   wave: '0.1.0.1.0.' },\n  { name: 'Q',   wave: '0..1.0.1.0', node: '.......a' }\n],\n  head: { text: 'D flip-flop: Q takes D on the rising edge of clk' },\n  foot: { text: 'Setup and hold must be respected around the rising edge.' } }` },
-          { id: 'p4m3l2', title: 'Setup, hold, metastability', type: 'reading', duration_min: 75, summary: 't_su: input stable for t_su before edge. t_h: stable for t_h after. Violate → metastable (output hovers between 0 and 1 for unbounded time). Two-flop synchronizer reduces failure probability to MTBF of billions of years.', key_takeaways: ['Setup/hold violations cause metastability', 'Metastability is unavoidable in clock-domain crossings', 'Two-flop synchronizer: MTBF of billions of years'] },
+          { id: 'p4m3l2', title: 'Setup, hold, metastability', type: 'reading', duration_min: 75, summary: 't_su: input stable for t_su before edge. t_h: stable for t_h after. Violate → metastable (output hovers between 0 and 1 for unbounded time). Two-flop synchronizer reduces failure probability to MTBF of billions of years.', key_takeaways: ['Setup/hold violations cause metastability', 'Metastability is unavoidable in clock-domain crossings', 'Two-flop synchronizer: MTBF of billions of years'], has_verilog: true, verilog_starter: `// D flip-flop — the simplest sequential element.
+// This is the exact flop whose setup/hold window we are studying.
+// Hit Synthesize, then click the d button in the circuit view and
+// watch q capture d on every rising clk edge.
+module dff(
+    input  wire clk,
+    input  wire d,
+    output reg  q
+);
+    always @(posedge clk) q <= d;
+endmodule
+` },
           { id: 'p4m3l3', title: 'Counters and shift registers', type: 'reading', duration_min: 60, summary: 'Ripple counter: slow (count ripples through n flops). Synchronous: fast (all share clock, combinational computes next count). Ring counter: 1 circulates. Johnson: 2n states from n flops. Shift register: basis of serial comms.', key_takeaways: ['Synchronous counters are faster than ripple', 'Johnson counter: 2n states from n flops', 'Shift registers = UART, SPI, I2C basis'], wavedrom: `{ signal: [\n  { name: 'clk',  wave: 'p...........' },\n  { name: 'Q[0]', wave: '010101010101.' },\n  { name: 'Q[1]', wave: '001100110011.' },\n  { name: 'Q[2]', wave: '000011110000.' },\n  { name: 'Q[3]', wave: '000000001111.' }\n],\n  head: { text: '4-bit synchronous up-counter (Q[3:0] = 0,1,2,...,15,0,...)' } }` },
         ],
         projects: [
@@ -696,14 +768,53 @@ R1 out 0 1k
       { id: 'p4m4', title: 'HDL Intro: Verilog and FSMs', description: 'Concurrent assignments, always blocks, blocking vs non-blocking. Testbenches. Icarus Verilog + GTKWave.',
         duration_hours: 7, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p4m4l1', title: 'Verilog in one page: assign and always', type: 'reading', duration_min: 75, summary: 'assign for continuous (combinational). always @(posedge clk) for sequential. always @(*) for combinational procedural. Non-blocking <= in clocked blocks; blocking = in combinational. Mixing them up is #1 Verilog bug source.', key_takeaways: ['HDL describes hardware, not programs — everything runs concurrently', '<= for sequential (non-blocking, samples at edge)', '= for combinational (blocking)', 'Testbench needed — HDL has no "run" button'], verilog: true, wavedrom: `{ signal: [
+          { id: 'p4m4l1', title: 'Verilog in one page: assign and always', type: 'reading', duration_min: 75, summary: 'assign for continuous (combinational). always @(posedge clk) for sequential. always @(*) for combinational procedural. Non-blocking <= in clocked blocks; blocking = in combinational. Mixing them up is #1 Verilog bug source.', key_takeaways: ['HDL describes hardware, not programs — everything runs concurrently', '<= for sequential (non-blocking, samples at edge)', '= for combinational (blocking)', 'Testbench needed — HDL has no "run" button'], has_verilog: true, verilog_starter: `// 4-bit synchronous up-counter with async reset.
+// Classic Phase 4 Module 4 example — try toggling rst and watching count.
+module counter(
+    input  wire        clk,
+    input  wire        rst,
+    output reg  [3:0]  count
+);
+    always @(posedge clk or posedge rst) begin
+        if (rst)        count <= 4'b0000;
+        else            count <= count + 1'b1;
+    end
+endmodule
+`, wavedrom: `{ signal: [
   { name: 'SCLK',  wave: '0..10101010.' },
   { name: 'CS',    wave: '1.0........1' },
   { name: 'MOSI',  wave: 'x..0101100x', data: ['D7','D6','D5','D4','D3','D2','D1','D0'] },
   { name: 'MISO',  wave: 'x..0101100x', data: ['Q7','Q6','Q5','Q4','Q3','Q2','Q1','Q0'] }
 ],
   head: { text: 'SPI transaction: 8 bits, MSB first, sampled on rising edge of SCLK' } }` },
-          { id: 'p4m4l2', title: 'Testbenches and simulation', type: 'exercise', duration_min: 75, summary: 'Testbench: toggle clk every 5 ns, assert rst, run for 200 ns, $dumpfile/$dumpvars for waveforms. View .vcd in GTKWave.', key_takeaways: ['Testbench is a separate Verilog module', '$dumpvars saves all signals to .vcd', 'GTKWave is the open-source waveform viewer'], verilog: true },
+          { id: 'p4m4l2', title: 'Testbenches and simulation', type: 'exercise', duration_min: 75, summary: 'Testbench: toggle clk every 5 ns, assert rst, run for 200 ns, $dumpfile/$dumpvars for waveforms. View .vcd in GTKWave.', key_takeaways: ['Testbench is a separate Verilog module', '$dumpvars saves all signals to .vcd', 'GTKWave is the open-source waveform viewer'], has_verilog: true, verilog_starter: `// 4-bit counter (the DUT — synthesized and visualized by digitaljs).
+module counter(
+    input  wire        clk,
+    input  wire        rst,
+    output reg  [3:0]  count
+);
+    always @(posedge clk or posedge rst) begin
+        if (rst)        count <= 4'b0000;
+        else            count <= count + 1'b1;
+    end
+endmodule
+
+// Testbench (documentation only — Yosys synthesizes the DUT above).
+// In a real flow you would run this with iverilog + GTKWave:
+//   iverilog -o sim counter_tb.v counter.v && vvp sim && gtkwave dump.vcd
+module counter_tb;
+    reg        clk = 0;
+    reg        rst = 1;
+    wire [3:0] count;
+    counter dut(.clk(clk), .rst(rst), .count(count));
+    initial begin
+        clk = 0; rst = 1;
+        #10  rst = 0;
+        #200 $finish;
+    end
+    always #5 clk = ~clk;
+endmodule
+` },
         ],
         projects: [
           { id: 'p4m4pr1', title: 'Simulate Counter in Icarus Verilog', goal: 'Write testbench and verify 4-bit counter.', tools: ['Icarus Verilog (iverilog)', 'GTKWave'], steps: ['Write testbench: toggle clk every 5 ns, assert rst 10 ns at start, run 200 ns', 'Dump waveforms with $dumpfile/$dumpvars', 'Open .vcd in GTKWave. Confirm count goes 0,1,...,15,0,1,...', 'Feed same module to Vivado, confirm synthesizes with no warnings'], pass_criteria: 'Count sequence is 0,1,2,...,15,0,1,...; synthesizes cleanly.', difficulty: 'Intermediate', estimated_hours: 2 },
@@ -719,7 +830,30 @@ R1 out 0 1k
       { id: 'p4m5', title: 'FPGA Basics with Vivado and Artix-7', description: 'CLBs, LUTs, slices. Design flow: design entry → sim → synth → impl → bitstream → program → debug with ILA.',
         duration_hours: 7, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p4m5l1', title: 'FPGA architecture: CLBs, LUTs, routing', type: 'reading', duration_min: 60, summary: 'Sea of configurable logic blocks (CLBs), each with a 6-input LUT and a flop, interconnected by programmable routing. Synthesizer maps RTL to LUTs; P&R fits them; bitstream downloaded.', key_takeaways: ['CLB = LUT + flop + fast carry logic', '6-input LUT is the universal logic element', 'DSPs and BRAMs are dedicated blocks for arithmetic and memory'] },
+          { id: 'p4m5l1', title: 'FPGA architecture: CLBs, LUTs, routing', type: 'reading', duration_min: 60, summary: 'Sea of configurable logic blocks (CLBs), each with a 6-input LUT and a flop, interconnected by programmable routing. Synthesizer maps RTL to LUTs; P&R fits them; bitstream downloaded.', key_takeaways: ['CLB = LUT + flop + fast carry logic', '6-input LUT is the universal logic element', 'DSPs and BRAMs are dedicated blocks for arithmetic and memory'], has_verilog: true, verilog_starter: `// Pipelined 16-bit adder — two-stage pipeline for FPGA timing closure.
+// sum_p1 holds the combinational a+b (Stage 1 flop).
+// sum     holds sum_p1 (Stage 2 flop).
+// Synthesize this and notice how the Yosys netlist has two DFF banks
+// separated by an adder — exactly the CLB/LUT pipeline the lesson describes.
+module pipe_add(
+    input  wire        clk,
+    input  wire        rst,
+    input  wire [15:0] a,
+    input  wire [15:0] b,
+    output reg  [16:0] sum
+);
+    reg [16:0] sum_p1;
+    always @(posedge clk or posedge rst) begin
+        if (rst) begin
+            sum_p1 <= 17'd0;
+            sum    <= 17'd0;
+        end else begin
+            sum_p1 <= a + b;
+            sum    <= sum_p1;
+        end
+    end
+endmodule
+` },
           { id: 'p4m5l2', title: 'The FPGA design flow', type: 'reading', duration_min: 75, summary: 'Design Entry (Verilog + .xdc constraints) → Simulation (testbench) → Synthesis (RTL → LUTs) → Implementation (P&R) → Bitstream → Program → On-chip debug with ILA.', key_takeaways: ['.xdc maps ports to physical pins and voltage standards', 'ILA (Integrated Logic Analyzer) captures internal signals for debug', 'Always simulate before touching hardware'] },
         ],
         projects: [
@@ -886,7 +1020,7 @@ R1 out 0 1k
         cs_bridge: 'FFT ↔ divide-and-conquer sorting. FFT is to DFT as mergesort is to sorting. Radix-2 splits N-point DFT into two N/2-point DFTs (even/odd), recurses. Cooley-Tukey 1965 (Gauss knew it in 1805). Same butterfly pattern in JPEG\'s DCT.',
         lessons: [
           { id: 'p5m7l1', title: 'DFT and spectral leakage', type: 'reading', duration_min: 75, summary: 'X[k]=Σx[n]·e^(−j2πkn/N). Bin k ↔ freq f_k=k·f_s/N. Treats x[n] as one period of periodic signal. Energy leaks between bins (spectral leakage). Window (Hann, Hamming, Blackman) reduces leakage at cost of wider main lobe.', key_takeaways: ['Bin k ↔ frequency k·f_s/N', 'Spectral leakage: energy spreads to adjacent bins', 'Windowing reduces leakage but widens main lobe'], has_playground: true },
-          { id: 'p5m7l2', title: 'FFT algorithm: Cooley-Tukey radix-2', type: 'reading', duration_min: 75, summary: 'Split N-point DFT into even/odd N/2-point DFTs. X[k]=E[k]+W_N^k·O[k]. Recurse to 1-point. log₂(N) levels, O(N) work each. Total O(N log N) vs DFT O(N²).', key_takeaways: ['FFT requires N power of 2', 'O(N log N) vs O(N²) for direct DFT', 'Twiddle factors W_N=e^(−j2π/N) precomputed'] },
+          { id: 'p5m7l2', title: 'FFT algorithm: Cooley-Tukey radix-2', type: 'reading', duration_min: 75, summary: 'Split N-point DFT into even/odd N/2-point DFTs. X[k]=E[k]+W_N^k·O[k]. Recurse to 1-point. log₂(N) levels, O(N) work each. Total O(N log N) vs DFT O(N²).', key_takeaways: ['FFT requires N power of 2', 'O(N log N) vs O(N²) for direct DFT', 'Twiddle factors W_N=e^(−j2π/N) precomputed'], has_scope: true },
         ],
         projects: [
           { id: 'p5m7pr1', title: 'Python: Real-Time Audio Spectrum Analyzer', goal: 'Build real-time spectrum analyzer on laptop.', tools: ['Python', 'sounddevice', 'numpy.fft', 'matplotlib'], steps: ['Capture audio from mic using sounddevice', 'Window each 1024-sample block with Hann', 'FFT, plot magnitude in dB vs frequency, 30 fps', 'Whistle, clap, play tone — confirm peaks at right frequencies', 'Extension: waterfall display (time x freq x magnitude)'], pass_criteria: 'Real-time display shows peaks at correct frequencies.', difficulty: 'Intermediate', estimated_hours: 3 },
@@ -1005,7 +1139,19 @@ R1 out 0 1k
       { id: 'p7m2', title: 'Non-Isolated DC-DC Converters', description: 'Buck V_o=D·V_in. Boost V_o=V_in/(1−D). Buck-boost V_o=−D/(1−D)·V_in. CCM vs DCM. Synchronous rectification.',
         duration_hours: 9, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p7m2l1', title: 'Buck, boost, buck-boost topologies', type: 'reading', duration_min: 90, summary: 'Buck: V_o=D·V_in. Boost: V_o=V_in/(1−D). Buck-boost: V_o=−D/(1−D)·V_in. Volt-second balance on L. CCM if I_L never zero; DCM if it does. Synchronous rectification replaces diode with FET for high-current efficiency.', key_takeaways: ['Duty cycle sets conversion ratio', 'Volt-second balance on inductor is the key principle', 'Synchronous rectification for >few amps'] },
+          { id: 'p7m2l1', title: 'Buck, boost, buck-boost topologies', type: 'reading', duration_min: 90, summary: 'Buck: V_o=D·V_in. Boost: V_o=V_in/(1−D). Buck-boost: V_o=−D/(1−D)·V_in. Volt-second balance on L. CCM if I_L never zero; DCM if it does. Synchronous rectification replaces diode with FET for high-current efficiency.', key_takeaways: ['Duty cycle sets conversion ratio', 'Volt-second balance on inductor is the key principle', 'Synchronous rectification for >few amps'], has_heavy_spice: true, heavy_spice_starter: `* Buck converter, 100kHz, 12V to 5V at 2A
+V1 Vin 0 12
+Vpulse gate 0 PULSE(0 12 0 10n 10n 4u 10u)
+M1 Vin gate sw 0 IRFZ44N
+D1 0 sw 1N5822
+L1 sw out 36u
+C1 out 0 50u
+Rload out 0 2.5
+.model IRFZ44N NMOS(Vto=4 Kp=10 Rd=10m)
+.model 1N5822 D(Is=1u N=1.5 Rs=10m Bv=20)
+.tran 100n 200u 0 50n
+.print tran v(out) i(L1) v(gate)
+.end` },
           { id: 'p7m2l2', title: 'Inductor and capacitor sizing', type: 'reading', duration_min: 60, summary: 'L=(V_in−V_o)·D/(ΔI_L·f_sw). C=ΔI_L/(8·ΔV_o·f_sw). Ripple specs drive component sizing.', key_takeaways: ['L sets current ripple', 'C sets voltage ripple', 'Higher f_sw → smaller L and C but more switching loss'] },
         ],
         projects: [
@@ -1104,12 +1250,14 @@ R1 out 0 1k
       { id: 'p8m8', title: 'Modulation: AM, FM, PM, ASK, FSK, PSK, QAM', description: 'AM (envelope, BW=2f_m). FM (phase varies, Carson BW). Digital: BPSK, QPSK, 16-QAM, 64-QAM. Shannon limit C=B·log₂(1+SNR).',
         duration_hours: 8, difficulty: 'Advanced',
         cs_bridge: 'Modulation ↔ encoding scheme. ASK is 1-bit NRZ on amplitude. FSK is two tones (Bell modem). PSK is phase shifts. QAM combines amplitude and phase — 16-QAM = 4 bits/symbol, 256-QAM = 8. Shannon limit C=B·log₂(1+SNR) is the same theoretical bound as in information theory.',
-        lessons: [{ id: 'p8m8l1', title: 'Analog and digital modulation', type: 'reading', duration_min: 90, summary: 'AM: m(t)=(A_c+m·cos ω_m t)·cos ω_c t, envelope. FM: phase varies with m(t), Carson BW=2(β+1)f_m. Digital: BPSK (2 points), QPSK (4 points circle), 16-QAM (4×4 grid). Shannon: C=B·log₂(1+SNR). WiFi 802.11ax uses 1024-QAM (10 bits/symbol).', key_takeaways: ['AM is simple but noise-vulnerable', 'FM has better noise immunity but wider BW', 'Shannon limit: C = B·log₂(1+SNR)', 'QAM spectral efficiency: log₂(M) bits/symbol'] }],
+        lessons: [{ id: 'p8m8l1', title: 'Analog and digital modulation', type: 'reading', duration_min: 90, summary: 'AM: m(t)=(A_c+m·cos ω_m t)·cos ω_c t, envelope. FM: phase varies with m(t), Carson BW=2(β+1)f_m. Digital: BPSK (2 points), QPSK (4 points circle), 16-QAM (4×4 grid). Shannon: C=B·log₂(1+SNR). WiFi 802.11ax uses 1024-QAM (10 bits/symbol).', key_takeaways: ['AM is simple but noise-vulnerable', 'FM has better noise immunity but wider BW', 'Shannon limit: C = B·log₂(1+SNR)', 'QAM spectral efficiency: log₂(M) bits/symbol'], has_scope: true }],
         projects: [], checkpoints: [],
       },
       { id: 'p8m9', title: 'Phase 8 Capstone: FM Transmitter + SDR Receiver', description: 'MAX2606 VCO modulated by audio, transmit on unused FM band (under 100 μW legal). RTL-SDR + GNU Radio demodulator. Optional: FSK digital data.',
         duration_hours: 14, difficulty: 'Advanced',
-        lessons: [],
+        lessons: [
+          { id: 'p8m9l1', title: 'FM transmitter + SDR receiver: IQ recordings walkthrough', type: 'reading', duration_min: 45, summary: 'Before building your own transmitter, study what real RF looks like. IQEngine (embedded below) renders spectrograms and IQ plots from SigMF recordings — the standard open format for sharing SDR captures. Browse the demo recordings (FM broadcast, ADS-B aircraft transponders, LTE cell towers) and identify the modulation type by eye: FM broadcast shows a tall narrow carrier with sidebands spaced by the audio bandwidth; ADS-B is a bursty 1090 MHz OOK pattern; LTE has a wide flat block of resource blocks.', key_takeaways: ['SigMF is the open standard format for sharing SDR captures', 'Spectrogram: time × frequency × power — read it like a waterfall', 'FM broadcast looks like a tall carrier with audio sidebands', 'ADS-B at 1090 MHz is bursty OOK — easy to spot in the spectrogram'], iqengine_url: '' },
+        ],
         projects: [
           { id: 'p8m9pr1', title: 'Phase 8 Capstone: FM Transmitter + SDR Receiver', goal: 'Build FM transmitter and receive your own signal with SDR.', tools: ['MAX2606 VCO or discrete Colpitts', 'audio source', 'RTL-SDR', 'GNU Radio'], steps: ['Transmitter: VCO modulated by audio from phone. Tune to unused FM band (88-108 MHz). Keep power <100 μW legal.', 'Receiver: RTL-SDR + GNU Radio. FM demodulator: bandpass → limit → frequency discriminator → de-emphasis → audio sink', 'Tests: (1) transmit tone, receive, confirm. (2) transmit music, listen. (3) measure SNR. (4) walk away, measure range.', 'Extension: FSK digital data. Send UART byte stream. Demodulate. Compute BER.'], pass_criteria: 'Receive own FM signal at >10 m range; SNR > 20 dB.', difficulty: 'Advanced', estimated_hours: 14 },
         ],

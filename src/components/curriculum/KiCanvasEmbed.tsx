@@ -4,25 +4,71 @@ import * as React from 'react';
 import { ExternalLink, Layers, AlertTriangle } from 'lucide-react';
 
 export interface KiCanvasEmbedProps {
-  /** KiCanvas URL — typically https://kicanvas.org/?src=<file-url>. */
-  src: string;
+  /**
+   * URL to a `.kicad_sch` (or `.kicad_pcb`) file — typically a GitHub raw URL.
+   *
+   * Two forms are accepted:
+   *  - A bare schematic file URL (e.g. a raw.githubusercontent.com URL).
+   *    Wrapped into https://kicanvas.org/?src=<url-encoded>.
+   *  - A full KiCanvas URL (e.g. https://kicanvas.org/?src=...).
+   *    Used verbatim as the iframe src.
+   *
+   * When undefined, a generic KiCanvas demo schematic is shown.
+   */
+  url?: string;
   /** Optional title for the header strip. */
   title?: string;
 }
 
+const KICANVAS_HOST = 'kicanvas.org';
+
+/**
+ * Default demo schematic — a small, publicly-hosted KiCad schematic that
+ * KiCanvas can fetch and render. Used when no `url` is provided.
+ *
+ * (Public KiCad schematics from the KiCanvas / Guava project repos work well
+ *  here — they're MIT-licensed and reliably hosted on GitHub raw.)
+ */
+const DEFAULT_KICAD_URL =
+  'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch';
+
+/**
+ * Build the final iframe src from a user-supplied URL.
+ *
+ * - Full KiCanvas URLs (already on kicanvas.org) pass through verbatim.
+ * - Anything else is treated as a raw schematic file URL and wrapped in
+ *   https://kicanvas.org/?src=<url-encoded>.
+ * - When undefined, falls back to the default demo schematic.
+ */
+function buildSrc(url?: string): string {
+  const target = url ?? DEFAULT_KICAD_URL;
+  try {
+    const u = new URL(target);
+    if (u.hostname === KICANVAS_HOST || u.hostname === `www.${KICANVAS_HOST}`) {
+      return target;
+    }
+  } catch {
+    /* fall through — treat as a bare schematic URL */
+  }
+  return `https://kicanvas.org/?src=${encodeURIComponent(target)}`;
+}
+
 /**
  * Embed the hosted KiCanvas viewer via iframe. KiCanvas parses .kicad_sch and
- * .kicad_pcb files client-side; we host the file on our own origin and let
- * kicanvas.org fetch and render it.
+ * .kicad_pcb files client-side; we let kicanvas.org fetch and render the file.
  *
  * Note: KiCanvas is also available as a web component (bundled from source)
  * for offline/self-hosted use — see Tier 2 of the research doc.
  */
-export function KiCanvasEmbed({ src, title = 'KiCad schematic' }: KiCanvasEmbedProps) {
+export function KiCanvasEmbed({
+  url,
+  title = 'KiCad schematic',
+}: KiCanvasEmbedProps) {
+  const src = React.useMemo(() => buildSrc(url), [url]);
   const isAllowed = React.useMemo(() => {
     try {
       const u = new URL(src);
-      return u.hostname === 'kicanvas.org' || u.hostname === 'www.kicanvas.org';
+      return u.hostname === KICANVAS_HOST || u.hostname === `www.${KICANVAS_HOST}`;
     } catch {
       return false;
     }
@@ -72,6 +118,13 @@ export function KiCanvasEmbed({ src, title = 'KiCad schematic' }: KiCanvasEmbedP
         allow="fullscreen"
         referrerPolicy="no-referrer-when-downgrade"
       />
+      {!url && (
+        <p className="border-t border-border/40 bg-muted/20 px-3 py-2 text-[11px] text-muted-foreground">
+          Showing a generic KiCanvas demo schematic. Set a specific{' '}
+          <code className="ee-mono">.kicad_sch</code> URL on this lesson to
+          embed a project-specific schematic.
+        </p>
+      )}
     </div>
   );
 }

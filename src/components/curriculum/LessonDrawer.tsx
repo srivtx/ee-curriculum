@@ -34,8 +34,11 @@ import { FalstadEmbed } from './FalstadEmbed';
 import { WaveDromDiagram } from './WaveDromDiagram';
 import { BodePlot } from './BodePlot';
 import { SpicePlayground } from './SpicePlayground';
+import { HeavySpicePlayground } from './HeavySpicePlayground';
 import { VerilogPlayground } from './VerilogPlayground';
 import { KiCanvasEmbed } from './KiCanvasEmbed';
+import { WebAudioScope } from './WebAudioScope';
+import { IQEngineEmbed } from './IQEngineEmbed';
 import { cn } from '@/lib/utils';
 
 export interface LessonDrawerPayload {
@@ -281,6 +284,21 @@ function DrawerInner({
             </section>
           )}
 
+          {/* Heavy SPICE Playground (ngspice WASM) — placed above the lightweight
+              spicey playground because it is more capable (real semiconductor
+              models, .op/.dc/.tran/.ac, subcircuits, MOSFET/BJT models). */}
+          {(lesson.has_heavy_spice || lesson.heavy_spice_starter) && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Heavy SPICE (ngspice WASM)
+              </h3>
+              <HeavySpicePlayground
+                starterNetlist={lesson.heavy_spice_starter}
+                lessonTitle={lesson.title}
+              />
+            </section>
+          )}
+
           {/* SPICE Playground */}
           {lesson.spice_netlist && (
             <section>
@@ -294,13 +312,16 @@ function DrawerInner({
             </section>
           )}
 
-          {/* Verilog Playground */}
-          {lesson.verilog && (
+          {/* Verilog HDL Playground (Yosys WASM + digitaljs) */}
+          {(lesson.has_verilog || lesson.verilog || lesson.verilog_starter) && (
             <section>
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Verilog Playground
+                Verilog HDL Playground (Yosys WASM)
               </h3>
-              <VerilogPlayground />
+              <VerilogPlayground
+                starterCode={lesson.verilog_starter}
+                lessonTitle={lesson.title}
+              />
             </section>
           )}
 
@@ -310,7 +331,27 @@ function DrawerInner({
               <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
                 KiCad Schematic
               </h3>
-              <KiCanvasEmbed src={lesson.kicanvas_url} />
+              <KiCanvasEmbed url={lesson.kicanvas_url} />
+            </section>
+          )}
+
+          {/* Web Audio Oscilloscope + Spectrum */}
+          {lesson.has_scope && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                Web Audio Oscilloscope
+              </h3>
+              <WebAudioScope lessonTitle={lesson.title} />
+            </section>
+          )}
+
+          {/* IQEngine SDR Spectrogram */}
+          {lesson.iqengine_url !== undefined && (
+            <section>
+              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                SDR Spectrogram
+              </h3>
+              <IQEngineEmbed recordingUrl={lesson.iqengine_url} />
             </section>
           )}
 

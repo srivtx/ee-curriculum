@@ -7,6 +7,7 @@
     "build": "next build && cp -r .next/static .next/standalone/.next/ && cp -r public .next/standalone/",
     "start": "NODE_ENV=production bun .next/standalone/server.js 2>&1 | tee server.log",
     "lint": "eslint .",
+    "postinstall": "node -e \"require('fs').writeFileSync('node_modules/jquery-ui/themes/base/all.css','/* Patched: jquery-ui non-relative @imports break Turbopack CSS bundling. digitaljs style.css provides all schematic styling we need. */\\n')\"",
     "db:push": "prisma db push --accept-data-loss",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -57,6 +58,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "digitaljs": "^0.14.2",
+    "eecircuit-engine": "^1.8.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.23.2",
     "input-otp": "^1.4.2",
@@ -86,6 +88,7 @@
     "uuid": "^11.1.0",
     "vaul": "^1.1.2",
     "wavedrom": "^3.7.0",
+    "yosys2digitaljs": "^0.10.3",
     "z-ai-web-dev-sdk": "^0.0.18",
     "zod": "^4.0.2",
     "zustand": "^5.0.6"
