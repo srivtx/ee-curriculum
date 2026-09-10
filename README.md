@@ -2,26 +2,27 @@
 
 > A rigorous 12-month, project-based master curriculum that takes a working computer scientist from Ohm's law to field-oriented motor control, FPGA prototyping, and grid-tied solar inverters — without skipping the math, the physics, or the bench time.
 
-**Authored by [srivtx](https://github.com/srivtx)** · MIT Licensed · v2.2 (2026)
+**Authored by [svx](https://github.com/srivtx) (Sribatsha dash)** · MIT Licensed · v3.0 (2026)
 
 ---
 
-![License: MIT](https://img.shields.io/badge/License-MIT-1f6c92.svg?style=flat-square)
+![License: MIT](https://img.shields.io/badge/License-MIT-7FFF9F.svg?style=flat-square)
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg?style=flat-square&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg?style=flat-square&logo=typescript)
 ![Tailwind CSS 4](https://img.shields.io/badge/Tailwind-4-38bdf8.svg?style=flat-square&logo=tailwindcss)
 ![Pyodide](https://img.shields.io/badge/Pyodide-0.26-3776AB.svg?style=flat-square&logo=python)
-![ngspice WASM](https://img.shields.io/badge/ngspice-WASM-8c7443.svg?style=flat-square)
-![Yosys WASM](https://img.shields.io/badge/Yosys-WASM-1f6c92.svg?style=flat-square)
+![ngspice WASM](https://img.shields.io/badge/ngspice-WASM-7FFF9F.svg?style=flat-square)
+![Yosys WASM](https://img.shields.io/badge/Yosys-WASM-7FFF9F.svg?style=flat-square)
 ![Plotly](https://img.shields.io/badge/Plotly.js-interactive-3f4f75.svg?style=flat-square)
 ![WebSerial](https://img.shields.io/badge/WebSerial-real%20hardware-507aa4.svg?style=flat-square)
 ![Web Audio](https://img.shields.io/badge/Web%20Audio-scope%20%26%20FFT-529067.svg?style=flat-square)
 ![PDF](https://img.shields.io/badge/PDF-97%20pages-c23a3a.svg?style=flat-square)
-![Phases](https://img.shields.io/badge/Phases-11-1f6c92.svg?style=flat-square)
+![Phases](https://img.shields.io/badge/Phases-11-7FFF9F.svg?style=flat-square)
 ![Modules](https://img.shields.io/badge/Modules-91-507aa4.svg?style=flat-square)
 ![Lessons](https://img.shields.io/badge/Lessons-140-529067.svg?style=flat-square)
 ![Projects](https://img.shields.io/badge/Projects-52-8c7443.svg?style=flat-square)
 ![Capstones](https://img.shields.io/badge/Capstones-6-a25b54.svg?style=flat-square)
+![Design](https://img.shields.io/badge/Design-x.ai%20inspired%20%2B%20voxel-0a0a0a.svg?style=flat-square)
 
 ---
 
@@ -199,9 +200,11 @@ The fastest path: push to GitHub → import to Vercel → done. No environment v
 | Framework | Next.js 16 (App Router) |
 | Language | TypeScript 5 |
 | Styling | Tailwind CSS 4 + shadcn/ui (New York style) |
+| Design system | v3 — x.ai/grok inspired, dark mode default, `#0a0a0a` canvas, `#7FFF9F` phosphor grass accent |
+| Fonts | Inter (body), JetBrains Mono (labels/code), Source Serif 4 italic (accent), Press Start 2P (pixel phase numbers) |
 | Icons | lucide-react |
 | State | React Context + localStorage (no backend) |
-| Theme | next-themes (dark mode) |
+| Theme | next-themes (dark mode default) |
 | In-browser Python | Pyodide v0.26.2 (loaded from jsDelivr CDN, lazy) |
 | Math rendering | KaTeX + react-katex |
 | Interactive plots | Plotly.js (Bode plots, SPICE waveforms, lazy-loaded) |
@@ -215,32 +218,26 @@ The fastest path: push to GitHub → import to Vercel → done. No environment v
 | Signal generation + scope | Web Audio API (browser-native, zero bundle) |
 | Real hardware | WebSerial API (Chrome/Edge) |
 | PDF generation | ReportLab + Playwright (cover HTML → PDF) + pypdf (merge) |
-| Fonts | Geist Sans + Geist Mono (Next.js font loader) |
 | Package manager | bun (preferred) — npm/pnpm/yarn also work |
 
 ## Roadmap
 
-This is a living project. v2.2 shipped 11 interactive features. Future work (see `research/EE_INTERACTIVE_FEATURES_RECOMMENDATION.md` for the full plan):
+This is a living project. v3.0 shipped a complete redesign (x.ai/grok-inspired design system + voxel motif cover) plus 11 interactive features and 43 expanded lessons. Future work:
 
-**Tier 1 — DONE (v2.1 + v2.2)**
-- [x] KaTeX math rendering for lesson formulas
-- [x] Interactive Bode plot (Plotly.js) with ω_n / ζ sliders and LP/BP/HP selector
-- [x] Falstad/CircuitJS1 iframe embed for visual circuit building
-- [x] WaveDrom timing diagrams for digital logic lessons
-- [x] In-browser SPICE (lightweight) via `spicey` (pure-JS, instant-load)
-- [x] **Heavy SPICE via `eecircuit-engine` (ngspice 46 WASM, 5.7 MB)** — real semiconductor models (1N4148, 2N3904, 2N7000, uA741, IRFZ44N), .op/.dc/.tran/.ac analyses
-- [x] **Verilog HDL playground via `@yowasp/yosys` + `digitaljs`** — real RTL synthesis in browser, gate-level circuit visualization
-- [x] **KiCad schematic viewer via KiCanvas iframe**
-- [x] **Web Audio oscilloscope + FFT spectrum** (browser-native, zero bundle)
-- [x] **IQEngine iframe for SDR spectrograms** (real RF captures: FM, ADS-B, LTE)
-- [x] WebSerial hook + floating hardware-connect button (Chrome/Edge)
+**Done (v3.0)**
+- [x] **v3 design system** — x.ai/grok-inspired: Inter + JetBrains Mono + Source Serif 4 + Press Start 2P fonts, `#0a0a0a` canvas, `#7FFF9F` phosphor grass accent, dark mode default, voxel-grid texture
+- [x] **Voxel motif PDF cover** — half-wave rectifier schematic as 16×8 pixel blocks, "by svx · Sribatsha dash" subtle attribution
+- [x] **"by svx" branding** — subtle colophon-style attribution everywhere, GitHub handle stays `srivtx`
+- [x] **Interactive features integrated into curriculum** — feature badges on lesson rows, filter chips in curriculum view, jump-list in lesson drawer, stats card in dashboard
+- [x] **43 lessons expanded** — Phases 6, 7, 8, 9, 10 summaries and takeaways deepened with concrete examples and numbers
+- [x] KaTeX math rendering, interactive Bode plots, Falstad embed, WaveDrom, spicey SPICE, heavy SPICE (ngspice WASM), Verilog (Yosys WASM), KiCanvas, Web Audio scope, IQEngine SDR, WebSerial
 
-**Tier 2 — nice-to-have (v2.3 target)**
+**Tier 2 — nice-to-have (v3.1 target)**
 - [ ] `@tscircuit/schematic-viewer` for JSX-based circuit snippets
 - [ ] Web Bluetooth for BLE devices (in addition to WebSerial)
 - [ ] Self-hosted CircuitJS1 build (currently iframed from falstad.com)
-- [ ] WaveDrom → SVG export for offline use
 - [ ] Web Worker isolation for long-running SPICE sims (currently main-thread)
+- [ ] Expand Phases 0-5 lesson content to match the depth of Phases 6-10
 
 **Tier 3 — aspirational**
 - [ ] QEMU-WASM for full MCU simulation in browser
@@ -275,9 +272,10 @@ MIT — see [LICENSE](./LICENSE). The curriculum content, code, and PDF are all 
 
 ## Connect
 
-- **Author:** [srivtx](https://github.com/srivtx)
+- **Author:** [svx](https://github.com/srivtx) (Sribatsha dash)
 - **Repository:** [github.com/srivtx/ee-curriculum](https://github.com/srivtx/ee-curriculum)
 - **Issues:** [github.com/srivtx/ee-curriculum/issues](https://github.com/srivtx/ee-curriculum/issues)
+- **Design system:** [`research/DESIGN_SYSTEM_v3.md`](./research/DESIGN_SYSTEM_v3.md) — full spec with hex codes, font tokens, component specs
 
 ---
 

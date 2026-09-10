@@ -2,7 +2,6 @@
 
 import * as React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
 import {
   Accordion,
   AccordionContent,
@@ -44,10 +43,10 @@ export function ProjectCard({
     <AccordionItem
       value={project.id}
       className={cn(
-        'overflow-hidden rounded-lg border bg-card shadow-sm transition-shadow hover:shadow-md',
+        'overflow-hidden rounded-sm border bg-canvas-card transition-colors',
         done
-          ? 'border-ee-green/40 bg-ee-green/[0.03]'
-          : 'border-border/60'
+          ? 'border-accent/40 bg-accent-soft/20'
+          : 'border-hairline'
       )}
     >
       <AccordionTrigger
@@ -55,8 +54,7 @@ export function ProjectCard({
       >
         <span
           aria-hidden
-          className="absolute left-0 top-0 h-full w-1"
-          style={{ backgroundColor: project.phaseColor }}
+          className="absolute left-0 top-0 h-full w-0.5 bg-accent"
         />
         <span
           role="button"
@@ -74,63 +72,63 @@ export function ProjectCard({
               toggleProject(project.id);
             }
           }}
-          className="ml-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ee-teal"
+          className="ml-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           {done ? (
-            <CheckCircle2 className="h-5 w-5 text-ee-green" />
+            <CheckCircle2 className="h-5 w-5 text-accent" />
           ) : (
-            <span className="block h-5 w-5 rounded-full border-2 border-muted-foreground/30 transition-colors hover:border-ee-teal" />
+            <span className="block h-5 w-5 rounded-full border-2 border-body-mid/30 transition-colors hover:border-accent" />
           )}
         </span>
 
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span
-              className="ee-mono text-[10px] font-bold uppercase tracking-wide text-muted-foreground"
-            >
-              P{project.phaseIndex}
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-sm border border-hairline bg-canvas-soft px-1 font-pixel text-[10px] text-accent">
+              {project.phaseIndex}
             </span>
             <h4
               className={cn(
-                'truncate text-sm font-semibold',
+                'truncate text-sm font-normal',
                 done
-                  ? 'text-muted-foreground line-through'
-                  : 'text-foreground'
+                  ? 'text-body-mid line-through'
+                  : 'text-ink'
               )}
             >
               {project.title}
             </h4>
           </div>
-          <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+          <p className="mt-0.5 line-clamp-1 text-xs text-body-mid">
             {project.goal}
           </p>
-          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] text-muted-foreground">
-            <Badge
-              variant="outline"
-              className={cn('border px-1.5 py-0 text-[10px]', ds.badge)}
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-[10px] text-body-mid">
+            <span
+              className={cn(
+                'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px]',
+                ds.badge
+              )}
             >
               <span
                 className={cn(
-                  'mr-1 inline-block h-1.5 w-1.5 rounded-full',
+                  'inline-block h-1.5 w-1.5 rounded-full',
                   ds.dot
                 )}
                 aria-hidden
               />
               {ds.label}
-            </Badge>
+            </span>
             <span className="inline-flex items-center gap-0.5">
               <Clock className="h-2.5 w-2.5" />
               {formatHours(project.estimated_hours)}
             </span>
             <span className="hidden sm:inline">·</span>
-            <span className="hidden truncate text-muted-foreground/70 sm:inline">
+            <span className="hidden truncate text-body-mid/70 sm:inline">
               {project.phaseTitle} / {project.moduleTitle}
             </span>
           </div>
         </div>
 
         <ChevronRight
-          className="h-4 w-4 shrink-0 text-muted-foreground/50"
+          className="h-4 w-4 shrink-0 text-body-mid/50"
           aria-hidden
         />
       </AccordionTrigger>
@@ -138,20 +136,18 @@ export function ProjectCard({
       <AccordionContent className="px-4 pb-4 pt-1">
         <div className="space-y-3">
           {/* Goal */}
-          <div className="rounded-md border border-ee-teal/20 bg-ee-teal/5 px-3 py-2">
-            <div className="flex items-center gap-1.5 text-ee-teal-dark dark:text-ee-teal">
+          <div className="rounded-sm border-l-2 border-accent bg-accent-soft/20 px-3 py-2">
+            <div className="flex items-center gap-1.5 text-accent">
               <Target className="h-3.5 w-3.5" aria-hidden />
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em]">
-                Goal
-              </span>
+              <span className="eyebrow text-[11px]">Goal</span>
             </div>
-            <p className="mt-1 text-xs text-foreground/85">{project.goal}</p>
+            <p className="mt-1 text-xs text-body">{project.goal}</p>
           </div>
 
           {/* Tools */}
           {project.tools.length > 0 && (
             <div>
-              <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              <div className="eyebrow mb-1.5 flex items-center gap-1.5 text-[11px] text-body-mid">
                 <Wrench className="h-3 w-3" />
                 Tools
               </div>
@@ -159,7 +155,7 @@ export function ProjectCard({
                 {project.tools.map((t) => (
                   <span
                     key={t}
-                    className="rounded border border-border/60 bg-muted/40 px-1.5 py-0.5 text-[11px] text-foreground/80"
+                    className="rounded-full border border-hairline bg-canvas px-2 py-0.5 text-[11px] text-body"
                   >
                     {t}
                   </span>
@@ -171,7 +167,7 @@ export function ProjectCard({
           {/* Steps */}
           {project.steps.length > 0 && (
             <div>
-              <div className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              <div className="eyebrow mb-1.5 flex items-center gap-1.5 text-[11px] text-body-mid">
                 <ListChecks className="h-3 w-3" />
                 Steps
               </div>
@@ -179,10 +175,10 @@ export function ProjectCard({
                 {project.steps.map((s, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 text-xs text-foreground/85"
+                    className="flex items-start gap-2 text-xs text-body"
                   >
                     <span
-                      className="mt-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-ee-teal/15 px-1 text-[10px] font-bold text-ee-teal-dark dark:text-ee-teal"
+                      className="mt-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent/15 px-1 text-[10px] text-accent"
                       aria-hidden
                     >
                       {i + 1}
@@ -195,23 +191,19 @@ export function ProjectCard({
           )}
 
           {/* Pass criteria */}
-          <div className="rounded-md border border-ee-amber/30 bg-ee-amber/5 px-3 py-2">
-            <div className="flex items-center gap-1.5 text-ee-amber">
+          <div className="rounded-sm border-l-2 border-warning bg-accent-soft/20 px-3 py-2">
+            <div className="flex items-center gap-1.5 text-warning">
               <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em]">
-                Pass criteria
-              </span>
+              <span className="eyebrow text-[11px]">Pass criteria</span>
             </div>
-            <p className="mt-1 text-xs text-foreground/85">
-              {project.pass_criteria}
-            </p>
+            <p className="mt-1 text-xs text-body">{project.pass_criteria}</p>
           </div>
 
           {/* Footer: completion toggle (mobile-friendly) */}
           <label
             className={cn(
-              'flex cursor-pointer items-center gap-2 rounded-md border border-border/50 px-3 py-2 text-xs transition-colors hover:bg-muted/40',
-              done && 'border-ee-green/30 bg-ee-green/5'
+              'flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 text-xs transition-colors hover:bg-canvas-soft',
+              done ? 'border-accent/30 bg-accent/5' : 'border-hairline'
             )}
           >
             <Checkbox
@@ -221,13 +213,12 @@ export function ProjectCard({
             />
             <span
               className={cn(
-                'font-medium',
-                done ? 'text-ee-green' : 'text-foreground/80'
+                done ? 'text-accent' : 'text-body'
               )}
             >
               {done ? 'Completed' : 'Mark as completed'}
             </span>
-            <span className="ml-auto ee-mono text-[10px] text-muted-foreground">
+            <span className="ml-auto ee-mono text-[10px] text-body-mid">
               {formatHours(project.estimated_hours)}
             </span>
           </label>

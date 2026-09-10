@@ -7,7 +7,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   CheckCircle2,
@@ -16,8 +15,6 @@ import {
   Layers,
   ListChecks,
   Target,
-  Terminal,
-  CircuitBoard,
   Clock,
   Lightbulb,
 } from 'lucide-react';
@@ -30,15 +27,22 @@ import {
 } from './helpers';
 import { useProgress } from '@/hooks/useProgress';
 import { cn } from '@/lib/utils';
+import { FeatureBadges } from './FeatureBadges';
+import { getLessonFeatures } from './lessonFeatures';
 
 export function ModuleAccordion({
   module,
-  phaseColor,
   onOpenLesson,
+  featureFilter,
 }: {
   module: Module;
-  phaseColor: string;
+  /** Per-phase color is retired in v3 — kept in the signature for callers
+   *  that still pass it; ignored. */
+  phaseColor?: string;
   onOpenLesson: (lesson: Lesson) => void;
+  /** Optional set of feature keys; lessons matching any key get a subtle
+   *  accent highlight on the row. */
+  featureFilter?: Set<string> | null;
 }) {
   const { isLessonDone, state } = useProgress();
   const doneLessons = module.lessons.filter((l) => isLessonDone(l.id)).length;
@@ -51,53 +55,46 @@ export function ModuleAccordion({
   return (
     <AccordionItem
       value={module.id}
-      className="overflow-hidden rounded-lg border border-border/60 bg-card px-0 shadow-sm first:rounded-t-lg last:rounded-b-lg"
+      className="overflow-hidden rounded-sm border border-hairline bg-canvas-card first:rounded-t-sm last:rounded-b-sm"
     >
       <AccordionTrigger
         className={cn(
-          'ee-accordion-trigger group relative grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 text-left hover:bg-muted/40',
-          '[&[data-state=open]]:bg-muted/40'
+          'ee-accordion-trigger group relative grid grid-cols-[auto_1fr_auto] items-center gap-3 px-4 py-3 text-left hover:bg-canvas-soft',
+          '[&[data-state=open]]:bg-canvas-soft'
         )}
       >
-        {/* phase color accent strip */}
         <span
-          aria-hidden
-          className="absolute left-0 top-0 h-full w-1"
-          style={{ backgroundColor: phaseColor }}
-        />
-        <span
-          className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-border/60 bg-muted/40"
+          className="ml-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-hairline bg-canvas-soft"
           aria-hidden
         >
-          <Layers className="h-4 w-4 text-muted-foreground" />
+          <Layers className="h-4 w-4 text-body-mid" />
         </span>
 
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h4 className="truncate text-sm font-semibold text-foreground">
+            <h4 className="truncate text-base font-normal text-ink">
               {module.title}
             </h4>
-            <Badge
-              variant="outline"
+            <span
               className={cn(
-                'shrink-0 border px-1.5 py-0 text-[10px] font-medium',
+                'inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px]',
                 DIFFICULTY_STYLES[module.difficulty].badge
               )}
             >
               <span
                 className={cn(
-                  'mr-1 inline-block h-1.5 w-1.5 rounded-full',
+                  'inline-block h-1.5 w-1.5 rounded-full',
                   DIFFICULTY_STYLES[module.difficulty].dot
                 )}
                 aria-hidden
               />
               {DIFFICULTY_STYLES[module.difficulty].label}
-            </Badge>
+            </span>
           </div>
-          <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+          <p className="mt-0.5 line-clamp-1 text-xs text-body-mid">
             {module.description}
           </p>
-          <div className="mt-1.5 flex items-center gap-3 text-[11px] text-muted-foreground">
+          <div className="mt-1.5 flex items-center gap-3 text-[11px] text-body-mid">
             <span className="inline-flex items-center gap-1">
               <Clock className="h-3 w-3" />
               {formatHours(module.duration_hours)}
@@ -123,12 +120,12 @@ export function ModuleAccordion({
 
         {/* Progress mini */}
         <div className="hidden flex-col items-end gap-1 pr-2 sm:flex">
-          <span className="ee-mono text-[10px] tabular-nums text-muted-foreground">
+          <span className="ee-mono text-[10px] tabular-nums text-body-mid">
             {doneLessons}/{totalLessons} lessons
           </span>
           <Progress
             value={pct}
-            className="h-1.5 w-24 bg-muted [&>div]:bg-ee-teal"
+            className="h-1.5 w-24 bg-canvas-mid [&>div]:bg-accent"
           />
         </div>
       </AccordionTrigger>
@@ -137,32 +134,43 @@ export function ModuleAccordion({
         <div className="grid gap-3">
           {/* CS BRIDGE callout (module-level) */}
           {module.cs_bridge && (
-            <Callout variant="amber" icon={Lightbulb} title="CS BRIDGE — Module">
+            <Callout variant="accent" icon={Lightbulb} title="CS BRIDGE — Module">
               {module.cs_bridge}
             </Callout>
           )}
 
           {/* Lessons */}
           {module.lessons.length > 0 && (
-            <div className="rounded-md border border-border/50 bg-background/60">
-              <div className="flex items-center justify-between border-b border-border/40 px-3 py-1.5">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-sm border border-hairline bg-canvas">
+              <div className="flex items-center justify-between border-b border-hairline px-3 py-1.5">
+                <span className="eyebrow text-[11px] text-body-mid">
                   Lessons
                 </span>
-                <span className="ee-mono text-[10px] text-muted-foreground">
+                <span className="ee-mono text-[10px] text-body-mid">
                   {doneLessons}/{totalLessons}
                 </span>
               </div>
-              <ul className="divide-y divide-border/30">
+              <ul>
                 {module.lessons.map((lesson) => {
                   const meta = LESSON_TYPE_META[lesson.type];
                   const done = isLessonDone(lesson.id);
                   const Icon = meta.icon;
+                  const feats = getLessonFeatures(lesson, module.cs_bridge);
+                  const matchesFilter =
+                    !featureFilter ||
+                    featureFilter.size === 0 ||
+                    feats.some((f) => featureFilter.has(f.key));
                   return (
-                    <li key={lesson.id}>
+                    <li key={lesson.id} className="border-t border-hairline first:border-t-0">
                       <button
                         onClick={() => onOpenLesson(lesson)}
-                        className="group flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors hover:bg-ee-teal/5"
+                        className={cn(
+                          'group flex w-full items-center gap-2.5 px-3 py-2 text-left transition-colors duration-150',
+                          matchesFilter
+                            ? 'bg-accent-soft/20 hover:bg-canvas-soft'
+                            : 'hover:bg-canvas-soft',
+                          !matchesFilter && featureFilter && featureFilter.size > 0 && 'opacity-50'
+                        )}
                       >
                         <Icon
                           className={cn(
@@ -175,49 +183,34 @@ export function ModuleAccordion({
                           <span className="flex items-center gap-1.5">
                             <span
                               className={cn(
-                                'truncate text-sm font-medium',
+                                'truncate text-sm',
                                 done
-                                  ? 'text-muted-foreground line-through'
-                                  : 'text-foreground'
+                                  ? 'text-body-mid line-through'
+                                  : 'text-ink'
                               )}
                             >
                               {lesson.title}
                             </span>
-                            {lesson.has_playground && (
-                              <span
-                                title="Interactive Python playground"
-                                className="inline-flex items-center gap-0.5 rounded border border-ee-teal/30 bg-ee-teal/10 px-1 py-px text-[9px] font-medium uppercase text-ee-teal dark:text-ee-teal"
-                              >
-                                <Terminal className="h-2.5 w-2.5" />
-                                Py
-                              </span>
-                            )}
-                            {lesson.has_circuit && (
-                              <span
-                                title="Circuit visualization available"
-                                className="inline-flex items-center gap-0.5 rounded border border-ee-cyan/30 bg-ee-cyan/10 px-1 py-px text-[9px] font-medium uppercase text-ee-cyan dark:text-ee-cyan"
-                              >
-                                <CircuitBoard className="h-2.5 w-2.5" />
-                                CKT
-                              </span>
-                            )}
                           </span>
-                          <span className="mt-0.5 flex items-center gap-2 text-[10px] text-muted-foreground">
-                            <span className="uppercase tracking-wider">
-                              {meta.label}
-                            </span>
+                          <span className="mt-0.5 flex items-center gap-2 text-[10px] text-body-mid">
+                            <span className="eyebrow">{meta.label}</span>
                             <span>·</span>
                             <span>{formatDuration(lesson.duration_min)}</span>
                           </span>
                         </span>
+                        {/* Feature badges — compact icon pills with tooltips */}
+                        <FeatureBadges
+                          features={feats}
+                          className="shrink-0"
+                        />
                         {done ? (
                           <CheckCircle2
-                            className="h-4 w-4 shrink-0 text-ee-green"
+                            className="h-4 w-4 shrink-0 text-accent"
                             aria-label="Completed"
                           />
                         ) : (
                           <ChevronRight
-                            className="h-4 w-4 shrink-0 text-muted-foreground/50 transition-transform group-hover:translate-x-0.5"
+                            className="h-4 w-4 shrink-0 text-body-mid/50 transition-transform group-hover:translate-x-0.5"
                             aria-hidden
                           />
                         )}
@@ -231,56 +224,55 @@ export function ModuleAccordion({
 
           {/* Projects */}
           {module.projects.length > 0 && (
-            <div className="rounded-md border border-border/50 bg-background/60">
-              <div className="flex items-center justify-between border-b border-border/40 px-3 py-1.5">
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <div className="rounded-sm border border-hairline bg-canvas">
+              <div className="flex items-center justify-between border-b border-hairline px-3 py-1.5">
+                <span className="eyebrow text-[11px] text-body-mid">
                   Projects
                 </span>
-                <span className="ee-mono text-[10px] text-muted-foreground">
+                <span className="ee-mono text-[10px] text-body-mid">
                   {doneProjects}/{module.projects.length}
                 </span>
               </div>
-              <ul className="divide-y divide-border/30">
+              <ul>
                 {module.projects.map((p) => {
                   const done = state.completedProjects.includes(p.id);
                   const ds = DIFFICULTY_STYLES[p.difficulty];
                   return (
                     <li
                       key={p.id}
-                      className="flex items-start gap-2 px-3 py-2"
+                      className="flex items-start gap-2 border-t border-hairline px-3 py-2 first:border-t-0"
                     >
                       <Target
                         className={cn(
                           'mt-0.5 h-3.5 w-3.5 shrink-0',
-                          done ? 'text-ee-green' : 'text-muted-foreground'
+                          done ? 'text-accent' : 'text-body-mid'
                         )}
                         aria-hidden
                       />
                       <div className="min-w-0 flex-1">
                         <p
                           className={cn(
-                            'text-sm font-medium',
+                            'text-sm',
                             done
-                              ? 'text-muted-foreground line-through'
-                              : 'text-foreground'
+                              ? 'text-body-mid line-through'
+                              : 'text-ink'
                           )}
                         >
                           {p.title}
                         </p>
-                        <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">
+                        <p className="mt-0.5 line-clamp-1 text-xs text-body-mid">
                           {p.goal}
                         </p>
                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                          <Badge
-                            variant="outline"
+                          <span
                             className={cn(
-                              'border px-1.5 py-0 text-[10px]',
+                              'inline-flex items-center rounded-full border px-2 py-0.5 text-[10px]',
                               ds.badge
                             )}
                           >
                             {ds.label}
-                          </Badge>
-                          <span className="text-[10px] text-muted-foreground">
+                          </span>
+                          <span className="text-[10px] text-body-mid">
                             {formatHours(p.estimated_hours)}
                           </span>
                         </div>
@@ -294,9 +286,9 @@ export function ModuleAccordion({
 
           {/* Checkpoints summary */}
           {module.checkpoints.length > 0 && (
-            <div className="flex items-center gap-2 rounded-md border border-ee-amber/20 bg-ee-amber/5 px-3 py-2 text-xs">
-              <ListChecks className="h-3.5 w-3.5 text-ee-amber" aria-hidden />
-              <span className="text-foreground/80">
+            <div className="flex items-center gap-2 rounded-sm border-l-2 border-accent bg-accent-soft/20 px-3 py-2 text-xs">
+              <ListChecks className="h-3.5 w-3.5 text-accent" aria-hidden />
+              <span className="text-body">
                 <span className="font-medium">{module.checkpoints.length}</span>{' '}
                 self-test checkpoints — open the Checkpoints tab to drill them.
               </span>
@@ -314,35 +306,18 @@ function Callout({
   title,
   children,
 }: {
-  variant: 'amber' | 'teal' | 'cyan';
+  variant: 'accent';
   icon: React.ComponentType<{ className?: string }>;
   title: string;
   children: React.ReactNode;
 }) {
-  const styles = {
-    amber: 'border-ee-amber/30 bg-ee-amber/8 text-foreground',
-    teal: 'border-ee-teal/30 bg-ee-teal/8 text-foreground',
-    cyan: 'border-ee-cyan/30 bg-ee-cyan/8 text-foreground',
-  }[variant];
-  const iconColor = {
-    amber: 'text-ee-amber',
-    teal: 'text-ee-teal',
-    cyan: 'text-ee-cyan',
-  }[variant];
   return (
-    <div className={cn('rounded-md border px-3 py-2.5', styles)}>
+    <div className="rounded-sm border-l-2 border-accent bg-accent-soft/20 px-3 py-2.5">
       <div className="flex items-center gap-1.5">
-        <Icon className={cn('h-3.5 w-3.5', iconColor)} aria-hidden />
-        <span
-          className={cn(
-            'text-[10px] font-bold uppercase tracking-[0.16em]',
-            iconColor
-          )}
-        >
-          {title}
-        </span>
+        <Icon className="h-3.5 w-3.5 text-accent" aria-hidden />
+        <span className="eyebrow text-[11px] text-accent">{title}</span>
       </div>
-      <p className="mt-1.5 text-xs leading-relaxed text-foreground/80">
+      <p className="mt-1.5 text-xs leading-relaxed text-body">
         {children}
       </p>
     </div>

@@ -312,10 +312,10 @@ export function SpicePlayground({ netlist, title = 'SPICE Playground' }: SpicePl
   }, [plotData]);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-amber/40 bg-background">
-      <div className="flex items-center gap-2 border-b border-border/60 bg-ee-amber/10 px-3 py-2">
-        <Zap className="h-4 w-4 text-ee-amber" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-amber">
+    <div className="overflow-hidden rounded-sm border border-warning/40 bg-background">
+      <div className="flex items-center gap-2 border-b border-border/60 bg-warning/10 px-3 py-2">
+        <Zap className="h-4 w-4 text-warning" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-warning">
           {title}
         </span>
         <span className="text-[10px] text-muted-foreground">
@@ -336,7 +336,7 @@ export function SpicePlayground({ netlist, title = 'SPICE Playground' }: SpicePl
             size="sm"
             onClick={handleRun}
             disabled={isBusy}
-            className="h-7 gap-1 bg-ee-amber px-3 text-xs font-semibold text-white hover:bg-ee-amber/90"
+            className="h-7 gap-1 bg-warning px-3 text-xs font-semibold text-white hover:bg-warning/90"
           >
             {isBusy ? (
               <>
@@ -410,9 +410,9 @@ export function SpicePlayground({ netlist, title = 'SPICE Playground' }: SpicePl
       </div>
 
       {opTable && (
-        <div className="border-t border-border/60 bg-ee-amber/5">
-          <div className="border-b border-ee-amber/20 px-3 py-1.5">
-            <span className="ee-mono text-[10px] uppercase tracking-wider text-ee-amber">
+        <div className="border-t border-border/60 bg-warning/5">
+          <div className="border-b border-warning/20 px-3 py-1.5">
+            <span className="ee-mono text-[10px] uppercase tracking-wider text-warning">
               DC Operating Point
             </span>
           </div>

@@ -3,113 +3,229 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ────────────────────────────────────────────────────────────────────────
+   Design System v3 — x.ai/Grok + voxel schematic + Phosphor Grass (#7FFF9F)
+   See: research/DESIGN_SYSTEM_v3.md
+   - Dark mode is the default (`:root` block).
+   - Light mode is the explicit `.light` override (toggled via next-themes).
+   - shadcn/ui aliases are kept in sync so existing components keep working.
+   ──────────────────────────────────────────────────────────────────────── */
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
+  /* Font aliases — Inter (body), JetBrains Mono (code/captions),
+     Press Start 2P (phase numbers only), Source Serif 4 (cover accent).
+     The next/font/google loader in layout.tsx sets --font-inter,
+     --font-jetbrains, --font-serif, --font-pixel as runtime CSS variables
+     on <body>. We expose them here as Tailwind --font-sans / --font-mono /
+     --font-serif / --font-pixel tokens so utilities like `font-sans`,
+     `font-mono`, `font-serif`, `font-pixel` resolve to the next/font value. */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-jetbrains);
+  --font-serif: var(--font-serif);
+  --font-pixel: var(--font-pixel);
+
+  /* shadcn/ui compatibility aliases (flip with .light) */
+  --color-background: var(--canvas);
+  --color-foreground: var(--ink);
+  --color-card: var(--canvas-card);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--canvas-soft);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--canvas);
+  --color-secondary: var(--canvas-mid);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--canvas-mid);
+  --color-muted-foreground: var(--body-mid);
   --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: var(--error);
+  --color-border: var(--hairline);
+  --color-input: var(--canvas-mid);
+  --color-ring: var(--accent);
+
+  /* v3 design tokens */
+  --color-canvas: var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-canvas-card: var(--canvas-card);
+  --color-canvas-mid: var(--canvas-mid);
+  --color-hairline: var(--hairline);
+  --color-ink: var(--ink);
+  --color-body: var(--body);
+  --color-body-mid: var(--body-mid);
+  --color-mute: var(--mute);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  /* Radius scale — only 0 (sharp), 8px (sm), 9999px (pill). */
+  --radius-sm: 8px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+
+  /* Type scale tokens (Tailwind v4 generates utilities like text-display-lg) */
+  --text-display-2xl: 72px;
+  --text-display-2xl--line-height: 76px;
+  --text-display-2xl--letter-spacing: -1.8px;
+  --text-display-xl: 56px;
+  --text-display-xl--line-height: 60px;
+  --text-display-xl--letter-spacing: -1.4px;
+  --text-display-lg: 40px;
+  --text-display-lg--line-height: 44px;
+  --text-display-lg--letter-spacing: -1.0px;
+  --text-display-md: 32px;
+  --text-display-md--line-height: 36px;
+  --text-display-md--letter-spacing: -0.6px;
+  --text-display-sm: 24px;
+  --text-display-sm--line-height: 28px;
+  --text-display-sm--letter-spacing: -0.3px;
+  --text-display-xs: 20px;
+  --text-display-xs--line-height: 28px;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 20px;
+  --text-caption-mono: 14px;
+  --text-caption-mono--line-height: 20px;
+  --text-caption-mono--letter-spacing: 1.4px;
+  --text-caption-mono-sm: 12px;
+  --text-caption-mono-sm--line-height: 16px;
+  --text-caption-mono-sm--letter-spacing: 1.2px;
 }
 
+/* ── Dark mode (DEFAULT) ── ──────────────────────────────────────────── */
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --radius: 8px;
+
+  /* Font CSS variables. The fonts themselves are loaded by next/font/google
+     in layout.tsx (Inter, JetBrains Mono, Source Serif 4, Press Start 2P),
+     which injects the @font-face rules and sets --font-inter / --font-jetbrains
+     / --font-serif / --font-pixel on <body>. We use LITERAL family names here
+     (not var(--font-inter)) because custom-property inheritance resolves at
+     :root scope, where the body-scoped next/font vars are not yet visible —
+     referencing them here would make --font-sans invalid at :root and the
+     inherited value on <body> would also be invalid, causing the browser to
+     fall back to its default sans. The @font-face rules next/font injects
+     make 'Inter' / 'JetBrains Mono' resolvable as literal family names.
+     --font-serif and --font-pixel are also literal fallbacks; the next/font
+     vars on <body> override them at runtime for body descendants. */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-serif: 'Source Serif 4', Georgia, serif;
+
+  --canvas:          oklch(0.145 0 0);            /* #0a0a0a */
+  --canvas-soft:     oklch(0.20 0.005 250);        /* #1a1c20 */
+  --canvas-card:     oklch(0.18 0 0);             /* #191919 */
+  --canvas-mid:      oklch(0.27 0.005 250);        /* #26282c */
+  --hairline:        oklch(0.22 0.005 250);        /* #212327 */
+
+  --ink:             oklch(1 0 0);                /* #ffffff */
+  --body:            oklch(0.88 0.005 250);        /* #dadbdf */
+  --body-mid:        oklch(0.70 0.01 250);         /* #9aa0a8 */
+  --mute:            oklch(0.50 0.01 250);         /* #6a7079 */
+
+  --accent:          oklch(0.91 0.21 144);         /* #7FFF9F phosphor grass */
+  --accent-soft:     oklch(0.40 0.08 144);         /* #2d5a3a */
+  --success:         var(--accent);
+  --warning:         oklch(0.82 0.13 70);          /* #FFB347 */
+  --error:           oklch(0.71 0.19 25);          /* #FF6B6B */
+  --info:            oklch(0.82 0.04 240);         /* #A0C3EC */
+
+  /* shadcn/ui compatibility aliases (flip with .light) */
+  --background:      var(--canvas);
+  --foreground:      var(--ink);
+  --card:            var(--canvas-card);
+  --card-foreground: var(--ink);
+  --popover:         var(--canvas-soft);
+  --popover-foreground: var(--ink);
+  --primary:         var(--accent);
+  --primary-foreground: var(--canvas);
+  --secondary:       var(--canvas-mid);
+  --secondary-foreground: var(--ink);
+  --muted:           var(--canvas-mid);
+  --muted-foreground: var(--body-mid);
+  --accent-foreground: var(--ink);
+  --destructive:     var(--error);
+  --border:          var(--hairline);
+  --input:           var(--canvas-mid);
+  --ring:            var(--accent);
+
+  /* sidebar aliases (kept for sidebar.tsx shadcn component) */
+  --sidebar:                  var(--canvas-card);
+  --sidebar-foreground:       var(--ink);
+  --sidebar-primary:          var(--accent);
+  --sidebar-primary-foreground: var(--canvas);
+  --sidebar-accent:           var(--canvas-soft);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border:           var(--hairline);
+  --sidebar-ring:             var(--accent);
+
+  /* chart palette — phosphor + neutrals */
+  --chart-1: oklch(0.91 0.21 144); /* accent green */
+  --chart-2: oklch(0.70 0.01 250); /* body-mid */
+  --chart-3: oklch(0.50 0.01 250); /* mute */
+  --chart-4: oklch(0.82 0.13 70);  /* warning */
+  --chart-5: oklch(0.71 0.19 25);  /* error */
 }
 
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+/* ── Light mode (explicit toggle) ───────────────────────────────────── */
+.light {
+  --canvas:          oklch(0.985 0.002 90);       /* #fafaf7 */
+  --canvas-soft:     oklch(0.96 0.003 90);         /* #f0f1ee */
+  --canvas-card:     oklch(1 0 0);                /* #ffffff */
+  --canvas-mid:      oklch(0.93 0.003 90);         /* #e8eae6 */
+  --hairline:        oklch(0.90 0.003 90);         /* #e0e2dc */
+
+  --ink:             oklch(0.145 0 0);            /* #0a0a0a */
+  --body:            oklch(0.27 0.005 250);        /* #2a2d31 */
+  --body-mid:        oklch(0.50 0.01 250);         /* #52575e */
+  --mute:            oklch(0.65 0.01 250);         /* #7a808a */
+
+  --accent:          oklch(0.50 0.15 144);         /* #1f8a3d */
+  --accent-soft:     oklch(0.93 0.03 144);         /* #d8f0de */
+  --success:         var(--accent);
+  --warning:         oklch(0.55 0.13 70);          /* #9c5a00 */
+  --error:           oklch(0.50 0.18 25);          /* #b03030 */
+  --info:            oklch(0.45 0.10 240);         /* #1a4f7a */
+
+  --background:      var(--canvas);
+  --foreground:      var(--ink);
+  --card:            var(--canvas-card);
+  --card-foreground: var(--ink);
+  --popover:         var(--canvas-soft);
+  --popover-foreground: var(--ink);
+  --primary:         var(--accent);
+  --primary-foreground: var(--canvas);
+  --secondary:       var(--canvas-mid);
+  --secondary-foreground: var(--ink);
+  --muted:           var(--canvas-mid);
+  --muted-foreground: var(--body-mid);
+  --accent-foreground: var(--ink);
+  --destructive:     var(--error);
+  --border:          var(--hairline);
+  --input:           var(--canvas-mid);
+  --ring:            var(--accent);
+
+  --sidebar:                  var(--canvas-card);
+  --sidebar-foreground:       var(--ink);
+  --sidebar-primary:          var(--accent);
+  --sidebar-primary-foreground: var(--canvas);
+  --sidebar-accent:           var(--canvas-soft);
+  --sidebar-accent-foreground: var(--ink);
+  --sidebar-border:           var(--hairline);
+  --sidebar-ring:             var(--accent);
+
+  --chart-1: oklch(0.50 0.15 144);
+  --chart-2: oklch(0.50 0.01 250);
+  --chart-3: oklch(0.65 0.01 250);
+  --chart-4: oklch(0.55 0.13 70);
+  --chart-5: oklch(0.50 0.18 25);
 }
 
 @layer base {
@@ -118,61 +234,43 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-sans);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+  /* Pixel-font utility — only used on phase numbers (≤16px). */
+  .font-pixel {
+    font-family: var(--font-pixel);
+    font-feature-settings: normal;
+  }
+  /* Mono caption eyebrow — uppercase, positively tracked. */
+  .eyebrow {
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-weight: 400;
   }
 }
 
-/* ── Engineering blueprint theme additions ─────────────────────────── */
-
-:root {
-  /* Engineering palette overrides (slate/teal/amber) */
-  --ee-teal: oklch(0.62 0.13 184);
-  --ee-teal-dark: oklch(0.45 0.10 184);
-  --ee-amber: oklch(0.72 0.16 70);
-  --ee-green: oklch(0.60 0.13 150);
-  --ee-red: oklch(0.58 0.22 25);
-  --ee-cyan: oklch(0.65 0.11 215);
-  --ee-slate: oklch(0.27 0.02 250);
+/* ── Voxel grid background texture (§8.10 + task D1) ────────────────────
+   24px voxel grid rendered as an SVG data URL: a single low-opacity
+   phosphor-green dot at each grid intersection. The SVG tile is 24×24
+   with the circle centered at (0,0) so that when tiled, the four corner
+   quarters merge into one full dot at every intersection — a seamless
+   dot grid. fill-opacity 0.08 reads as ~3% on the #0a0a0a canvas (very
+   subtle, engineering-blueprint feel). Use only on hero sections — never
+   on cards or drawers. */
+.voxel-grid {
+  background-color: var(--canvas);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='0' cy='0' r='1.5' fill='%237FFF9F' fill-opacity='0.08'/%3E%3C/svg%3E");
+  background-size: 24px 24px;
+  background-position: 0 0;
 }
 
-.dark {
-  --ee-teal: oklch(0.70 0.13 184);
-  --ee-teal-dark: oklch(0.55 0.10 184);
-  --ee-amber: oklch(0.78 0.16 70);
-  --ee-green: oklch(0.70 0.13 150);
-  --ee-red: oklch(0.68 0.22 25);
-  --ee-cyan: oklch(0.72 0.11 215);
-}
-
-/* Tailwind v4 — register custom color utilities */
-@theme inline {
-  --color-ee-teal: var(--ee-teal);
-  --color-ee-teal-dark: var(--ee-teal-dark);
-  --color-ee-amber: var(--ee-amber);
-  --color-ee-green: var(--ee-green);
-  --color-ee-red: var(--ee-red);
-  --color-ee-cyan: var(--ee-cyan);
-  --color-ee-slate: var(--ee-slate);
-}
-
-/* Blueprint grid background — used on hero / dashboard */
-.ee-blueprint {
-  background-color: oklch(0.99 0.005 200);
-  background-image:
-    linear-gradient(rgba(13, 148, 136, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13, 148, 136, 0.07) 1px, transparent 1px),
-    linear-gradient(rgba(13, 148, 136, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13, 148, 136, 0.04) 1px, transparent 1px);
-  background-size: 48px 48px, 48px 48px, 8px 8px, 8px 8px;
-  background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
-}
-
-.dark .ee-blueprint {
-  background-color: oklch(0.16 0.01 250);
-  background-image:
-    linear-gradient(rgba(45, 212, 191, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 212, 191, 0.08) 1px, transparent 1px),
-    linear-gradient(rgba(45, 212, 191, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(45, 212, 191, 0.04) 1px, transparent 1px);
+/* Voxel "EE" monogram — 16×16 pixel art, accent on canvas.
+   Used in Header + Footer. Scales crisply via SVG. */
+.ee-monogram {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
 /* Custom scrollbar for long lists */
@@ -184,29 +282,56 @@
   background: transparent;
 }
 .ee-scroll::-webkit-scrollbar-thumb {
-  background-color: oklch(0.70 0.03 200 / 0.4);
+  background-color: var(--canvas-mid);
   border-radius: 8px;
 }
 .ee-scroll::-webkit-scrollbar-thumb:hover {
-  background-color: oklch(0.60 0.08 184 / 0.6);
+  background-color: var(--accent-soft);
 }
 
-/* Monospace formula inline */
+/* Mono utility */
 .ee-mono {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
 }
 
-/* Subtle technical accent for code editor textarea */
+/* Code editor textarea */
 .ee-code-editor {
-  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   line-height: 1.55;
   tab-size: 4;
 }
 
-/* Hide default focus rings on Radix accordion but keep accessible outline */
+/* Accordion focus ring uses the brand accent */
 .ee-accordion-trigger:focus-visible {
-  outline: 2px solid var(--ee-teal);
+  outline: 2px solid var(--accent);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 8px;
+}
+
+/* Tooltip content override — the shadcn default uses primary bg, which
+   is the accent. On dark mode that's phosphor green (too loud for
+   tooltips). Use canvas-soft instead. */
+[data-slot="tooltip-content"] {
+  background-color: var(--canvas-soft) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+}
+[data-slot="tooltip-content"] [data-radix-tooltip-arrow] {
+  background-color: var(--canvas-soft) !important;
+  fill: var(--canvas-soft) !important;
+}
+
+/* "feature-flash" — briefly pulses a section in the LessonDrawer when the
+   user clicks a feature in the jump-list at the top, to confirm the
+   scroll target. */
+@keyframes feature-flash {
+  0%   { box-shadow: 0 0 0 0 var(--accent); background-color: transparent; }
+  20%  { box-shadow: 0 0 0 2px var(--accent); background-color: var(--accent-soft); }
+  100% { box-shadow: 0 0 0 0 transparent; background-color: transparent; }
+}
+.feature-flash {
+  animation: feature-flash 1.2s ease-out;
+  border-radius: 8px;
 }

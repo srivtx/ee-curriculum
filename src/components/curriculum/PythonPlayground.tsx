@@ -176,11 +176,11 @@ export function PythonPlayground({ lessonId }: { lessonId: string }) {
   const isBusy = state === 'loading' || state === 'running';
 
   return (
-    <div className="mt-4 overflow-hidden rounded-lg border border-ee-teal/30 bg-background">
+    <div className="mt-4 overflow-hidden rounded-sm border border-accent/30 bg-background">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border/60 bg-ee-teal/5 px-3 py-2">
-        <Terminal className="h-4 w-4 text-ee-teal" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-teal-dark dark:text-ee-teal">
+      <div className="flex items-center gap-2 border-b border-border/60 bg-accent/5 px-3 py-2">
+        <Terminal className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent dark:text-accent">
           Python Playground
         </span>
         <span className="text-[10px] text-muted-foreground">
@@ -201,7 +201,7 @@ export function PythonPlayground({ lessonId }: { lessonId: string }) {
             size="sm"
             onClick={handleRun}
             disabled={isBusy}
-            className="h-7 gap-1 bg-ee-teal px-3 text-xs font-semibold text-white hover:bg-ee-teal-dark"
+            className="h-7 gap-1 bg-accent px-3 text-xs font-semibold text-white hover:bg-accent"
           >
             {state === 'loading' ? (
               <>

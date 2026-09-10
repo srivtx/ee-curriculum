@@ -316,13 +316,13 @@ def draw_page_decoration(canvas, doc):
     canvas.drawString(doc.leftMargin, A4[1] - 9*mm,
                       'ELECTRICAL ENGINEERING — A MASTER CURRICULUM FOR COMPUTER SCIENTISTS')
     canvas.drawRightString(A4[0] - doc.rightMargin, A4[1] - 9*mm,
-                           'github.com/srivtx · 2026')
+                           'by svx · Sribatsha dash · 2026')
     # Footer
     canvas.setLineWidth(0.4)
     canvas.line(doc.leftMargin, 12*mm, A4[0] - doc.rightMargin, 12*mm)
     canvas.setFont('FreeSans', 8)
     canvas.setFillColor(TEXT_MUTED)
-    canvas.drawString(doc.leftMargin, 8*mm, 'srivtx · EE Curriculum')
+    canvas.drawString(doc.leftMargin, 8*mm, 'svx · EE Curriculum')
     canvas.drawRightString(A4[0] - doc.rightMargin, 8*mm, f'Page {doc.page}')
     canvas.restoreState()
 
@@ -331,208 +331,256 @@ COVER_HTML = """<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EE Curriculum Cover</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,700;8..60,900&display=swap" rel="stylesheet">
+<title>EE Curriculum v3 Cover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&family=JetBrains+Mono:wght@400&family=Source+Serif+4:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
   @page { size: 794px 1123px; margin: 0; }
-  html, body { margin: 0; padding: 0; background: #0f1419; font-family: 'Inter', sans-serif; }
-  .cover { position: relative; width: 794px; height: 1123px; background: #0f1419; overflow: hidden; color: #e8eef2; }
-  /* Layer 1: blueprint grid + watermark */
-  .layer1 { position: absolute; inset: 0; overflow: hidden; z-index: 1; }
-  .grid-bg {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(to right, rgba(80,122,164,0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(80,122,164,0.06) 1px, transparent 1px);
-    background-size: 40px 40px;
+  html, body { margin: 0; padding: 0; background: #0a0a0a; font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  .cover {
+    position: relative; width: 794px; height: 1123px;
+    background: #0a0a0a; color: #dadbdf; overflow: hidden;
   }
-  .grid-bg-major {
-    position: absolute; inset: 0;
-    background-image:
-      linear-gradient(to right, rgba(80,122,164,0.12) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(80,122,164,0.12) 1px, transparent 1px);
-    background-size: 200px 200px;
+  /* Edition badge — the only serif on the cover */
+  .edition {
+    position: absolute; top: 64px; right: 80px;
+    font-family: 'Source Serif 4', serif; font-style: italic;
+    font-size: 28px; font-weight: 400; color: #7FFF9F;
+    letter-spacing: -0.01em; line-height: 1;
   }
-  .watermark {
-    position: absolute; right: -10px; bottom: 30px;
-    font-family: 'JetBrains Mono', monospace; font-size: 180px; font-weight: 700;
-    color: rgba(31,108,146,0.07); letter-spacing: -4px; line-height: 0.9;
-    user-select: none; pointer-events: none;
-  }
-  .watermark-sub {
-    position: absolute; right: 30px; bottom: 12px;
-    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 400;
-    color: rgba(80,122,164,0.4); letter-spacing: 4px;
-    user-select: none; pointer-events: none;
-  }
-  /* Layer 2: structural elements */
-  .layer2 { position: absolute; inset: 0; z-index: 2; }
-  .anchor-line {
-    position: absolute; left: 80px; top: 100px; width: 4px; height: 923px;
-    background: linear-gradient(to bottom, #1f6c92 0%, #1f6c92 80%, rgba(31,108,146,0.2) 100%);
-  }
-  .accent-bar {
-    position: absolute; left: 80px; top: 100px; width: 80px; height: 4px;
-    background: #1f6c92;
-  }
-  .corner-tl { position: absolute; top: 30px; left: 30px; width: 24px; height: 24px;
-    border-top: 1.5px solid rgba(80,122,164,0.6); border-left: 1.5px solid rgba(80,122,164,0.6); }
-  .corner-tr { position: absolute; top: 30px; right: 30px; width: 24px; height: 24px;
-    border-top: 1.5px solid rgba(80,122,164,0.6); border-right: 1.5px solid rgba(80,122,164,0.6); }
-  .corner-bl { position: absolute; bottom: 30px; left: 30px; width: 24px; height: 24px;
-    border-bottom: 1.5px solid rgba(80,122,164,0.6); border-left: 1.5px solid rgba(80,122,164,0.6); }
-  .corner-br { position: absolute; bottom: 30px; right: 30px; width: 24px; height: 24px;
-    border-bottom: 1.5px solid rgba(80,122,164,0.6); border-right: 1.5px solid rgba(80,122,164,0.6); }
-  /* Layer 3: content */
-  .layer3 { position: absolute; inset: 0; z-index: 3; }
-  .content { position: absolute; left: 116px; top: 0; width: 600px; height: 100%; }
-  .kicker {
-    position: absolute; top: 130px; left: 0; width: 600px;
-    font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 400;
-    letter-spacing: 4px; color: #1f6c92; text-transform: uppercase;
-  }
-  .kicker::before {
-    content: '> '; color: rgba(31,108,146,0.6);
-  }
-  .title-block {
-    position: absolute; top: 175px; left: 0; width: 600px;
-  }
-  .title-eyebrow {
-    font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 400;
-    color: rgba(232,238,242,0.5); letter-spacing: 2px; margin-bottom: 14px;
+  /* Eyebrow */
+  .eyebrow {
+    position: absolute; top: 144px; left: 80px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px; font-weight: 400; color: #7FFF9F;
+    letter-spacing: 1.4px; line-height: 20px;
     text-transform: uppercase;
   }
+  /* Display title */
   .title {
-    font-family: 'Source Serif 4', serif; font-size: 68px; font-weight: 900;
-    color: #f4f7fa; line-height: 1.05; letter-spacing: -2px; margin: 0;
+    position: absolute; top: 244px; left: 80px; right: 80px;
+    font-family: 'Inter', sans-serif; font-size: 72px; font-weight: 400;
+    color: #ffffff; letter-spacing: -1.8px; line-height: 76px;
+    margin: 0; max-width: 640px;
   }
-  .title em { color: #1f6c92; font-style: normal; font-weight: 900; }
-  .title .ampersand { color: rgba(232,238,242,0.4); font-weight: 400; font-style: italic; }
-  .summary {
-    position: absolute; top: 510px; left: 0; width: 520px;
-    font-family: 'Source Serif 4', serif; font-size: 16px; font-weight: 400;
-    color: rgba(232,238,242,0.82); line-height: 1.65;
+  .title .accent { color: #7FFF9F; }
+  /* Lead paragraph */
+  .lead {
+    position: absolute; top: 432px; left: 80px; right: 80px;
+    font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 400;
+    color: #dadbdf; line-height: 28px; max-width: 520px; margin: 0;
   }
-  .stats-bar {
-    position: absolute; top: 640px; left: 0; width: 600px;
-    display: flex; gap: 14px;
+  /* Voxel motif — half-wave rectifier schematic as pixel blocks */
+  .voxel-wrap {
+    position: absolute; top: 612px; left: 50%; transform: translateX(-50%);
+    width: 384px; height: 192px;
+    filter: drop-shadow(0 0 24px rgba(127, 255, 159, 0.12));
   }
-  .stat {
-    flex: 1; padding: 14px 12px 12px;
-    background: rgba(31,108,146,0.08); border-top: 2px solid #1f6c92;
+  .voxel {
+    width: 384px; height: 192px;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+    display: grid;
+    grid-template-columns: repeat(16, 24px);
+    grid-template-rows: repeat(8, 24px);
   }
-  .stat-num { font-family: 'JetBrains Mono', monospace; font-size: 26px; font-weight: 700; color: #4ea3d1; line-height: 1; }
-  .stat-lbl { font-family: 'JetBrains Mono', monospace; font-size: 8px; letter-spacing: 1.8px;
-    color: rgba(232,238,242,0.5); text-transform: uppercase; margin-top: 6px; }
-  .meta {
-    position: absolute; top: 790px; left: 0; width: 600px;
-    color: #e8eef2; line-height: 1.6;
+  .voxel .b { background: #7FFF9F; }
+  .voxel div { width: 24px; height: 24px; }
+  /* Stats row */
+  .stats {
+    position: absolute; top: 870px; left: 80px; right: 80px;
+    display: grid; grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid #212327;
+    border-bottom: 1px solid #212327;
   }
-  .meta-label {
-    font-family: 'JetBrains Mono', monospace; font-size: 9px; font-weight: 700;
-    letter-spacing: 3px; color: rgba(31,108,146,0.9); text-transform: uppercase; margin-bottom: 6px;
+  .stat { padding: 24px 12px; border-right: 1px solid #212327; }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace; font-size: 32px; font-weight: 400;
+    color: #ffffff; line-height: 36px; letter-spacing: 0;
   }
-  .meta-target {
-    font-family: 'Source Serif 4', serif; font-size: 17px; font-weight: 700;
-    color: #f4f7fa; margin-bottom: 22px;
+  .stat-lbl {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    font-weight: 400; color: #6a7079; letter-spacing: 1.4px;
+    text-transform: uppercase; margin-top: 6px; line-height: 16px;
   }
-  .meta-row { display: flex; gap: 30px; }
-  .meta-col { flex: 1; }
-  .meta-col-value {
-    font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: 400;
-    color: rgba(232,238,242,0.8); margin-top: 4px;
-  }
+  /* Footer — single line, hairline above */
   .footer {
-    position: absolute; bottom: 50px; left: 116px; right: 60px;
-    display: flex; justify-content: space-between; align-items: center;
-    font-family: 'JetBrains Mono', monospace; font-size: 10px;
-    letter-spacing: 2px; color: rgba(232,238,242,0.4); text-transform: uppercase;
-    padding-top: 14px; border-top: 1px solid rgba(80,122,164,0.2);
+    position: absolute; bottom: 64px; left: 80px; right: 80px;
+    border-top: 1px solid #212327; padding-top: 18px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    font-weight: 400; color: #6a7079; letter-spacing: 1.2px;
+    text-transform: uppercase; display: flex; gap: 18px; flex-wrap: wrap;
+    align-items: center;
   }
-  .footer-brand {
-    color: #4ea3d1; font-weight: 700;
-  }
-  .badge-row {
-    position: absolute; top: 88px; left: 116px; right: 60px;
-    display: flex; gap: 10px; font-family: 'JetBrains Mono', monospace; font-size: 9px;
-    letter-spacing: 1.5px; text-transform: uppercase;
-  }
-  .badge {
-    padding: 4px 10px; border: 1px solid rgba(80,122,164,0.4); color: rgba(232,238,242,0.7);
-    border-radius: 2px;
-  }
-  .badge-accent {
-    border-color: #1f6c92; color: #4ea3d1; background: rgba(31,108,146,0.1);
-  }
+  .footer .sep { color: #363a3f; }
+  .footer .handle { color: #9aa0a8; }
 </style>
 </head>
 <body>
 <div class="cover">
-  <div class="layer1">
-    <div class="grid-bg"></div>
-    <div class="grid-bg-major"></div>
-    <div class="watermark">EE//</div>
-    <div class="watermark-sub">REV 2.0 · 2026</div>
+  <div class="edition">v3.0</div>
+
+  <div class="eyebrow">// SVX · EE CURRICULUM · v3.0</div>
+
+  <h1 class="title">
+    Electrical Engineering<br>
+    for Computer <span class="accent">Scientists</span>
+  </h1>
+
+  <p class="lead">
+    A rigorous, hardware-plus-simulation curriculum that takes a working
+    computer scientist from Ohm's law to field-oriented motor control,
+    FPGA prototyping, and grid-tied solar inverters &mdash; without skipping
+    the math, the physics, or the bench time.
+  </p>
+
+  <div class="voxel-wrap">
+    <div class="voxel" aria-label="Voxel schematic of a half-wave rectifier with RC smoothing">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div class="b"></div>
+    <div></div>
+    </div>
   </div>
-  <div class="layer2">
-    <div class="anchor-line"></div>
-    <div class="accent-bar"></div>
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num">11</div><div class="stat-lbl">Phases</div></div>
+    <div class="stat"><div class="stat-num">91</div><div class="stat-lbl">Modules</div></div>
+    <div class="stat"><div class="stat-num">140</div><div class="stat-lbl">Lessons</div></div>
+    <div class="stat"><div class="stat-num">52</div><div class="stat-lbl">Projects</div></div>
+    <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Capstones</div></div>
   </div>
-  <div class="layer3">
-    <div class="badge-row">
-      <span class="badge badge-accent">v2.0</span>
-      <span class="badge">MIT LICENSE</span>
-      <span class="badge">OPEN SOURCE</span>
-      <span class="badge">12-MONTH PLAN</span>
-    </div>
-    <div class="content">
-      <div class="kicker">A 12-MONTH PROJECT-BASED MASTER PLAN</div>
-      <div class="title-block">
-        <div class="title-eyebrow">/ curriculum / electrical-engineering</div>
-        <h1 class="title">Electrical<br/>Engineering<br/><em>for Computer</em><br/><em>Scientists</em></h1>
-      </div>
-      <div class="summary">
-        A rigorous, hardware-plus-simulation curriculum that takes a working
-        computer scientist from Ohm's law to field-oriented motor control,
-        FPGA prototyping, and grid-tied solar inverters — without skipping the
-        math, the physics, or the bench time.
-      </div>
-      <div class="stats-bar">
-        <div class="stat"><div class="stat-num">11</div><div class="stat-lbl">Phases</div></div>
-        <div class="stat"><div class="stat-num">91</div><div class="stat-lbl">Modules</div></div>
-        <div class="stat"><div class="stat-num">140</div><div class="stat-lbl">Lessons</div></div>
-        <div class="stat"><div class="stat-num">52</div><div class="stat-lbl">Projects</div></div>
-        <div class="stat"><div class="stat-num">6</div><div class="stat-lbl">Capstones</div></div>
-      </div>
-      <div class="meta">
-        <div class="meta-label">PREPARED FOR</div>
-        <div class="meta-target">The CS Engineer who wants the full EE picture.</div>
-        <div class="meta-row">
-          <div class="meta-col">
-            <div class="meta-label">AUTHOR</div>
-            <div class="meta-col-value">srivtx</div>
-          </div>
-          <div class="meta-col">
-            <div class="meta-label">EDITION</div>
-            <div class="meta-col-value">v2.0 · 2026</div>
-          </div>
-          <div class="meta-col">
-            <div class="meta-label">SOURCE</div>
-            <div class="meta-col-value">github.com/srivtx</div>
-          </div>
-          <div class="meta-col">
-            <div class="meta-label">FORMAT</div>
-            <div class="meta-col-value">PDF + Web</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="footer">
-      <span><span class="footer-brand">srivtx</span> · EE CURRICULUM · v2.0</span>
-      <span>GITHUB.COM/STRIVTX</span>
-    </div>
+
+  <div class="footer">
+    <span class="handle">by svx</span><span class="sep">&middot;</span>
+    <span>Sribatsha dash</span><span class="sep">&middot;</span>
+    <span>github.com/srivtx</span><span class="sep">&middot;</span>
+    <span>v3.0</span>
   </div>
 </div>
 </body>

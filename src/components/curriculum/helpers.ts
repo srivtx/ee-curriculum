@@ -1,4 +1,6 @@
 // Shared helpers for the EE curriculum website.
+// Design System v3 — uses semantic tokens (accent, body-mid, warning,
+// error, info) instead of the retired --ee-teal / --ee-amber palette.
 
 import {
   BookOpen,
@@ -9,27 +11,27 @@ import {
 } from 'lucide-react';
 import type { Difficulty, LessonType } from '@/lib/curriculum';
 
-/** Difficulty → tailwind classes (badge + dot). */
+/** Difficulty → tailwind classes (badge + dot). All pill-shaped. */
 export const DIFFICULTY_STYLES: Record<
   Difficulty,
   { badge: string; dot: string; label: string }
 > = {
   Foundation: {
     badge:
-      'border-ee-green/30 bg-ee-green/10 text-ee-green dark:text-ee-green',
-    dot: 'bg-ee-green',
+      'border-accent/40 bg-accent/10 text-accent rounded-full',
+    dot: 'bg-accent',
     label: 'Foundation',
   },
   Intermediate: {
     badge:
-      'border-ee-cyan/30 bg-ee-cyan/10 text-ee-cyan dark:text-ee-cyan',
-    dot: 'bg-ee-cyan',
+      'border-body-mid/40 bg-body-mid/10 text-body-mid rounded-full',
+    dot: 'bg-body-mid',
     label: 'Intermediate',
   },
   Advanced: {
     badge:
-      'border-ee-red/30 bg-ee-red/10 text-ee-red dark:text-ee-red',
-    dot: 'bg-ee-red',
+      'border-error/40 bg-error/10 text-error rounded-full',
+    dot: 'bg-error',
     label: 'Advanced',
   },
 };
@@ -38,10 +40,10 @@ export const LESSON_TYPE_META: Record<
   LessonType,
   { icon: LucideIcon; label: string; color: string }
 > = {
-  reading: { icon: BookOpen, label: 'Reading', color: 'text-ee-cyan' },
-  exercise: { icon: Pencil, label: 'Exercise', color: 'text-ee-amber' },
-  project: { icon: Hammer, label: 'Project', color: 'text-ee-teal' },
-  quiz: { icon: HelpCircle, label: 'Quiz', color: 'text-ee-red' },
+  reading: { icon: BookOpen, label: 'Reading', color: 'text-body-mid' },
+  exercise: { icon: Pencil, label: 'Exercise', color: 'text-warning' },
+  project: { icon: Hammer, label: 'Project', color: 'text-accent' },
+  quiz: { icon: HelpCircle, label: 'Quiz', color: 'text-error' },
 };
 
 export function formatDuration(minutes: number): string {

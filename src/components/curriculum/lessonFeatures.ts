@@ -1,0 +1,280 @@
+// Lesson feature detection — shared by ModuleAccordion badges, the
+// CurriculumView filter chips, the LessonDrawer "Interactive features"
+// section at the top of the drawer, and the DashboardView stats card.
+//
+// One source of truth for "which interactive features does this lesson have?"
+// so badges, filters, the drawer, and the dashboard all agree.
+//
+// See: research/DESIGN_SYSTEM_v3.md §8.6 for the badge spec.
+// See: task D-website-redesign Goal 3 for the icon mapping.
+
+import type { LucideIcon } from 'lucide-react';
+import {
+  Terminal,
+  Activity,
+  Zap,
+  Cpu,
+  LineChart,
+  CircuitBoard,
+  Waves,
+  Sigma,
+  FileCode,
+  AudioLines,
+  Radio,
+  Lightbulb,
+  Usb,
+} from 'lucide-react';
+import type { Lesson } from '@/lib/curriculum';
+
+export type FeatureKey =
+  | 'python'
+  | 'heavy_spice'
+  | 'spice'
+  | 'verilog'
+  | 'bode'
+  | 'falstad'
+  | 'wavedrom'
+  | 'katex'
+  | 'kicanvas'
+  | 'webaudio'
+  | 'iqengine'
+  | 'cs_bridge'
+  | 'webserial';
+
+export interface FeatureMeta {
+  key: FeatureKey;
+  /** Short label, ≤6 chars, mono-caption-friendly. */
+  short: string;
+  /** Full human label, e.g. "Pyodide Python playground". */
+  label: string;
+  /** lucide-react icon component. */
+  icon: LucideIcon;
+  /** "active" = interactive hands-on (accent border).
+   *  "passive" = viewer/visualizer (hairline border).
+   *  "hardware" = requires real hardware (warning border). */
+  tier: 'active' | 'passive' | 'hardware';
+  /** Drawer section anchor id (used by the "Interactive features" jump list
+   *  at the top of the LessonDrawer). */
+  anchor: string;
+}
+
+export const FEATURE_META: Record<FeatureKey, FeatureMeta> = {
+  python: {
+    key: 'python',
+    short: 'PY',
+    label: 'Pyodide Python playground',
+    icon: Terminal,
+    tier: 'active',
+    anchor: 'section-python',
+  },
+  heavy_spice: {
+    key: 'heavy_spice',
+    short: 'HSPICE',
+    label: 'Heavy SPICE simulation (ngspice WASM)',
+    icon: Activity,
+    tier: 'active',
+    anchor: 'section-heavy-spice',
+  },
+  spice: {
+    key: 'spice',
+    short: 'SPICE',
+    label: 'spicey SPICE playground',
+    icon: Zap,
+    tier: 'active',
+    anchor: 'section-spice',
+  },
+  verilog: {
+    key: 'verilog',
+    short: 'HDL',
+    label: 'Verilog HDL playground (Yosys WASM)',
+    icon: Cpu,
+    tier: 'active',
+    anchor: 'section-verilog',
+  },
+  bode: {
+    key: 'bode',
+    short: 'BODE',
+    label: 'Interactive Bode plot',
+    icon: LineChart,
+    tier: 'active',
+    anchor: 'section-bode',
+  },
+  falstad: {
+    key: 'falstad',
+    short: 'SIM',
+    label: 'Falstad circuit simulator',
+    icon: CircuitBoard,
+    tier: 'active',
+    anchor: 'section-falstad',
+  },
+  wavedrom: {
+    key: 'wavedrom',
+    short: 'WAVE',
+    label: 'WaveDrom timing diagram',
+    icon: Waves,
+    tier: 'passive',
+    anchor: 'section-wavedrom',
+  },
+  katex: {
+    key: 'katex',
+    short: 'f(x)',
+    label: 'KaTeX formulas',
+    icon: Sigma,
+    tier: 'passive',
+    anchor: 'section-katex',
+  },
+  kicanvas: {
+    key: 'kicanvas',
+    short: 'PCB',
+    label: 'KiCanvas (KiCad schematic)',
+    icon: FileCode,
+    tier: 'passive',
+    anchor: 'section-kicanvas',
+  },
+  webaudio: {
+    key: 'webaudio',
+    short: 'FFT',
+    label: 'Web Audio oscilloscope + spectrum',
+    icon: AudioLines,
+    tier: 'active',
+    anchor: 'section-webaudio',
+  },
+  iqengine: {
+    key: 'iqengine',
+    short: 'SDR',
+    label: 'IQEngine SDR spectrogram',
+    icon: Radio,
+    tier: 'passive',
+    anchor: 'section-iqengine',
+  },
+  cs_bridge: {
+    key: 'cs_bridge',
+    short: 'CS↔EE',
+    label: 'CS ↔ EE concept bridge',
+    icon: Lightbulb,
+    tier: 'active',
+    anchor: 'section-cs-bridge',
+  },
+  webserial: {
+    key: 'webserial',
+    short: 'HW',
+    label: 'WebSerial hardware connect',
+    icon: Usb,
+    tier: 'hardware',
+    anchor: 'section-webserial',
+  },
+};
+
+/** Display order: hands-on first, then passive viewers, hardware last. */
+const FEATURE_ORDER: FeatureKey[] = [
+  'python',
+  'heavy_spice',
+  'spice',
+  'verilog',
+  'bode',
+  'falstad',
+  'webaudio',
+  'cs_bridge',
+  'wavedrom',
+  'katex',
+  'kicanvas',
+  'iqengine',
+  'webserial',
+];
+
+/** Return the list of features present on a given lesson, in display order. */
+export function getLessonFeatures(
+  lesson: Lesson,
+  moduleCsBridge?: string
+): FeatureMeta[] {
+  const present: FeatureKey[] = [];
+  if (lesson.has_playground) present.push('python');
+  if (lesson.has_heavy_spice || lesson.heavy_spice_starter)
+    present.push('heavy_spice');
+  if (lesson.has_spice || lesson.spice_netlist) present.push('spice');
+  if (lesson.has_verilog || lesson.verilog || lesson.verilog_starter)
+    present.push('verilog');
+  if (lesson.bode || lesson.has_bode) present.push('bode');
+  if (lesson.falstad_url) present.push('falstad');
+  if (lesson.has_scope) present.push('webaudio');
+  if (lesson.wavedrom) present.push('wavedrom');
+  if (lesson.formulas && lesson.formulas.length > 0) present.push('katex');
+  if (lesson.kicanvas_url) present.push('kicanvas');
+  // IQEngine uses `!== undefined` so the empty-string (homepage) case still
+  // triggers the embed, mirroring the LessonDrawer check.
+  if (lesson.iqengine_url !== undefined) present.push('iqengine');
+  if (lesson.cs_bridge ?? moduleCsBridge) present.push('cs_bridge');
+  // WebSerial is global (floating FAB), not per-lesson. We surface it on
+  // lessons where it's particularly relevant (any lesson with a has_circuit
+  // flag or any playground) — see lessonSupportsWebSerial below.
+  if (lessonSupportsWebSerial(lesson)) present.push('webserial');
+  return FEATURE_ORDER.filter((k) => present.includes(k)).map(
+    (k) => FEATURE_META[k]
+  );
+}
+
+/** A lesson is "WebSerial-relevant" if it has interactive circuit content
+ *  the student could plausibly want to wire to real hardware. We're being
+ *  generous here — the WebSerial FAB is always available globally, this
+ *  badge just signals "this lesson pairs well with a hardware bench." */
+export function lessonSupportsWebSerial(lesson: Lesson): boolean {
+  return Boolean(
+    lesson.has_circuit ||
+      lesson.falstad_url ||
+      lesson.has_heavy_spice ||
+      lesson.spice_netlist ||
+      lesson.has_verilog ||
+      lesson.kicanvas_url
+  );
+}
+
+/** Aggregate counts across the entire curriculum — used by the Dashboard
+ *  "Interactive features" stat card. */
+export function getCurriculumFeatureStats(): {
+  total: number;
+  lessonsWithFeatures: number;
+  byType: Record<FeatureKey, number>;
+  lessonsByType: Record<FeatureKey, number>;
+} {
+  // Lazy import to avoid a static-import cycle (curriculum.ts is heavy).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { CURRICULUM } = require('@/lib/curriculum') as {
+    CURRICULUM: typeof import('@/lib/curriculum').CURRICULUM;
+  };
+
+  const byType = {} as Record<FeatureKey, number>;
+  const lessonsByType = {} as Record<FeatureKey, number>;
+  (Object.keys(FEATURE_META) as FeatureKey[]).forEach((k) => {
+    byType[k] = 0;
+    lessonsByType[k] = 0;
+  });
+
+  let total = 0;
+  let lessonsWithFeatures = 0;
+  const seen = new Set<string>(); // de-dup by lesson id
+
+  for (const phase of CURRICULUM) {
+    for (const mod of phase.modules) {
+      for (const lesson of mod.lessons) {
+        const feats = getLessonFeatures(lesson, mod.cs_bridge);
+        if (feats.length > 0 && !seen.has(lesson.id)) {
+          seen.add(lesson.id);
+          lessonsWithFeatures++;
+        }
+        total += feats.length;
+        for (const f of feats) {
+          byType[f.key]++;
+        }
+      }
+      // For lessons-by-type, count unique lessons per feature.
+      for (const lesson of mod.lessons) {
+        const feats = getLessonFeatures(lesson, mod.cs_bridge);
+        for (const f of feats) {
+          lessonsByType[f.key]++;
+        }
+      }
+    }
+  }
+
+  return { total, lessonsWithFeatures, byType, lessonsByType };
+}

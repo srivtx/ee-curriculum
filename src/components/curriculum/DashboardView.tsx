@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -34,12 +33,21 @@ import {
   Sparkles,
   Award,
   Flame,
+  Usb,
+  Cable,
+  ArrowRight,
 } from 'lucide-react';
 import { CURRICULUM, CURRICULUM_STATS } from '@/lib/curriculum';
 import { useProgress, checkpointKey } from '@/hooks/useProgress';
-import { formatHours, formatWeeks, hexToRgba } from './helpers';
+import { formatHours, formatWeeks } from './helpers';
 import { cn } from '@/lib/utils';
 import type { ViewKey } from './Header';
+import {
+  getCurriculumFeatureStats,
+  getLessonFeatures,
+  FEATURE_META,
+  type FeatureKey,
+} from './lessonFeatures';
 
 export function DashboardView({
   onNavigate,
@@ -75,6 +83,27 @@ export function DashboardView({
       ? (hoursLogged / CURRICULUM_STATS.hours) * 100
       : 0;
 
+  // Interactive feature stats (computed once; cheap on first render).
+  const featureStats = React.useMemo(
+    () => getCurriculumFeatureStats(),
+    []
+  );
+
+  // WebSerial-relevant lesson count.
+  const webSerialLessons = React.useMemo(() => {
+    let n = 0;
+    for (const phase of CURRICULUM) {
+      for (const mod of phase.modules) {
+        for (const lesson of mod.lessons) {
+          if (getLessonFeatures(lesson, mod.cs_bridge).some((f) => f.key === 'webserial')) {
+            n++;
+          }
+        }
+      }
+    }
+    return n;
+  }, []);
+
   // "Streak" — a simple motivational indicator based on activity breadth
   const phasesStarted = CURRICULUM.filter((p) =>
     p.modules.some((m) =>
@@ -95,17 +124,16 @@ export function DashboardView({
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
       {/* Hero header */}
-      <section className="ee-blueprint mb-6 rounded-2xl border border-border/60 p-6 sm:p-8">
+      <section className="voxel-grid mb-6 rounded-sm border border-hairline p-6 sm:p-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-ee-teal/30 bg-ee-teal/10 px-2.5 py-1 text-[11px] font-medium text-ee-teal dark:text-ee-teal">
-              <Sparkles className="h-3 w-3" />
-              Your learning dashboard
+            <div className="eyebrow text-[14px] text-accent">
+              {'// DASHBOARD'}
             </div>
-            <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-              Progress at a glance
+            <h1 className="mt-3 text-2xl font-normal tracking-[-0.6px] text-ink sm:text-3xl md:tracking-[-1.0px]">
+              Curriculum Progress
             </h1>
-            <p className="mt-1 max-w-2xl text-sm text-foreground/70">
+            <p className="mt-1 max-w-2xl text-sm text-body">
               All progress saves automatically to your browser. Mark lessons
               complete from the curriculum view, ship projects in the project
               tracker, and self-rate checkpoints to update these numbers.
@@ -113,15 +141,11 @@ export function DashboardView({
           </div>
 
           {/* Streak badge */}
-          <div className="inline-flex items-center gap-2 self-start rounded-lg border border-ee-amber/30 bg-ee-amber/10 px-3 py-2">
-            <Flame className="h-5 w-5 text-ee-amber" aria-hidden />
+          <div className="inline-flex items-center gap-2 self-start rounded-sm border border-hairline bg-canvas-card px-3 py-2">
+            <Flame className="h-5 w-5 text-warning" aria-hidden />
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-ee-amber">
-                Streak
-              </div>
-              <div className="text-sm font-semibold text-foreground">
-                {streakLabel}
-              </div>
+              <div className="eyebrow text-[10px] text-warning">Streak</div>
+              <div className="text-sm text-ink">{streakLabel}</div>
             </div>
           </div>
         </div>
@@ -131,8 +155,8 @@ export function DashboardView({
       <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <KpiTile
           icon={GraduationCap}
-          color="text-ee-teal"
-          barColor="[&>div]:bg-ee-teal"
+          color="text-accent"
+          barColor="[&>div]:bg-accent"
           label="Lessons completed"
           value={`${lessonsDone}`}
           total={`/ ${CURRICULUM_STATS.lessons}`}
@@ -140,8 +164,8 @@ export function DashboardView({
         />
         <KpiTile
           icon={Target}
-          color="text-ee-green"
-          barColor="[&>div]:bg-ee-green"
+          color="text-accent"
+          barColor="[&>div]:bg-accent"
           label="Projects shipped"
           value={`${projectsDone}`}
           total={`/ ${CURRICULUM_STATS.projects}`}
@@ -149,8 +173,8 @@ export function DashboardView({
         />
         <KpiTile
           icon={ListChecks}
-          color="text-ee-amber"
-          barColor="[&>div]:bg-ee-amber"
+          color="text-accent"
+          barColor="[&>div]:bg-accent"
           label="Checkpoints: Got it"
           value={`${checkpointsGotIt}`}
           total={`/ ${CURRICULUM_STATS.checkpoints}`}
@@ -159,8 +183,8 @@ export function DashboardView({
         />
         <KpiTile
           icon={Clock}
-          color="text-ee-cyan"
-          barColor="[&>div]:bg-ee-cyan"
+          color="text-accent"
+          barColor="[&>div]:bg-accent"
           label="Hours logged"
           value={`${hoursLogged.toFixed(1)} h`}
           total={`/ ~${CURRICULUM_STATS.hours} h`}
@@ -168,24 +192,29 @@ export function DashboardView({
         />
       </section>
 
+      {/* Interactive features stat card */}
+      <section className="mb-6">
+        <InteractiveFeaturesCard stats={featureStats} />
+      </section>
+
       {/* Per-phase progress + hours */}
       <section className="mb-6">
         <div className="mb-3 flex items-center gap-2">
-          <Layers className="h-5 w-5 text-ee-teal" aria-hidden />
-          <h2 className="text-lg font-semibold text-foreground">
+          <Layers className="h-5 w-5 text-accent" aria-hidden />
+          <h2 className="text-lg font-normal tracking-[-0.3px] text-ink">
             Phase-by-phase progress
           </h2>
         </div>
 
         <div className="grid gap-3 lg:grid-cols-2">
-          {CURRICULUM.map((phase, i) => {
+          {CURRICULUM.map((phase) => {
             const lessons = phase.modules.flatMap((m) => m.lessons);
             const done = lessons.filter((l) =>
               state.completedLessons.includes(l.id)
             ).length;
             const pct = lessons.length > 0 ? (done / lessons.length) * 100 : 0;
             const projects = phase.modules.flatMap((m) => m.projects);
-            const projectsDone = projects.filter((p) =>
+            const projectsDoneInPhase = projects.filter((p) =>
               state.completedProjects.includes(p.id)
             ).length;
             const checkpoints = phase.modules.flatMap((m) =>
@@ -202,46 +231,32 @@ export function DashboardView({
             );
 
             return (
-              <motion.div
-                key={phase.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: i * 0.03 }}
-              >
-                <Card className="overflow-hidden py-0">
-                  <CardHeader
-                    className="relative px-4 py-3"
-                    style={{
-                      backgroundImage: `linear-gradient(to right, ${hexToRgba(
-                        phase.color,
-                        0.1
-                      )} 0%, transparent 70%)`,
-                    }}
-                  >
+              <div key={phase.id}>
+                <Card className="overflow-hidden rounded-sm border border-hairline bg-canvas-card py-0">
+                  <CardHeader className="relative px-4 py-3">
                     <span
                       aria-hidden
-                      className="absolute left-0 top-0 h-full w-1"
-                      style={{ backgroundColor: phase.color }}
+                      className="absolute left-0 top-0 h-full w-0.5 bg-accent"
                     />
                     <div className="flex items-center justify-between gap-2">
                       <div className="flex items-center gap-2">
                         <span
-                          className="ee-mono inline-flex h-6 min-w-6 items-center justify-center rounded px-1.5 text-xs font-bold text-white"
-                          style={{ backgroundColor: phase.color }}
+                          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-hairline bg-canvas-soft font-pixel text-[12px] text-accent"
+                          aria-label={`Phase ${phase.index}`}
                         >
-                          P{phase.index}
+                          {phase.index}
                         </span>
                         <div>
-                          <CardTitle className="text-sm font-semibold leading-tight">
+                          <CardTitle className="text-sm font-normal leading-tight text-ink">
                             {phase.title}
                           </CardTitle>
-                          <CardDescription className="text-[11px]">
+                          <CardDescription className="text-[11px] text-body-mid">
                             {formatWeeks(phase.duration_weeks)} ·{' '}
                             {phase.modules.length} modules
                           </CardDescription>
                         </div>
                       </div>
-                      <span className="ee-mono text-xs font-semibold tabular-nums text-muted-foreground">
+                      <span className="ee-mono text-xs tabular-nums text-body-mid">
                         {Math.round(pct)}%
                       </span>
                     </div>
@@ -249,31 +264,25 @@ export function DashboardView({
                   <CardContent className="space-y-3 px-4 py-3">
                     {/* lesson bar */}
                     <div>
-                      <div className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+                      <div className="mb-1 flex items-center justify-between text-[11px] text-body-mid">
                         <span>Lessons</span>
                         <span className="ee-mono tabular-nums">
                           {done}/{lessons.length}
                         </span>
                       </div>
-                      <div
-                        className="h-1.5 w-full overflow-hidden rounded-full"
-                        style={{ backgroundColor: hexToRgba(phase.color, 0.15) }}
-                      >
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-canvas-mid">
                         <div
                           className="h-full rounded-full transition-[width] duration-500"
-                          style={{
-                            width: `${pct}%`,
-                            backgroundColor: phase.color,
-                          }}
+                          style={{ width: `${pct}%`, backgroundColor: 'var(--accent)' }}
                         />
                       </div>
                     </div>
 
                     {/* mini stats row */}
-                    <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-4 text-[11px] text-body-mid">
                       <span className="inline-flex items-center gap-1">
                         <Target className="h-3 w-3" />
-                        {projectsDone}/{projects.length} projects
+                        {projectsDoneInPhase}/{projects.length} projects
                       </span>
                       <span className="inline-flex items-center gap-1">
                         <ListChecks className="h-3 w-3" />
@@ -282,10 +291,10 @@ export function DashboardView({
                     </div>
 
                     {/* hours input */}
-                    <div className="flex items-center gap-2 border-t border-border/40 pt-2">
+                    <div className="flex items-center gap-2 border-t border-hairline pt-2">
                       <label
                         htmlFor={`hours-${phase.id}`}
-                        className="text-[11px] font-medium text-muted-foreground"
+                        className="eyebrow text-[11px] text-body-mid"
                       >
                         Hours logged
                       </label>
@@ -302,29 +311,34 @@ export function DashboardView({
                             Math.max(0, parseFloat(e.target.value) || 0)
                           )
                         }
-                        className="h-7 w-20 ee-mono text-xs"
+                        className="ee-mono h-7 w-20 rounded-sm border-hairline bg-canvas-mid text-xs"
                       />
-                      <span className="text-[11px] text-muted-foreground">
+                      <span className="text-[11px] text-body-mid">
                         / {formatHours(targetHours)} target
                       </span>
                     </div>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
         </div>
       </section>
 
-      {/* Bottom row: difficulty mix + reset */}
+      {/* Hardware (WebSerial) section */}
+      <section className="mb-6">
+        <HardwareSection webSerialLessons={webSerialLessons} />
+      </section>
+
+      {/* Bottom row: what's next + reset */}
       <section className="grid gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
+        <Card className="rounded-sm border border-hairline bg-canvas-card lg:col-span-2">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <TrendingUp className="h-4 w-4 text-ee-teal" />
+            <CardTitle className="flex items-center gap-2 text-base font-normal text-ink">
+              <TrendingUp className="h-4 w-4 text-accent" />
               What&apos;s next
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-body-mid">
               Pick up where you left off — quick links to each view.
             </CardDescription>
           </CardHeader>
@@ -333,30 +347,27 @@ export function DashboardView({
               label="Curriculum"
               hint={`${CURRICULUM_STATS.lessons} lessons · ${CURRICULUM_STATS.modules} modules`}
               onClick={() => onNavigate('curriculum')}
-              color="text-ee-teal"
             />
             <NextLink
               label="Projects"
               hint={`${CURRICULUM_STATS.projects} hands-on`}
               onClick={() => onNavigate('projects')}
-              color="text-ee-green"
             />
             <NextLink
               label="Checkpoints"
               hint={`${CURRICULUM_STATS.checkpoints} self-tests`}
               onClick={() => onNavigate('checkpoints')}
-              color="text-ee-amber"
             />
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-sm border border-hairline bg-canvas-card">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Award className="h-4 w-4 text-ee-amber" />
+            <CardTitle className="flex items-center gap-2 text-base font-normal text-ink">
+              <Award className="h-4 w-4 text-accent" />
               Reset
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-body-mid">
               Wipe all saved progress from this browser.
             </CardDescription>
           </CardHeader>
@@ -365,17 +376,15 @@ export function DashboardView({
               <AlertDialogTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full gap-2 border-ee-red/30 text-ee-red hover:bg-ee-red/5"
+                  className="w-full gap-2 rounded-full border-error/30 text-error hover:bg-error/5"
                 >
                   <RotateCcw className="h-3.5 w-3.5" />
                   Reset all progress
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="rounded-sm border-hairline bg-canvas-card">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Reset all progress?
-                  </AlertDialogTitle>
+                  <AlertDialogTitle>Reset all progress?</AlertDialogTitle>
                   <AlertDialogDescription>
                     This will clear completed lessons, shipped projects,
                     checkpoint ratings, and logged hours. This action cannot
@@ -383,10 +392,10 @@ export function DashboardView({
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel className="rounded-full">Cancel</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={reset}
-                    className="bg-ee-red text-white hover:bg-ee-red/90"
+                    className="rounded-full bg-error text-white hover:bg-error/90"
                   >
                     Yes, reset everything
                   </AlertDialogAction>
@@ -397,6 +406,152 @@ export function DashboardView({
         </Card>
       </section>
     </div>
+  );
+}
+
+/**
+ * Interactive Features stat card — task D-website-redesign Goal 3.4.
+ *
+ * Shows total interactive features across the curriculum + breakdown by
+ * type. ("X interactive features across Y lessons")
+ */
+function InteractiveFeaturesCard({
+  stats,
+}: {
+  stats: ReturnType<typeof getCurriculumFeatureStats>;
+}) {
+  return (
+    <Card className="rounded-sm border border-hairline bg-canvas-card">
+      <CardHeader>
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <div className="eyebrow text-[11px] text-accent">
+              Interactive features
+            </div>
+            <CardTitle className="mt-1 text-lg font-normal tracking-[-0.3px] text-ink">
+              {stats.total} interactive features across{' '}
+              <span className="text-accent">{stats.lessonsWithFeatures}</span>{' '}
+              lessons
+            </CardTitle>
+            <CardDescription className="text-body-mid">
+              Every Pyodide Python demo, SPICE sim, Verilog HDL playground,
+              Bode plot, Falstad circuit, WaveDrom timing diagram, KaTeX
+              formula, KiCanvas schematic, Web Audio scope, and IQEngine SDR
+              spectrogram — discoverable per-lesson.
+            </CardDescription>
+          </div>
+          <Sparkles className="hidden h-6 w-6 shrink-0 text-accent sm:block" aria-hidden />
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+          {(Object.keys(FEATURE_META) as FeatureKey[]).map((k) => {
+            const meta = FEATURE_META[k];
+            const Icon = meta.icon;
+            const count = stats.byType[k];
+            const lessonCount = stats.lessonsByType[k];
+            const tierCls =
+              meta.tier === 'active'
+                ? 'border-accent/40 text-accent'
+                : meta.tier === 'hardware'
+                ? 'border-warning/40 text-warning'
+                : 'border-hairline text-body-mid';
+            return (
+              <div
+                key={k}
+                className={cn(
+                  'rounded-sm border bg-canvas px-3 py-2',
+                  tierCls
+                )}
+              >
+                <div className="flex items-center gap-1.5">
+                  <Icon className="h-3 w-3" aria-hidden />
+                  <span className="eyebrow text-[11px]">{meta.short}</span>
+                </div>
+                <div className="mt-1 flex items-baseline gap-1">
+                  <span className="ee-mono text-xl text-ink tabular-nums">
+                    {count}
+                  </span>
+                  <span className="text-[10px] text-body-mid">
+                    in {lessonCount} lesson{lessonCount === 1 ? '' : 's'}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+/**
+ * Hardware (WebSerial) section — task D-website-redesign Goal 3.5.
+ *
+ * Explains what WebSerial is, which browsers support it, and how many
+ * lessons in the curriculum benefit from a hardware bench.
+ */
+function HardwareSection({
+  webSerialLessons,
+}: {
+  webSerialLessons: number;
+}) {
+  return (
+    <Card className="rounded-sm border border-hairline bg-canvas-card">
+      <CardHeader>
+        <div className="flex items-center justify-between gap-2">
+          <div>
+            <div className="eyebrow text-[11px] text-accent">Hardware</div>
+            <CardTitle className="mt-1 text-lg font-normal tracking-[-0.3px] text-ink">
+              WebSerial — connect real hardware in the browser
+            </CardTitle>
+            <CardDescription className="text-body-mid">
+              WebSerial is a browser API that lets a web page talk directly
+              to USB-serial devices — Arduino, ESP32, STM32 — without
+              installing any driver or IDE. Click the floating{' '}
+              <span className="inline-flex items-center gap-1 align-middle">
+                <Usb className="h-3 w-3 text-accent" />
+              </span>{' '}
+              button (bottom-right) to open the serial monitor.
+            </CardDescription>
+          </div>
+          <Cable className="hidden h-6 w-6 shrink-0 text-accent sm:block" aria-hidden />
+        </div>
+      </CardHeader>
+      <CardContent className="grid gap-3 sm:grid-cols-3">
+        <div className="rounded-sm border border-hairline bg-canvas px-3 py-2">
+          <div className="eyebrow text-[11px] text-body-mid">Browser support</div>
+          <p className="mt-1 text-sm text-ink">
+            Chrome, Edge, Opera
+          </p>
+          <p className="text-[11px] text-body-mid">
+            Firefox needs a flag · Safari: no support
+          </p>
+        </div>
+        <div className="rounded-sm border border-hairline bg-canvas px-3 py-2">
+          <div className="eyebrow text-[11px] text-body-mid">Typical use</div>
+          <p className="mt-1 text-sm text-ink">
+            Stream <code className="ee-mono text-accent">analogRead()</code>{' '}
+            values, plot sensor data live
+          </p>
+          <p className="text-[11px] text-body-mid">
+            No Arduino IDE install needed
+          </p>
+        </div>
+        <div className="rounded-sm border border-accent/40 bg-accent-soft/20 px-3 py-2">
+          <div className="eyebrow text-[11px] text-accent">
+            Pairs with {webSerialLessons} lessons
+          </div>
+          <p className="mt-1 text-sm text-ink">
+            Any lesson with a circuit, SPICE, Verilog, or KiCanvas badge
+            benefits from a real hardware bench.
+          </p>
+          <p className="text-[11px] text-body-mid">
+            Filter the curriculum to find them.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -420,29 +575,27 @@ function KpiTile({
   extra?: string;
 }) {
   return (
-    <Card className="overflow-hidden py-0">
+    <Card className="overflow-hidden rounded-sm border border-hairline bg-canvas-card py-0">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <Icon className={cn('h-5 w-5', color)} aria-hidden />
-          <span className="ee-mono text-[10px] text-muted-foreground tabular-nums">
+          <span className="ee-mono text-[10px] text-body-mid tabular-nums">
             {Math.round(pct)}%
           </span>
         </div>
         <div className="mt-2 flex items-baseline gap-1">
-          <span className="ee-mono text-2xl font-bold tabular-nums text-foreground">
+          <span className="ee-mono text-2xl text-ink tabular-nums">
             {value}
           </span>
-          <span className="text-xs text-muted-foreground">{total}</span>
+          <span className="text-xs text-body-mid">{total}</span>
         </div>
-        <div className="mt-0.5 text-xs font-medium text-foreground/80">
-          {label}
-        </div>
+        <div className="mt-0.5 text-xs text-body">{label}</div>
         {extra && (
-          <div className="text-[10px] text-muted-foreground">{extra}</div>
+          <div className="text-[10px] text-body-mid">{extra}</div>
         )}
         <Progress
           value={pct}
-          className={cn('mt-2 h-1.5 bg-muted', barColor)}
+          className={cn('mt-2 h-1.5 bg-canvas-mid', barColor)}
         />
       </CardContent>
     </Card>
@@ -453,22 +606,20 @@ function NextLink({
   label,
   hint,
   onClick,
-  color,
 }: {
   label: string;
   hint: string;
   onClick: () => void;
-  color: string;
 }) {
   return (
     <button
       onClick={onClick}
-      className="group flex flex-col items-start gap-1 rounded-lg border border-border/60 bg-card p-3 text-left transition-colors hover:border-ee-teal/40 hover:bg-ee-teal/5"
+      className="group flex flex-col items-start gap-1 rounded-sm border border-hairline bg-canvas p-3 text-left transition-colors duration-150 hover:border-accent/40 hover:bg-accent/5"
     >
-      <span className={cn('text-sm font-semibold', color)}>{label}</span>
-      <span className="text-[11px] text-muted-foreground">{hint}</span>
-      <span className="mt-1 text-[10px] font-medium uppercase tracking-wider text-ee-teal opacity-0 transition-opacity group-hover:opacity-100">
-        Open →
+      <span className="text-sm text-accent">{label}</span>
+      <span className="text-[11px] text-body-mid">{hint}</span>
+      <span className="mt-1 eyebrow text-[10px] text-accent opacity-0 transition-opacity group-hover:opacity-100">
+        Open <ArrowRight className="inline h-2.5 w-2.5" />
       </span>
     </button>
   );

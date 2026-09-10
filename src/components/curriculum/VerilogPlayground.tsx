@@ -491,22 +491,22 @@ export function VerilogPlayground({
   const statusColor = (() => {
     switch (state) {
       case 'done':
-        return 'text-ee-green';
+        return 'text-accent';
       case 'error':
-        return 'text-ee-red';
+        return 'text-error';
       case 'idle':
         return 'text-muted-foreground';
       default:
-        return 'text-ee-amber';
+        return 'text-warning';
     }
   })();
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-red/30 bg-background">
+    <div className="overflow-hidden rounded-sm border border-error/30 bg-background">
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-ee-red/8 px-3 py-2">
-        <Cpu className="h-4 w-4 text-ee-red" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-red">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-error/8 px-3 py-2">
+        <Cpu className="h-4 w-4 text-error" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-error">
           Verilog HDL Playground
         </span>
         <span className="text-[10px] text-muted-foreground">
@@ -525,7 +525,7 @@ export function VerilogPlayground({
           size="sm"
           onClick={handleSynthesize}
           disabled={isBusy}
-          className="h-7 gap-1 bg-ee-red px-3 text-xs font-semibold text-white hover:bg-ee-red/90"
+          className="h-7 gap-1 bg-error px-3 text-xs font-semibold text-white hover:bg-error/90"
         >
           {state === 'loading-yosys' || state === 'loading-djs' ? (
             <>
@@ -661,7 +661,7 @@ export function VerilogPlayground({
               state === 'loading-djs' ||
               state === 'synth') && (
               <div className="flex items-start gap-2 px-3 py-3 text-[11px] text-zinc-300">
-                <Loader2 className="mt-0.5 h-3.5 w-3.5 shrink-0 animate-spin text-ee-amber" />
+                <Loader2 className="mt-0.5 h-3.5 w-3.5 shrink-0 animate-spin text-warning" />
                 <pre className="ee-mono whitespace-pre-wrap">{statusText}</pre>
               </div>
             )}
@@ -757,7 +757,7 @@ export function VerilogPlayground({
             value="circuit"
             className="m-0 mt-0 px-2 pb-2 focus-visible:outline-none"
           >
-            <div className="ee-scroll max-h-[480px] overflow-auto rounded-md border border-border/40 bg-zinc-50 p-2 dark:bg-zinc-900/40">
+            <div className="ee-scroll max-h-[480px] overflow-auto rounded-sm border border-border/40 bg-zinc-50 p-2 dark:bg-zinc-900/40">
               <div
                 ref={circuitContainerRef}
                 className="djs-host min-h-[320px] w-full"
@@ -777,7 +777,7 @@ export function VerilogPlayground({
             value="waveforms"
             className="m-0 px-2 pb-2 focus-visible:outline-none"
           >
-            <div className="ee-scroll max-h-[480px] overflow-auto rounded-md border border-border/40 bg-zinc-50 p-2 dark:bg-zinc-900/40">
+            <div className="ee-scroll max-h-[480px] overflow-auto rounded-sm border border-border/40 bg-zinc-50 p-2 dark:bg-zinc-900/40">
               <div
                 ref={waveformContainerRef}
                 className="djs-host w-full"

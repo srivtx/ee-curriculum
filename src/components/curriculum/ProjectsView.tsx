@@ -1,7 +1,6 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
 import {
   Select,
   SelectContent,
@@ -9,7 +8,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Accordion } from '@/components/ui/accordion';
 import {
@@ -97,18 +95,15 @@ export function ProjectsView() {
       {/* Header + stats */}
       <section className="mb-6">
         <div className="flex items-center gap-2">
-          <Target className="h-5 w-5 text-ee-teal" aria-hidden />
-          <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+          <Target className="h-5 w-5 text-accent" aria-hidden />
+          <h1 className="text-xl font-normal tracking-[-0.3px] text-ink sm:text-2xl">
             Project Tracker
           </h1>
-          <Badge
-            variant="outline"
-            className="ml-2 border-ee-teal/30 bg-ee-teal/10 text-ee-teal dark:text-ee-teal"
-          >
+          <span className="ml-2 inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent">
             {ALL_PROJECTS.length} projects
-          </Badge>
+          </span>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-body-mid">
           Every bench, simulation, and code project across all 11 phases.
           Mark them off as you ship.
         </p>
@@ -117,28 +112,28 @@ export function ProjectsView() {
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatTile
             icon={CheckCircle2}
-            color="text-ee-green"
+            color="text-accent"
             label="Completed"
             value={`${doneCount} / ${ALL_PROJECTS.length}`}
             sub={`${Math.round((doneCount / ALL_PROJECTS.length) * 100)}%`}
           />
           <StatTile
             icon={CircleDot}
-            color="text-ee-teal"
+            color="text-accent"
             label="Remaining"
             value={`${ALL_PROJECTS.length - doneCount}`}
             sub="to ship"
           />
           <StatTile
             icon={Clock}
-            color="text-ee-amber"
+            color="text-accent"
             label="Hours done"
             value={`${doneHours.toFixed(1)} h`}
             sub={`of ${totalHours.toFixed(0)} h`}
           />
           <StatTile
             icon={TrendingUp}
-            color="text-ee-cyan"
+            color="text-accent"
             label="Difficulty mix"
             value={`${ALL_PROJECTS.filter((p) => p.difficulty === 'Foundation').length}F · ${
               ALL_PROJECTS.filter((p) => p.difficulty === 'Intermediate').length
@@ -149,15 +144,15 @@ export function ProjectsView() {
       </section>
 
       {/* Filters */}
-      <section className="mb-4 rounded-lg border border-border/60 bg-card p-3">
+      <section className="mb-4 rounded-sm border border-hairline bg-canvas-card p-3">
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-1.5 text-xs text-body-mid">
             <Filter className="h-3.5 w-3.5" />
-            Filters
+            <span className="eyebrow text-[11px]">Filters</span>
           </div>
 
           <Select value={phaseFilter} onValueChange={setPhaseFilter}>
-            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 text-xs">
+            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 rounded-sm text-xs">
               <SelectValue placeholder="Phase" />
             </SelectTrigger>
             <SelectContent>
@@ -174,7 +169,7 @@ export function ProjectsView() {
             value={diffFilter}
             onValueChange={(v) => setDiffFilter(v as DiffFilter)}
           >
-            <SelectTrigger className="h-8 w-auto min-w-36 gap-1 text-xs">
+            <SelectTrigger className="h-8 w-auto min-w-36 gap-1 rounded-sm text-xs">
               <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
             <SelectContent>
@@ -191,7 +186,7 @@ export function ProjectsView() {
             value={hoursFilter}
             onValueChange={(v) => setHoursFilter(v as HoursFilter)}
           >
-            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 text-xs">
+            <SelectTrigger className="h-8 w-auto min-w-32 gap-1 rounded-sm text-xs">
               <SelectValue placeholder="Hours" />
             </SelectTrigger>
             <SelectContent>
@@ -206,7 +201,7 @@ export function ProjectsView() {
             value={statusFilter}
             onValueChange={(v) => setStatusFilter(v as StatusFilter)}
           >
-            <SelectTrigger className="h-8 w-auto min-w-28 gap-1 text-xs">
+            <SelectTrigger className="h-8 w-auto min-w-28 gap-1 rounded-sm text-xs">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -221,14 +216,14 @@ export function ProjectsView() {
               variant="ghost"
               size="sm"
               onClick={clearFilters}
-              className="h-8 gap-1 px-2 text-xs text-muted-foreground"
+              className="h-8 gap-1 rounded-full px-2 text-xs text-body-mid"
             >
               <X className="h-3 w-3" />
               Clear
             </Button>
           )}
 
-          <span className="ml-auto text-xs text-muted-foreground">
+          <span className="ml-auto text-xs text-body-mid">
             {filtered.length} of {ALL_PROJECTS.length}
           </span>
         </div>
@@ -236,7 +231,7 @@ export function ProjectsView() {
 
       {/* Project list */}
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border/60 p-10 text-center text-sm text-muted-foreground">
+        <div className="rounded-sm border border-dashed border-hairline p-10 text-center text-sm text-body-mid">
           No projects match your filters.
         </div>
       ) : (
@@ -245,22 +240,15 @@ export function ProjectsView() {
           className="flex flex-col gap-2"
           defaultValue={filtered.length > 0 ? [filtered[0].id] : []}
         >
-          {filtered.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: Math.min(i * 0.02, 0.3) }}
-            >
-              <ProjectCard project={p} />
-            </motion.div>
+          {filtered.map((p) => (
+            <ProjectCard key={p.id} project={p} />
           ))}
         </Accordion>
       )}
 
       {/* Difficulty legend */}
-      <div className="mt-6 flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
-        <span className="font-medium">Legend:</span>
+      <div className="mt-6 flex flex-wrap items-center gap-3 text-[11px] text-body-mid">
+        <span className="text-ink">Legend:</span>
         {(['Foundation', 'Intermediate', 'Advanced'] as const).map((d) => (
           <span key={d} className="inline-flex items-center gap-1">
             <span
@@ -271,7 +259,7 @@ export function ProjectsView() {
               aria-hidden
             />
             {d}
-            <span className="text-muted-foreground/60">
+            <span className="text-body-mid/60">
               ({ALL_PROJECTS.filter((p) => p.difficulty === d).length})
             </span>
           </span>
@@ -299,13 +287,11 @@ function StatTile({
   sub: string;
 }) {
   return (
-    <div className="rounded-lg border border-border/60 bg-card p-3 shadow-sm">
+    <div className="rounded-sm border border-hairline bg-canvas-card p-3">
       <Icon className={cn('h-4 w-4', color)} aria-hidden />
-      <div className="mt-1.5 ee-mono text-lg font-bold tabular-nums text-foreground">
-        {value}
-      </div>
-      <div className="text-[11px] font-medium text-foreground/80">{label}</div>
-      <div className="text-[10px] text-muted-foreground">{sub}</div>
+      <div className="mt-1.5 ee-mono text-lg text-ink tabular-nums">{value}</div>
+      <div className="text-[11px] text-body">{label}</div>
+      <div className="text-[10px] text-body-mid">{sub}</div>
     </div>
   );
 }

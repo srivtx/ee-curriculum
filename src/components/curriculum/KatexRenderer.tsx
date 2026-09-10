@@ -71,7 +71,7 @@ export function KatexFormulaList({ items }: { items: FormulaItem[] }) {
       {items.map((item, i) => (
         <li
           key={i}
-          className="rounded-md border border-border/50 bg-muted/30 px-3 py-2"
+          className="rounded-sm border border-border/50 bg-muted/30 px-3 py-2"
         >
           {item.label && (
             <div className="mb-1 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">

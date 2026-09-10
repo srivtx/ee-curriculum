@@ -77,9 +77,9 @@ def build_body_pdf():
         leftMargin=LEFT_MARGIN, rightMargin=RIGHT_MARGIN,
         topMargin=TOP_MARGIN, bottomMargin=BOTTOM_MARGIN,
         title='Electrical Engineering — A Master Curriculum for Computer Scientists',
-        author='srivtx',
+        author='svx',
         subject='A 12-month project-based EE curriculum for CS engineers',
-        creator='srivtx EE Curriculum v2.0',
+        creator='svx EE Curriculum v3.0',
     )
     doc.multiBuild(story)
     print(f"[build] body PDF done: {OUTPUT_BODY} ({OUTPUT_BODY.stat().st_size//1024} KB)")
@@ -103,9 +103,9 @@ def merge_cover_and_body():
     # Set metadata
     writer.add_metadata({
         '/Title': 'Electrical Engineering — A Master Curriculum for Computer Scientists',
-        '/Author': 'srivtx',
+        '/Author': 'svx (Sribatsha dash)',
         '/Subject': 'A 12-month project-based EE curriculum for CS engineers',
-        '/Creator': 'srivtx EE Curriculum v2.0',
+        '/Creator': 'svx EE Curriculum v3.0',
         '/Keywords': 'electrical engineering, curriculum, computer science, circuits, DSP, control, power, RF, VLSI',
     })
     with open(OUTPUT_FINAL, 'wb') as f:

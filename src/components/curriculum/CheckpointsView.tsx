@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   Select,
   SelectContent,
@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
   ListChecks,
@@ -24,7 +23,7 @@ import {
 } from 'lucide-react';
 import { CURRICULUM, type Phase } from '@/lib/curriculum';
 import { useProgress, checkpointKey } from '@/hooks/useProgress';
-import { formatWeeks, hexToRgba } from './helpers';
+import { formatWeeks } from './helpers';
 import { cn } from '@/lib/utils';
 
 interface CheckpointItem {
@@ -100,29 +99,26 @@ export function CheckpointsView() {
       {/* Header */}
       <section className="mb-6">
         <div className="flex items-center gap-2">
-          <ListChecks className="h-5 w-5 text-ee-amber" aria-hidden />
-          <h1 className="text-xl font-semibold text-foreground sm:text-2xl">
+          <ListChecks className="h-5 w-5 text-accent" aria-hidden />
+          <h1 className="text-xl font-normal tracking-[-0.3px] text-ink sm:text-2xl">
             Checkpoint Flashcards
           </h1>
-          <Badge
-            variant="outline"
-            className="ml-2 border-ee-amber/30 bg-ee-amber/10 text-ee-amber"
-          >
+          <span className="ml-2 inline-flex items-center rounded-full border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] text-accent">
             {ALL_CHECKPOINTS.length} questions
-          </Badge>
+          </span>
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-body-mid">
           Self-test questions for every module. There&apos;s no answer key —
           open the curriculum, work the problem, then rate yourself honestly.
         </p>
       </section>
 
       {/* Phase selector + summary */}
-      <section className="mb-5 flex flex-col gap-3 rounded-lg border border-border/60 bg-card p-4 sm:flex-row sm:items-center">
+      <section className="mb-5 flex flex-col gap-3 rounded-sm border border-hairline bg-canvas-card p-4 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
-          <Layers className="h-4 w-4 text-ee-teal" aria-hidden />
+          <Layers className="h-4 w-4 text-accent" aria-hidden />
           <Select value={phaseId} onValueChange={setPhaseId}>
-            <SelectTrigger className="h-9 w-auto min-w-56 gap-1 text-sm">
+            <SelectTrigger className="h-9 w-auto min-w-56 gap-1 rounded-sm text-sm">
               <SelectValue placeholder="Pick a phase" />
             </SelectTrigger>
             <SelectContent>
@@ -138,24 +134,20 @@ export function CheckpointsView() {
 
         <div className="flex flex-1 flex-col gap-1.5 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 text-ee-green">
+            <span className="inline-flex items-center gap-1 text-accent">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Got it
             </span>
-            <span className="ee-mono font-semibold tabular-nums">
-              {gotItCount}
-            </span>
+            <span className="ee-mono text-ink tabular-nums">{gotItCount}</span>
           </div>
           <div className="flex items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 text-ee-amber">
+            <span className="inline-flex items-center gap-1 text-warning">
               <AlertCircle className="h-3.5 w-3.5" />
               Need review
             </span>
-            <span className="ee-mono font-semibold tabular-nums">
-              {needReviewCount}
-            </span>
+            <span className="ee-mono text-ink tabular-nums">{needReviewCount}</span>
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-xs text-body-mid">
             answered: <span className="ee-mono">{answeredCount}</span> /{' '}
             <span className="ee-mono">{filtered.length}</span>
           </div>
@@ -165,9 +157,9 @@ export function CheckpointsView() {
           <div className="hidden items-center gap-2 sm:flex">
             <Progress
               value={pct}
-              className="h-2 w-32 bg-muted [&>div]:bg-ee-green"
+              className="h-2 w-32 bg-canvas-mid [&>div]:bg-accent"
             />
-            <span className="ee-mono w-10 text-right text-xs font-semibold tabular-nums text-ee-green">
+            <span className="ee-mono w-10 text-right text-xs text-accent tabular-nums">
               {Math.round(pct)}%
             </span>
           </div>
@@ -176,7 +168,7 @@ export function CheckpointsView() {
               variant="ghost"
               size="sm"
               onClick={resetPhase}
-              className="h-8 gap-1 text-xs text-muted-foreground"
+              className="h-8 gap-1 rounded-full text-xs text-body-mid"
             >
               <RotateCcw className="h-3 w-3" />
               Reset
@@ -194,25 +186,25 @@ export function CheckpointsView() {
               <button
                 key={phase.id}
                 onClick={() => setPhaseId(phase.id)}
-                className="group rounded-lg border border-border/60 bg-card p-3 text-left transition-colors hover:border-ee-teal/40 hover:bg-ee-teal/5"
+                className="group rounded-sm border border-hairline bg-canvas-card p-3 text-left transition-colors hover:border-accent/40 hover:bg-accent/5"
                 style={{
-                  borderLeft: `3px solid ${phase.color}`,
+                  borderLeft: '2px solid var(--accent)',
                 }}
               >
                 <div className="flex items-baseline justify-between gap-2">
-                  <span className="ee-mono text-[10px] font-bold text-muted-foreground">
-                    P{phase.index}
+                  <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-hairline bg-canvas-soft font-pixel text-[10px] text-accent">
+                    {phase.index}
                   </span>
-                  <span className="ee-mono text-[10px] tabular-nums text-muted-foreground">
+                  <span className="ee-mono text-[10px] text-body-mid tabular-nums">
                     {got}/{total}
                   </span>
                 </div>
-                <p className="mt-0.5 truncate text-xs font-medium text-foreground group-hover:text-ee-teal-dark dark:group-hover:text-ee-teal">
+                <p className="mt-1 truncate text-xs text-ink group-hover:text-accent">
                   {phase.title}
                 </p>
                 <Progress
                   value={p}
-                  className="mt-1.5 h-1 bg-muted [&>div]:bg-ee-green"
+                  className="mt-1.5 h-1 bg-canvas-mid [&>div]:bg-accent"
                 />
               </button>
             );
@@ -249,7 +241,7 @@ export function CheckpointsView() {
       </section>
 
       {filtered.length === 0 && (
-        <div className="rounded-lg border border-dashed border-border/60 p-10 text-center text-sm text-muted-foreground">
+        <div className="rounded-sm border border-dashed border-hairline p-10 text-center text-sm text-body-mid">
           No checkpoints in this phase yet.
         </div>
       )}
@@ -273,50 +265,34 @@ function Flashcard({
   return (
     <article
       className={cn(
-        'relative flex h-full flex-col overflow-hidden rounded-xl border bg-card p-4 shadow-sm transition-colors',
+        'relative flex h-full flex-col overflow-hidden rounded-sm border bg-canvas-card p-4',
         status === 'got_it'
-          ? 'border-ee-green/40'
+          ? 'border-accent/40'
           : status === 'need_review'
-          ? 'border-ee-amber/40'
-          : 'border-border/60'
+          ? 'border-warning/40'
+          : 'border-hairline'
       )}
-      style={{
-        backgroundImage: `linear-gradient(to bottom right, ${hexToRgba(
-          item.phaseColor,
-          0.06
-        )} 0%, transparent 50%)`,
-      }}
     >
       {/* phase + module breadcrumb */}
-      <div className="mb-2 flex items-center gap-1.5 text-[10px] text-muted-foreground">
-        <span
-          className="ee-mono inline-flex h-4 min-w-4 items-center justify-center rounded px-1 text-[9px] font-bold text-white"
-          style={{ backgroundColor: item.phaseColor }}
-        >
-          P{item.phaseIndex}
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] text-body-mid">
+        <span className="flex h-5 w-5 items-center justify-center rounded-sm border border-hairline bg-canvas-soft font-pixel text-[10px] text-accent">
+          {item.phaseIndex}
         </span>
         <span className="truncate">{item.moduleTitle}</span>
       </div>
 
       {/* Question */}
       <div className="flex items-start gap-2">
-        <HelpCircle
-          className="mt-0.5 h-4 w-4 shrink-0 text-ee-amber"
-          aria-hidden
-        />
-        <p className="text-sm font-medium leading-relaxed text-foreground">
-          {item.question}
-        </p>
+        <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+        <p className="text-sm leading-relaxed text-ink">{item.question}</p>
       </div>
 
       {/* Reveal prompt */}
       <div className="mt-3 flex-1">
         {isRevealed ? (
-          <div className="rounded-md border border-border/50 bg-muted/30 px-3 py-2">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-              Self-check
-            </p>
-            <p className="mt-1 text-xs text-foreground/70">
+          <div className="rounded-sm border border-hairline bg-canvas px-3 py-2">
+            <p className="eyebrow text-[11px] text-body-mid">Self-check</p>
+            <p className="mt-1 text-xs text-body-mid">
               Work through it on paper or in code. No answer key — these are
               open-ended self-tests. Then rate yourself below.
             </p>
@@ -324,7 +300,7 @@ function Flashcard({
         ) : (
           <button
             onClick={onToggleReveal}
-            className="inline-flex items-center gap-1.5 rounded-md border border-ee-amber/30 bg-ee-amber/5 px-2.5 py-1 text-xs font-medium text-ee-amber transition-colors hover:bg-ee-amber/10"
+            className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/5 px-2.5 py-1 text-xs text-accent transition-colors hover:bg-accent/10"
           >
             <Eye className="h-3 w-3" />
             Show prompt
@@ -333,16 +309,16 @@ function Flashcard({
       </div>
 
       {/* Rating buttons */}
-      <div className="mt-3 flex items-center gap-2 border-t border-border/40 pt-3">
+      <div className="mt-3 flex items-center gap-2 border-t border-hairline pt-3">
         <Button
           size="sm"
           variant={status === 'got_it' ? 'default' : 'outline'}
           onClick={() => onRate('got_it')}
           className={cn(
-            'h-7 gap-1 px-2 text-xs',
+            'h-7 gap-1 rounded-full px-2 text-xs',
             status === 'got_it'
-              ? 'bg-ee-green text-white hover:bg-ee-green/90'
-              : 'text-ee-green border-ee-green/40 hover:bg-ee-green/10'
+              ? 'bg-accent text-canvas hover:bg-accent/90'
+              : 'border-accent/40 text-accent hover:bg-accent/10'
           )}
         >
           <CheckCircle2 className="h-3 w-3" />
@@ -353,10 +329,10 @@ function Flashcard({
           variant={status === 'need_review' ? 'default' : 'outline'}
           onClick={() => onRate('need_review')}
           className={cn(
-            'h-7 gap-1 px-2 text-xs',
+            'h-7 gap-1 rounded-full px-2 text-xs',
             status === 'need_review'
-              ? 'bg-ee-amber text-white hover:bg-ee-amber/90'
-              : 'text-ee-amber border-ee-amber/40 hover:bg-ee-amber/10'
+              ? 'bg-warning text-canvas hover:bg-warning/90'
+              : 'border-warning/40 text-warning hover:bg-warning/10'
           )}
         >
           <AlertCircle className="h-3 w-3" />
@@ -367,7 +343,7 @@ function Flashcard({
             size="sm"
             variant="ghost"
             onClick={onToggleReveal}
-            className="ml-auto h-7 gap-1 px-2 text-xs text-muted-foreground"
+            className="ml-auto h-7 gap-1 rounded-full px-2 text-xs text-body-mid"
           >
             <EyeOff className="h-3 w-3" />
             Hide

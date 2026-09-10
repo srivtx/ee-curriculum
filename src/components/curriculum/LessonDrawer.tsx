@@ -8,18 +8,13 @@ import {
   SheetTitle,
   SheetDescription,
 } from '@/components/ui/sheet';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircle2,
   Circle,
   Clock,
-  CircuitBoard,
   Lightbulb,
-  Sigma,
-  Sparkles,
-  Target,
-  Waves,
+  ArrowDown,
 } from 'lucide-react';
 import type { Lesson, Module } from '@/lib/curriculum';
 import { useProgress } from '@/hooks/useProgress';
@@ -40,6 +35,10 @@ import { KiCanvasEmbed } from './KiCanvasEmbed';
 import { WebAudioScope } from './WebAudioScope';
 import { IQEngineEmbed } from './IQEngineEmbed';
 import { cn } from '@/lib/utils';
+import {
+  getLessonFeatures,
+  type FeatureMeta,
+} from './lessonFeatures';
 
 export interface LessonDrawerPayload {
   lesson: Lesson;
@@ -69,7 +68,7 @@ export function LessonDrawer({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-full gap-0 sm:max-w-2xl lg:max-w-3xl p-0"
+        className="w-full gap-0 sm:max-w-2xl lg:max-w-3xl bg-canvas p-0"
       >
         <DrawerInner payload={payload} onOpenChange={onOpenChange} />
       </SheetContent>
@@ -91,114 +90,104 @@ function DrawerInner({
   const done = isLessonDone(lesson.id);
 
   const csBridge = lesson.cs_bridge ?? module?.cs_bridge;
+  const features = getLessonFeatures(lesson, module?.cs_bridge);
+
+  // Scroll the scrollable region (not the window) to the anchor.
+  const scrollToFeature = (anchor: string) => {
+    const el = document.getElementById(anchor);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Briefly pulse the section to confirm the scroll target.
+      el.classList.add('feature-flash');
+      window.setTimeout(() => {
+        el.classList.remove('feature-flash');
+      }, 1200);
+    }
+  };
 
   return (
     <>
-      {/* Scrollable content */}
-      <div className="ee-scroll flex-1 overflow-y-auto">
-        <SheetHeader className="gap-2 border-b border-border/60 bg-gradient-to-br from-ee-teal/5 to-transparent px-5 pb-4 pt-5">
+      <div className="ee-scroll flex-1 overflow-y-auto bg-canvas">
+        <SheetHeader className="gap-2 border-b border-hairline bg-canvas-soft px-5 pb-4 pt-5">
           {/* breadcrumb */}
-          <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+          <div className="eyebrow flex items-center gap-1.5 text-[11px] text-body-mid">
             {phaseTitle && (
               <>
                 <span className="truncate">{phaseTitle}</span>
                 <span aria-hidden>/</span>
               </>
             )}
-            {moduleTitle && (
-              <span className="truncate">{moduleTitle}</span>
-            )}
+            {moduleTitle && <span className="truncate">{moduleTitle}</span>}
           </div>
 
-          <div className="flex items-start justify-between gap-3">
-            <SheetTitle className="flex items-start gap-2 text-lg font-semibold leading-tight sm:text-xl">
-              <TypeIcon
-                className={cn('mt-1 h-5 w-5 shrink-0', meta.color)}
-                aria-hidden
-              />
-              <span>{lesson.title}</span>
-            </SheetTitle>
-          </div>
+          <SheetTitle className="flex items-start gap-2 text-xl font-normal leading-tight tracking-[-0.3px] sm:text-2xl">
+            <TypeIcon className={cn('mt-1 h-5 w-5 shrink-0', meta.color)} aria-hidden />
+            <span>{lesson.title}</span>
+          </SheetTitle>
 
           <SheetDescription className="flex flex-wrap items-center gap-2 text-xs">
-            <Badge
-              variant="outline"
+            <span
               className={cn(
-                'border px-1.5 py-0 text-[10px] font-medium uppercase',
-                'border-ee-teal/30 bg-ee-teal/10 text-ee-teal dark:text-ee-teal'
+                'inline-flex items-center gap-1 rounded-full border border-hairline px-2 py-0.5',
+                'eyebrow text-[11px] text-body-mid'
               )}
             >
-              <TypeIcon className="mr-1 h-2.5 w-2.5" />
+              <TypeIcon className="h-2.5 w-2.5" />
               {meta.label}
-            </Badge>
-            <span className="inline-flex items-center gap-1 text-muted-foreground">
+            </span>
+            <span className="inline-flex items-center gap-1 text-body-mid">
               <Clock className="h-3 w-3" />
               {formatDuration(lesson.duration_min)}
             </span>
             {module && (
-              <Badge
-                variant="outline"
+              <span
                 className={cn(
-                  'border px-1.5 py-0 text-[10px]',
+                  'inline-flex items-center gap-1 rounded-full border px-2 py-0.5',
+                  'eyebrow text-[11px]',
                   DIFFICULTY_STYLES[module.difficulty].badge
                 )}
               >
                 <span
                   className={cn(
-                    'mr-1 inline-block h-1.5 w-1.5 rounded-full',
+                    'inline-block h-1.5 w-1.5 rounded-full',
                     DIFFICULTY_STYLES[module.difficulty].dot
                   )}
                   aria-hidden
                 />
                 {DIFFICULTY_STYLES[module.difficulty].label}
-              </Badge>
-            )}
-            {lesson.has_playground && (
-              <Badge
-                variant="outline"
-                className="border-ee-teal/40 bg-ee-teal/10 px-1.5 py-0 text-[10px] text-ee-teal dark:text-ee-teal"
-              >
-                <Sparkles className="mr-1 h-2.5 w-2.5" />
-                Interactive
-              </Badge>
-            )}
-            {lesson.has_circuit && (
-              <Badge
-                variant="outline"
-                className="border-ee-cyan/40 bg-ee-cyan/10 px-1.5 py-0 text-[10px] text-ee-cyan dark:text-ee-cyan"
-              >
-                <CircuitBoard className="mr-1 h-2.5 w-2.5" />
-                Circuit
-              </Badge>
+              </span>
             )}
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-5 px-5 py-5">
+          {/* ── Interactive features jump-list (TOP of the drawer) ───────
+              Design System v3 task D-website-redesign Goal 3.3. */}
+          <InteractiveFeaturesSection
+            features={features}
+            onJump={scrollToFeature}
+          />
+
           {/* Summary */}
           <section>
-            <h3 className="mb-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-              Summary
-            </h3>
-            <p className="text-sm leading-relaxed text-foreground/90">
-              {lesson.summary}
-            </p>
+            <h3 className="eyebrow mb-1.5 text-[11px] text-body-mid">Summary</h3>
+            <p className="text-sm leading-relaxed text-body">{lesson.summary}</p>
           </section>
 
           {/* Key takeaways */}
           {lesson.key_takeaways.length > 0 && (
             <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              <h3 className="eyebrow mb-2 text-[11px] text-body-mid">
                 Key takeaways
               </h3>
               <ul className="space-y-1.5">
                 {lesson.key_takeaways.map((kt, i) => (
                   <li
                     key={i}
-                    className="flex items-start gap-2 rounded-md border border-border/50 bg-muted/20 px-2.5 py-1.5 text-sm text-foreground/90"
+                    className="flex items-start gap-2 rounded-sm border border-hairline bg-canvas-card px-2.5 py-1.5 text-sm text-body"
                   >
                     <span
-                      className="mt-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-ee-teal px-1 text-[10px] font-bold text-white"
+                      className="mt-0.5 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-accent px-1 text-[10px] text-canvas"
                       aria-hidden
                     >
                       {i + 1}
@@ -214,20 +203,18 @@ function DrawerInner({
 
           {/* CS BRIDGE callout */}
           {csBridge && (
-            <section className="overflow-hidden rounded-lg border border-ee-amber/40 bg-ee-amber/8">
-              <div className="flex items-center gap-2 border-b border-ee-amber/30 bg-ee-amber/15 px-3 py-2">
-                <Lightbulb
-                  className="h-4 w-4 text-ee-amber"
-                  aria-hidden
-                />
-                <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-ee-amber">
-                  CS Bridge
-                </span>
-                <span className="text-[10px] text-ee-amber/80">
+            <section
+              id="section-cs-bridge"
+              className="scroll-mt-4 overflow-hidden rounded-sm border-l-2 border-accent bg-accent-soft/20"
+            >
+              <div className="flex items-center gap-2 border-b border-accent/20 px-3 py-2">
+                <Lightbulb className="h-4 w-4 text-accent" aria-hidden />
+                <span className="eyebrow text-[11px] text-accent">CS Bridge</span>
+                <span className="text-[10px] text-body-mid">
                   {'· the CS \u2194 EE analogy'}
                 </span>
               </div>
-              <p className="ee-mono px-3 py-2.5 text-[13px] leading-relaxed text-foreground/85">
+              <p className="ee-mono px-3 py-2.5 text-[13px] leading-relaxed text-body">
                 {csBridge}
               </p>
             </section>
@@ -235,136 +222,122 @@ function DrawerInner({
 
           {/* Key Formulas (KaTeX) */}
           {lesson.formulas && lesson.formulas.length > 0 && (
-            <section>
-              <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                <Sigma className="h-3.5 w-3.5 text-ee-teal" aria-hidden />
-                Key Formulas
-              </h3>
+            <Section id="section-katex" eyebrow="Key Formulas">
               <KatexFormulaList items={lesson.formulas} />
-            </section>
+            </Section>
           )}
 
           {/* Falstad circuit simulator */}
           {lesson.falstad_url && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Try this circuit
-              </h3>
+            <Section id="section-falstad" eyebrow="Try this circuit">
               <FalstadEmbed
                 circuitUrl={lesson.falstad_url}
                 title={lesson.title}
                 caption="Click and drag in the simulator to interact. Use the scopes to see waveforms."
               />
-            </section>
+            </Section>
           )}
 
           {/* WaveDrom timing diagram */}
           {lesson.wavedrom && (
-            <section>
-              <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                <Waves className="h-3.5 w-3.5 text-ee-teal" aria-hidden />
-                Timing Diagram
-              </h3>
+            <Section id="section-wavedrom" eyebrow="Timing Diagram">
               <WaveDromDiagram wavejson={lesson.wavedrom} />
-            </section>
+            </Section>
           )}
 
           {/* Bode Plot Playground */}
           {(lesson.bode || lesson.has_bode) && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Interactive Bode Plot
-              </h3>
+            <Section id="section-bode" eyebrow="Interactive Bode Plot">
               <BodePlot
                 numerator={lesson.bode?.numerator}
                 denominator={lesson.bode?.denominator}
                 label={lesson.bode?.label}
                 note={lesson.bode?.note}
               />
-            </section>
+            </Section>
           )}
 
-          {/* Heavy SPICE Playground (ngspice WASM) — placed above the lightweight
-              spicey playground because it is more capable (real semiconductor
-              models, .op/.dc/.tran/.ac, subcircuits, MOSFET/BJT models). */}
+          {/* Heavy SPICE Playground (ngspice WASM) */}
           {(lesson.has_heavy_spice || lesson.heavy_spice_starter) && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Heavy SPICE (ngspice WASM)
-              </h3>
+            <Section
+              id="section-heavy-spice"
+              eyebrow="Heavy SPICE (ngspice WASM)"
+            >
               <HeavySpicePlayground
                 starterNetlist={lesson.heavy_spice_starter}
                 lessonTitle={lesson.title}
               />
-            </section>
+            </Section>
           )}
 
-          {/* SPICE Playground */}
+          {/* SPICE Playground (spicey) */}
           {lesson.spice_netlist && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                SPICE Playground
-              </h3>
+            <Section id="section-spice" eyebrow="SPICE Playground">
               <SpicePlayground
                 netlist={lesson.spice_netlist}
                 title={`SPICE · ${lesson.title}`}
               />
-            </section>
+            </Section>
           )}
 
-          {/* Verilog HDL Playground (Yosys WASM + digitaljs) */}
+          {/* Verilog HDL Playground */}
           {(lesson.has_verilog || lesson.verilog || lesson.verilog_starter) && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Verilog HDL Playground (Yosys WASM)
-              </h3>
+            <Section
+              id="section-verilog"
+              eyebrow="Verilog HDL Playground (Yosys WASM)"
+            >
               <VerilogPlayground
                 starterCode={lesson.verilog_starter}
                 lessonTitle={lesson.title}
               />
-            </section>
+            </Section>
           )}
 
-          {/* KiCanvas (KiCad schematic viewer) */}
+          {/* KiCanvas */}
           {lesson.kicanvas_url && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                KiCad Schematic
-              </h3>
+            <Section id="section-kicanvas" eyebrow="KiCad Schematic">
               <KiCanvasEmbed url={lesson.kicanvas_url} />
-            </section>
+            </Section>
           )}
 
-          {/* Web Audio Oscilloscope + Spectrum */}
+          {/* Web Audio Oscilloscope */}
           {lesson.has_scope && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Web Audio Oscilloscope
-              </h3>
+            <Section id="section-webaudio" eyebrow="Web Audio Oscilloscope">
               <WebAudioScope lessonTitle={lesson.title} />
-            </section>
+            </Section>
           )}
 
           {/* IQEngine SDR Spectrogram */}
           {lesson.iqengine_url !== undefined && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                SDR Spectrogram
-              </h3>
+            <Section id="section-iqengine" eyebrow="SDR Spectrogram">
               <IQEngineEmbed recordingUrl={lesson.iqengine_url} />
-            </section>
+            </Section>
           )}
 
-          {/* Circuit note */}
+          {/* WebSerial section — always shown (the FAB is global) */}
+          <Section id="section-webserial" eyebrow="Hardware (WebSerial)">
+            <div className="rounded-sm border border-hairline bg-canvas-card p-3 text-xs text-body">
+              <p>
+                This lesson pairs with the{' '}
+                <span className="text-accent">WebSerial hardware connect</span>{' '}
+                button (bottom-right floating action button). Click it to
+                stream bytes from a USB-serial device — Arduino, ESP32, or
+                STM32 — straight into the browser.
+              </p>
+              <p className="mt-2 text-body-mid">
+                Use Chrome, Edge, or Opera. Firefox needs a flag; Safari
+                has no support.
+              </p>
+            </div>
+          </Section>
+
+          {/* Circuit note (legacy has_circuit flag) */}
           {lesson.has_circuit && (
-            <section className="rounded-md border border-ee-cyan/30 bg-ee-cyan/5 px-3 py-2.5 text-xs text-foreground/80">
-              <div className="flex items-center gap-1.5 text-ee-cyan">
-                <CircuitBoard className="h-3.5 w-3.5" aria-hidden />
-                <span className="text-[11px] font-bold uppercase tracking-[0.16em]">
-                  Circuit visualization available
-                </span>
+            <section className="rounded-sm border border-hairline bg-canvas-card px-3 py-2.5 text-xs text-body">
+              <div className="eyebrow flex items-center gap-1.5 text-[11px] text-body-mid">
+                Circuit visualization available
               </div>
-              <p className="mt-1">
+              <p className="mt-1 text-body-mid">
                 This lesson has an accompanying circuit diagram. See the full
                 curriculum PDF for the schematic.
               </p>
@@ -374,23 +347,22 @@ function DrawerInner({
           {/* Related projects (if any in the module) */}
           {module && module.projects.length > 0 && (
             <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+              <h3 className="eyebrow mb-2 text-[11px] text-body-mid">
                 Hands-on project in this module
               </h3>
-              <div className="rounded-md border border-border/50 bg-muted/20 p-3">
+              <div className="rounded-sm border border-hairline bg-canvas-card p-3">
                 <div className="flex items-start gap-2">
-                  <Target
-                    className="mt-0.5 h-4 w-4 text-ee-teal"
-                    aria-hidden
-                  />
+                  <span className="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full border border-accent/40 text-accent">
+                    <ArrowDown className="h-3 w-3" aria-hidden />
+                  </span>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm text-ink">
                       {module.projects[0].title}
                     </p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">
+                    <p className="mt-0.5 text-xs text-body-mid">
                       {module.projects[0].goal}
                     </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground">
+                    <p className="mt-1 text-[11px] text-body-mid">
                       See it in the Projects tab →
                     </p>
                   </div>
@@ -399,36 +371,31 @@ function DrawerInner({
             </section>
           )}
 
-          {/* Playground */}
+          {/* Playground (Python/Pyodide) */}
           {lesson.has_playground && (
-            <section>
-              <h3 className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                Try it in Python
-              </h3>
+            <Section id="section-python" eyebrow="Try it in Python">
               <PythonPlayground lessonId={lesson.id} />
-            </section>
+            </Section>
           )}
 
-          {/* Footer spacer */}
           <div className="h-2" />
         </div>
       </div>
 
       {/* Footer: mark complete */}
-      <div className="border-t border-border/60 bg-muted/30 px-5 py-3">
+      <div className="border-t border-hairline bg-canvas-soft px-5 py-3">
         <div className="flex items-center justify-between gap-3">
           <Button
             variant={done ? 'outline' : 'default'}
             onClick={() => toggleLesson(lesson.id)}
             className={cn(
-              'gap-2',
-              !done &&
-                'bg-ee-green text-white hover:bg-ee-green/90'
+              'gap-2 rounded-full',
+              !done && 'bg-accent text-canvas hover:bg-accent/90'
             )}
           >
             {done ? (
               <>
-                <CheckCircle2 className="h-4 w-4 text-ee-green" />
+                <CheckCircle2 className="h-4 w-4 text-accent" />
                 Completed
               </>
             ) : (
@@ -442,12 +409,95 @@ function DrawerInner({
             variant="ghost"
             size="sm"
             onClick={() => onOpenChange(false)}
-            className="text-muted-foreground"
+            className="rounded-full text-body-mid"
           >
             Close
           </Button>
         </div>
       </div>
     </>
+  );
+}
+
+/** Section wrapper with the v3 eyebrow + scroll anchor + flash-on-jump. */
+function Section({
+  id,
+  eyebrow,
+  children,
+}: {
+  id: string;
+  eyebrow: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className="scroll-mt-4 rounded-sm">
+      <h3 className="eyebrow mb-2 text-[11px] text-accent">{eyebrow}</h3>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * Interactive Features jump-list — Design System v3 task D-website-redesign
+ * Goal 3.3.
+ *
+ * Lists every interactive feature present on the lesson at the TOP of the
+ * drawer, with icon + label. Each item is clickable and scrolls to the
+ * corresponding section (and briefly pulses it). If a lesson has no
+ * interactive features, shows "Reading only" muted text.
+ */
+function InteractiveFeaturesSection({
+  features,
+  onJump,
+}: {
+  features: FeatureMeta[];
+  onJump: (anchor: string) => void;
+}) {
+  if (features.length === 0) {
+    return (
+      <section className="rounded-sm border border-hairline border-dashed bg-canvas-card px-3 py-2.5">
+        <div className="eyebrow text-[11px] text-body-mid">
+          Interactive features
+        </div>
+        <p className="mt-1 text-xs text-body-mid">
+          Reading only — no interactive elements in this lesson.
+        </p>
+      </section>
+    );
+  }
+  return (
+    <section className="rounded-sm border border-accent/30 bg-accent-soft/20 px-3 py-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="eyebrow text-[11px] text-accent">
+          Interactive features · {features.length}
+        </div>
+        <span className="text-[10px] text-body-mid">click to jump ↓</span>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {features.map((f) => {
+          const Icon = f.icon;
+          const tierCls =
+            f.tier === 'active'
+              ? 'border-accent/40 text-accent hover:bg-accent/10'
+              : f.tier === 'hardware'
+              ? 'border-warning/40 text-warning hover:bg-warning/10'
+              : 'border-hairline text-body-mid hover:bg-canvas-soft hover:text-ink';
+          return (
+            <button
+              key={f.key}
+              onClick={() => onJump(f.anchor)}
+              className={cn(
+                'inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs transition-colors duration-150',
+                tierCls
+              )}
+              aria-label={`Jump to ${f.label}`}
+            >
+              <Icon className="h-3 w-3" aria-hidden />
+              {f.label}
+            </button>
+          );
+        })}
+      </div>
+    </section>
   );
 }

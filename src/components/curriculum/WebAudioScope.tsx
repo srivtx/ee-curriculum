@@ -377,7 +377,7 @@ export function WebAudioScope({
         Math.floor(0.1 * ctxSampleRate),
       );
       const startIdx = buf.length - samplesToShow;
-      scopeCtx.strokeStyle = '#2dd4bf'; // ee-teal-ish
+      scopeCtx.strokeStyle = '#2dd4bf'; // accent-ish
       scopeCtx.lineWidth = 1.8;
       scopeCtx.beginPath();
       for (let i = startIdx; i < buf.length; i++) {
@@ -463,26 +463,26 @@ export function WebAudioScope({
   const freqSliderValue = freqToSlider(freq);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-teal/30 bg-background">
+    <div className="overflow-hidden rounded-sm border border-accent/30 bg-background">
       {/* Header */}
-      <div className="flex items-center gap-2 border-b border-border/60 bg-ee-teal/8 px-3 py-2">
-        <Activity className="h-4 w-4 text-ee-teal" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-teal">
+      <div className="flex items-center gap-2 border-b border-border/60 bg-accent/8 px-3 py-2">
+        <Activity className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
           {headerTitle}
         </span>
         <span className="text-[10px] text-muted-foreground">
           (Web Audio API · 60 fps scope + FFT)
         </span>
         {running && (
-          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-ee-green/15 px-2 py-0.5 text-[10px] font-medium text-ee-green">
-            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-ee-green" />
+          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-medium text-accent">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
             LIVE
           </span>
         )}
       </div>
 
       {!supported && (
-        <div className="flex items-start gap-2 border-b border-ee-red/30 bg-ee-red/8 px-3 py-2.5 text-xs text-ee-red">
+        <div className="flex items-start gap-2 border-b border-error/30 bg-error/8 px-3 py-2.5 text-xs text-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
           <div>
             <p className="font-semibold">Web Audio API not supported</p>
@@ -511,9 +511,9 @@ export function WebAudioScope({
                 key={w.value}
                 htmlFor={`wave-${w.value}`}
                 className={cn(
-                  'flex cursor-pointer flex-col items-center gap-1 rounded-md border px-1 py-1.5 text-[10px] font-medium transition-colors',
+                  'flex cursor-pointer flex-col items-center gap-1 rounded-sm border px-1 py-1.5 text-[10px] font-medium transition-colors',
                   waveform === w.value
-                    ? 'border-ee-teal/60 bg-ee-teal/15 text-ee-teal'
+                    ? 'border-accent/60 bg-accent/15 text-accent'
                     : 'border-border/60 bg-background hover:bg-muted/40 text-muted-foreground',
                   (micOn || !supported) && 'cursor-not-allowed opacity-50',
                 )}
@@ -536,7 +536,7 @@ export function WebAudioScope({
             <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Frequency
             </Label>
-            <span className="ee-mono text-[11px] text-ee-teal">
+            <span className="ee-mono text-[11px] text-accent">
               {formatFreq(freq)}
             </span>
           </div>
@@ -563,7 +563,7 @@ export function WebAudioScope({
             <Label className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
               Amplitude
             </Label>
-            <span className="ee-mono text-[11px] text-ee-teal">
+            <span className="ee-mono text-[11px] text-accent">
               {(amp * 100).toFixed(0)}%
             </span>
           </div>
@@ -593,8 +593,8 @@ export function WebAudioScope({
           className={cn(
             'h-7 gap-1 px-3 text-xs font-semibold text-white',
             running
-              ? 'bg-ee-red hover:bg-ee-red/90'
-              : 'bg-ee-green hover:bg-ee-green/90',
+              ? 'bg-error hover:bg-error/90'
+              : 'bg-accent hover:bg-accent/90',
           )}
         >
           {running ? (
@@ -617,8 +617,8 @@ export function WebAudioScope({
           className={cn(
             'h-7 gap-1 px-2 text-xs',
             micOn
-              ? 'border-ee-red/40 text-ee-red hover:bg-ee-red/10'
-              : 'border-ee-amber/40 text-ee-amber hover:bg-ee-amber/10',
+              ? 'border-error/40 text-error hover:bg-error/10'
+              : 'border-warning/40 text-warning hover:bg-warning/10',
           )}
           title={micOn ? 'Turn microphone off' : 'Use microphone as signal source'}
         >
@@ -635,7 +635,7 @@ export function WebAudioScope({
           )}
         </Button>
         {error && (
-          <span className="text-[11px] text-ee-red">{error}</span>
+          <span className="text-[11px] text-error">{error}</span>
         )}
         <span className="ml-auto text-[10px] text-muted-foreground">
           {micOn

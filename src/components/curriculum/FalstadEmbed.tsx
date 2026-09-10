@@ -41,7 +41,7 @@ export function FalstadEmbed({
 
   if (!isAllowed) {
     return (
-      <div className="rounded-md border border-ee-red/40 bg-ee-red/8 px-3 py-2.5 text-xs text-ee-red">
+      <div className="rounded-sm border border-error/40 bg-error/8 px-3 py-2.5 text-xs text-error">
         <div className="flex items-center gap-1.5">
           <AlertTriangle className="h-3.5 w-3.5" aria-hidden />
           <span className="font-semibold uppercase tracking-wide">
@@ -56,10 +56,10 @@ export function FalstadEmbed({
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-cyan/30 bg-background">
-      <div className="flex items-center gap-2 border-b border-border/60 bg-ee-cyan/5 px-3 py-2">
-        <CircuitBoard className="h-4 w-4 text-ee-cyan" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-cyan">
+    <div className="overflow-hidden rounded-sm border border-accent/30 bg-background">
+      <div className="flex items-center gap-2 border-b border-border/60 bg-accent/5 px-3 py-2">
+        <CircuitBoard className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
           {title}
         </span>
         <span className="text-[10px] text-muted-foreground">
@@ -78,7 +78,7 @@ export function FalstadEmbed({
           href={circuitUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-ee-cyan hover:bg-ee-cyan/10"
+          className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-medium text-accent hover:bg-accent/10"
         >
           <ExternalLink className="h-3 w-3" />
           Open in Falstad

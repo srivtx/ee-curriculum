@@ -69,10 +69,10 @@ export function WaveDromDiagram({ wavejson, title = 'Timing diagram' }: WaveDrom
   }, [wavejson]);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-teal/30 bg-background">
-      <div className="flex items-center gap-2 border-b border-border/60 bg-ee-teal/5 px-3 py-2">
-        <Activity className="h-4 w-4 text-ee-teal" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-teal-dark dark:text-ee-teal">
+    <div className="overflow-hidden rounded-sm border border-accent/30 bg-background">
+      <div className="flex items-center gap-2 border-b border-border/60 bg-accent/5 px-3 py-2">
+        <Activity className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent dark:text-accent">
           {title}
         </span>
         <span className="text-[10px] text-muted-foreground">
@@ -81,7 +81,7 @@ export function WaveDromDiagram({ wavejson, title = 'Timing diagram' }: WaveDrom
       </div>
       <div className="overflow-x-auto ee-scroll px-3 py-3">
         {error ? (
-          <div className="flex items-start gap-2 rounded border border-ee-red/40 bg-ee-red/8 px-3 py-2 text-xs text-ee-red">
+          <div className="flex items-start gap-2 rounded border border-error/40 bg-error/8 px-3 py-2 text-xs text-error">
             <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
             <div>
               <div className="font-semibold">WaveDrom render error</div>

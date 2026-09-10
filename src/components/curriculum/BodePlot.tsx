@@ -307,11 +307,11 @@ export function BodePlot({ numerator, denominator, label, note }: BodePlotProps)
   );
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-teal/30 bg-background">
+    <div className="overflow-hidden rounded-sm border border-accent/30 bg-background">
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-ee-teal/5 px-3 py-2">
-        <Activity className="h-4 w-4 text-ee-teal" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-teal-dark dark:text-ee-teal">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-accent/5 px-3 py-2">
+        <Activity className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent dark:text-accent">
           Interactive Bode Plot
         </span>
         {label && (
@@ -355,7 +355,7 @@ export function BodePlot({ numerator, denominator, label, note }: BodePlotProps)
               step={0.01}
               value={Math.log10(wn)}
               onChange={(e) => setWn(Math.pow(10, parseFloat(e.target.value)))}
-              className="w-full accent-[color:var(--ee-teal)]"
+              className="w-full accent-[color:var(--accent)]"
               aria-label="Natural frequency (log scale)"
             />
             <div className="mt-0.5 flex justify-between text-[9px] text-muted-foreground">
@@ -379,7 +379,7 @@ export function BodePlot({ numerator, denominator, label, note }: BodePlotProps)
               step={0.01}
               value={zeta}
               onChange={(e) => setZeta(parseFloat(e.target.value))}
-              className="w-full accent-[color:var(--ee-teal)]"
+              className="w-full accent-[color:var(--accent)]"
               aria-label="Damping ratio"
             />
             <div className="mt-0.5 flex justify-between text-[9px] text-muted-foreground">
@@ -411,7 +411,7 @@ export function BodePlot({ numerator, denominator, label, note }: BodePlotProps)
                     className={
                       'rounded border px-1.5 py-1.5 text-[10px] font-medium transition ' +
                       (active
-                        ? 'border-ee-teal bg-ee-teal text-white'
+                        ? 'border-accent bg-accent text-white'
                         : 'border-border/60 bg-background text-foreground/70 hover:bg-muted')
                     }
                   >

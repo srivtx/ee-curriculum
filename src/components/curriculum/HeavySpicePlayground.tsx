@@ -325,11 +325,11 @@ export function HeavySpicePlayground({
   const statusBadge = renderStatusBadge(status);
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ee-teal/40 bg-background">
+    <div className="overflow-hidden rounded-sm border border-accent/40 bg-background">
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-ee-teal/10 px-3 py-2">
-        <Cpu className="h-4 w-4 text-ee-teal" aria-hidden />
-        <span className="text-xs font-semibold uppercase tracking-wider text-ee-teal">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border/60 bg-accent/10 px-3 py-2">
+        <Cpu className="h-4 w-4 text-accent" aria-hidden />
+        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
           Heavy SPICE · ngspice WASM
         </span>
         <span className="hidden text-[10px] text-muted-foreground sm:inline">
@@ -378,7 +378,7 @@ export function HeavySpicePlayground({
             size="sm"
             onClick={handleRun}
             disabled={isBusy}
-            className="h-7 gap-1 bg-ee-teal px-3 text-xs font-semibold text-white hover:bg-ee-teal/90"
+            className="h-7 gap-1 bg-accent px-3 text-xs font-semibold text-white hover:bg-accent/90"
           >
             {status.kind === 'running' ? (
               <>
@@ -457,36 +457,36 @@ function renderStatusBadge(status: Status): React.ReactNode {
     case 'loading':
       return (
         <>
-          <Loader2 className="h-3 w-3 animate-spin text-ee-amber" aria-hidden />
-          <span className="text-ee-amber">{status.msg}</span>
+          <Loader2 className="h-3 w-3 animate-spin text-warning" aria-hidden />
+          <span className="text-warning">{status.msg}</span>
         </>
       );
     case 'ready':
       return (
         <>
-          <Zap className="h-3 w-3 text-ee-green" aria-hidden />
-          <span className="text-ee-green">WASM ready</span>
+          <Zap className="h-3 w-3 text-accent" aria-hidden />
+          <span className="text-accent">WASM ready</span>
         </>
       );
     case 'running':
       return (
         <>
-          <Loader2 className="h-3 w-3 animate-spin text-ee-teal" aria-hidden />
-          <span className="text-ee-teal">Simulation running…</span>
+          <Loader2 className="h-3 w-3 animate-spin text-accent" aria-hidden />
+          <span className="text-accent">Simulation running…</span>
         </>
       );
     case 'done':
       return (
         <>
-          <Zap className="h-3 w-3 text-ee-green" aria-hidden />
-          <span className="text-ee-green">Done in {status.ms} ms</span>
+          <Zap className="h-3 w-3 text-accent" aria-hidden />
+          <span className="text-accent">Done in {status.ms} ms</span>
         </>
       );
     case 'error':
       return (
         <>
-          <AlertCircle className="h-3 w-3 text-ee-red" aria-hidden />
-          <span className="text-ee-red">Error</span>
+          <AlertCircle className="h-3 w-3 text-error" aria-hidden />
+          <span className="text-error">Error</span>
         </>
       );
   }
@@ -509,8 +509,8 @@ function ResultPanel({
   // Error state — always show
   if (status.kind === 'error') {
     return (
-      <div className="border-t border-border/60 bg-ee-red/5 px-3 py-2.5">
-        <div className="flex items-start gap-2 text-[11px] text-ee-red">
+      <div className="border-t border-border/60 bg-error/5 px-3 py-2.5">
+        <div className="flex items-start gap-2 text-[11px] text-error">
           <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <pre className="ee-mono ee-scroll max-h-48 overflow-auto whitespace-pre-wrap">
             {status.msg}
@@ -593,9 +593,9 @@ function OpTable({ result }: { result: EngineResult }) {
   }, [result]);
 
   return (
-    <div className="bg-ee-teal/5">
-      <div className="border-b border-ee-teal/20 px-3 py-1.5">
-        <span className="ee-mono text-[10px] uppercase tracking-wider text-ee-teal">
+    <div className="bg-accent/5">
+      <div className="border-b border-accent/20 px-3 py-1.5">
+        <span className="ee-mono text-[10px] uppercase tracking-wider text-accent">
           DC Operating Point ({rows.length} variables)
         </span>
       </div>
