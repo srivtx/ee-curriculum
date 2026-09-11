@@ -23,6 +23,9 @@ import {
   Radio,
   Lightbulb,
   Usb,
+  Box,
+  Microchip,
+  MousePointerClick,
 } from 'lucide-react';
 import type { Lesson } from '@/lib/curriculum';
 
@@ -39,7 +42,10 @@ export type FeatureKey =
   | 'webaudio'
   | 'iqengine'
   | 'cs_bridge'
-  | 'webserial';
+  | 'webserial'
+  | 'wokwi'
+  | 'wokwi_elements'
+  | 'model_3d';
 
 export interface FeatureMeta {
   key: FeatureKey;
@@ -163,6 +169,30 @@ export const FEATURE_META: Record<FeatureKey, FeatureMeta> = {
     tier: 'hardware',
     anchor: 'section-webserial',
   },
+  wokwi: {
+    key: 'wokwi',
+    short: 'MCU',
+    label: 'Wokwi live microcontroller sim',
+    icon: Microchip,
+    tier: 'active',
+    anchor: 'section-wokwi',
+  },
+  wokwi_elements: {
+    key: 'wokwi_elements',
+    short: 'BTN',
+    label: 'Interactive LED + pushbutton',
+    icon: MousePointerClick,
+    tier: 'active',
+    anchor: 'section-wokwi-elements',
+  },
+  model_3d: {
+    key: 'model_3d',
+    short: '3D',
+    label: '3D component viewer (R3F)',
+    icon: Box,
+    tier: 'active',
+    anchor: 'section-3d-model',
+  },
 };
 
 /** Display order: hands-on first, then passive viewers, hardware last. */
@@ -174,6 +204,9 @@ const FEATURE_ORDER: FeatureKey[] = [
   'bode',
   'falstad',
   'webaudio',
+  'wokwi',
+  'wokwi_elements',
+  'model_3d',
   'cs_bridge',
   'wavedrom',
   'katex',
@@ -204,6 +237,9 @@ export function getLessonFeatures(
   // triggers the embed, mirroring the LessonDrawer check.
   if (lesson.iqengine_url !== undefined) present.push('iqengine');
   if (lesson.cs_bridge ?? moduleCsBridge) present.push('cs_bridge');
+  if (lesson.wokwi_url) present.push('wokwi');
+  if (lesson.has_wokwi_elements) present.push('wokwi_elements');
+  if (lesson.has_3d_model) present.push('model_3d');
   // WebSerial is global (floating FAB), not per-lesson. We surface it on
   // lessons where it's particularly relevant (any lesson with a has_circuit
   // flag or any playground) — see lessonSupportsWebSerial below.
@@ -224,7 +260,9 @@ export function lessonSupportsWebSerial(lesson: Lesson): boolean {
       lesson.has_heavy_spice ||
       lesson.spice_netlist ||
       lesson.has_verilog ||
-      lesson.kicanvas_url
+      lesson.kicanvas_url ||
+      lesson.wokwi_url ||
+      lesson.has_wokwi_elements
   );
 }
 

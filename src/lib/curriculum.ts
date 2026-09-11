@@ -44,6 +44,19 @@ export interface Lesson {
   kicanvas_url?: string;           // KiCanvas iframe src for KiCad schematics
   has_scope?: boolean;              // Show the Web Audio oscilloscope + FFT spectrum
   iqengine_url?: string;           // Optional SigMF recording URL for IQEngine embed (empty string = homepage)
+  // ── Tier 1 interactive features (v2.2 — 3D + Wokwi) ───────────────────
+  wokwi_url?: string;              // Wokwi project URL for live Arduino/ESP32 simulation embed
+  has_wokwi_elements?: boolean;    // Show the interactive Wokwi LED + pushbutton demo
+  has_3d_model?: boolean;          // Show the procedural 3D component viewer (React Three Fiber)
+  model_component?:                // Which 3D model to render (resistor, capacitor, …)
+    | 'resistor'
+    | 'capacitor'
+    | 'inductor'
+    | 'led'
+    | 'transistor'
+    | 'diode'
+    | 'ic'
+    | 'breadboard';
 }
 
 export interface Project {
@@ -169,7 +182,7 @@ export const CURRICULUM: Phase[] = [
         duration_hours: 7,
         difficulty: 'Foundation',
         lessons: [
-          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch' },
+          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch', has_3d_model: true, model_component: 'breadboard' },
           { id: 'p0m4l2', title: 'Arduino + ESP32 + STM32: three MCU families', type: 'exercise', duration_min: 90, summary: 'Arduino Uno (intro), ESP32 devkit (wireless), STM32 Nucleo (real MCU). Hello-worlds: blink, WiFi hello, GPIO toggle.', key_takeaways: ['Arduino abstracts away register-level details', 'ESP32 adds WiFi/BLE and FreeRTOS', 'STM32 is closer to bare-metal embedded Linux'] },
           { id: 'p0m4l3', title: 'Python (NumPy/SciPy) + Octave: math tools', type: 'exercise', duration_min: 60, summary: 'Python with NumPy/SciPy/matplotlib/control. Octave as MATLAB clone. Hello-worlds: sine + FFT plot; solve linear system.', key_takeaways: ['Python leverages your CS skills for DSP/control/analysis', 'Octave gives MATLAB compatibility for EE literature'] },
           { id: 'p0m4l4', title: 'Vivado + Magic + GNU Radio: FPGA, VLSI, SDR', type: 'exercise', duration_min: 90, summary: 'Vivado WebPACK (FPGA), Magic VLSI (IC layout), GNU Radio (SDR). Hello-worlds: 4-bit counter synth; NMOS layout+DRC; source→LP→sink flowgraph.', key_takeaways: ['Vivado WebPACK is free for Artix-7', 'Magic is the open-source VLSI layout editor', 'GNU Radio is the SDR visual programming environment'] },
@@ -205,7 +218,7 @@ export const CURRICULUM: Phase[] = [
         duration_hours: 5, difficulty: 'Foundation',
         cs_bridge: 'Charge ↔ packet, current ↔ packet rate, voltage ↔ pressure, power ↔ rate of energy delivery, energy ↔ total work. Same vocabulary as network engineering — just different units.',
         lessons: [
-          { id: 'p1m1l1', title: 'The five quantities and their units', type: 'reading', duration_min: 45, summary: 'Q (C), I (A=C/s), V (V=J/C), P (W=J/s=VA), W (J=Ws). The entire vocabulary of circuit analysis.', key_takeaways: ['Memorize units cold: C, A, V, W, J', 'Power is the rate of energy delivery', 'Energy is the integral of power over time'], formulas: [{ label: 'Ohm\u2019s law', latex: 'V = I\\,R' }, { label: 'Power (three forms)', latex: 'P = V\\,I = I^{2}R = \\dfrac{V^{2}}{R}' }] },
+          { id: 'p1m1l1', title: 'The five quantities and their units', type: 'reading', duration_min: 45, summary: 'Q (C), I (A=C/s), V (V=J/C), P (W=J/s=VA), W (J=Ws). The entire vocabulary of circuit analysis.', key_takeaways: ['Memorize units cold: C, A, V, W, J', 'Power is the rate of energy delivery', 'Energy is the integral of power over time'], formulas: [{ label: 'Ohm\u2019s law', latex: 'V = I\\,R' }, { label: 'Power (three forms)', latex: 'P = V\\,I = I^{2}R = \\dfrac{V^{2}}{R}' }] , has_3d_model: true, model_component: 'resistor'},
           { id: 'p1m1l2', title: 'Passive sign convention and reference directions', type: 'reading', duration_min: 60, summary: 'For any device, label + and − terminals. Current enters +. Then p=v·i is power absorbed. Negative p means the device delivers power. Reference directions are arbitrary; the math corrects you.', key_takeaways: ['Reference directions are guesses; the math corrects you', 'p>0 means absorbing, p<0 means delivering', 'Sum of p over all elements = 0 (Tellegen)'] },
           { id: 'p1m1l3', title: 'Energy storage in caps and inductors', type: 'reading', duration_min: 45, summary: 'W_C=½CV², W_L=½LI². These storage terms are the bridge to transient analysis in Module 1.6.', key_takeaways: ['Capacitor stores energy in electric field', 'Inductor stores energy in magnetic field', 'Both storage terms are quadratic in the state variable'] },
         ],
@@ -306,7 +319,7 @@ R4 nB 0 1k
         duration_hours: 9, difficulty: 'Intermediate',
         cs_bridge: 'RC transient ↔ exponential decay recursion. The ODE RC·dv/dt+v=V_s has solution v(t)=V_s·(1−e^(−t/RC)). The same exponential decay appears in simulated annealing cooling schedules, Markov chain convergence, and gradient descent on a quadratic. τ=RC is the 1/e time.',
         lessons: [
-          { id: 'p1m6l1', title: 'Capacitors and inductors as energy stores', type: 'reading', duration_min: 60, summary: 'W_C=½CV², W_L=½LI². Constitutive laws are differential: i=C·dv/dt, v=L·di/dt. Voltage across cap cannot change instantaneously; current through inductor cannot change instantaneously.', key_takeaways: ['i=C·dv/dt, v=L·di/dt (differential constitutive laws)', 'V_C continuity: cap voltage cannot jump', 'I_L continuity: inductor current cannot jump'] },
+          { id: 'p1m6l1', title: 'Capacitors and inductors as energy stores', type: 'reading', duration_min: 60, summary: 'W_C=½CV², W_L=½LI². Constitutive laws are differential: i=C·dv/dt, v=L·di/dt. Voltage across cap cannot change instantaneously; current through inductor cannot change instantaneously.', key_takeaways: ['i=C·dv/dt, v=L·di/dt (differential constitutive laws)', 'V_C continuity: cap voltage cannot jump', 'I_L continuity: inductor current cannot jump'] , has_3d_model: true, model_component: 'capacitor'},
           { id: 'p1m6l2', title: 'First-order transients: RC and RL step response', type: 'reading', duration_min: 75, summary: 'RC step: v(t)=V_s·(1−e^(−t/τ)), τ=RC. RL step: i(t)=(V_s/R)·(1−e^(−t/τ)), τ=L/R. After 1τ: 63%. After 5τ: within 1%.', key_takeaways: ['τ=RC for RC, τ=L/R for RL', '63% after one τ, 99% after five τ', 'General form: v(t)=V_f+(V_0−V_f)·e^(−t/τ)'], has_playground: true, formulas: [{ label: 'RC step response', latex: 'v(t) = V_f + (V_0 - V_f)\\,e^{-t/\\tau}' }, { label: 'Time constant', latex: '\\tau = RC' }, { label: '63% / 99% rule', latex: 'v(\\tau) \\approx 0.63\\,V_f, \\quad v(5\\tau) \\approx 0.99\\,V_f' }], spice_netlist: `* RC step response (tau = RC = 1 ms)
 V1 in 0 PWL(0 0 1n 5)
 R1 in out 1k
@@ -496,7 +509,7 @@ C1 out 0 1u\
       { id: 'p3m1', title: 'Diodes: Rectifiers, Clippers, Clampers', description: 'Shockley equation I=I_S·(e^(V/V_T)−1). Half-wave, full-wave bridge, peak rectifier. Zener voltage reference.',
         duration_hours: 6, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p3m1l1', title: 'The diode I-V curve and Shockley equation', type: 'reading', duration_min: 60, summary: 'I=I_S·(e^(V/(nV_T))−1), V_T=kT/q≈26mV at room temp. Forward drop ~0.7V (Si), 0.3V (Schottky). Reverse leakage I_S typically 10⁻¹⁵ to 10⁻¹² A.', key_takeaways: ['Shockley equation is exponential in V', 'V_T=26mV at room temperature', 'Real forward drop ~0.7V (Si) due to exponential steepness'] },
+          { id: 'p3m1l1', title: 'The diode I-V curve and Shockley equation', type: 'reading', duration_min: 60, summary: 'I=I_S·(e^(V/(nV_T))−1), V_T=kT/q≈26mV at room temp. Forward drop ~0.7V (Si), 0.3V (Schottky). Reverse leakage I_S typically 10⁻¹⁵ to 10⁻¹² A.', key_takeaways: ['Shockley equation is exponential in V', 'V_T=26mV at room temperature', 'Real forward drop ~0.7V (Si) due to exponential steepness'] , has_3d_model: true, model_component: 'diode'},
           { id: 'p3m1l2', title: 'Three rectifier topologies', type: 'reading', duration_min: 75, summary: 'Half-wave: 1 diode, V_avg=V_m/π, ripple freq=line freq. Full-wave bridge: 4 diodes, V_avg=2V_m/π, ripple freq=2×line. Peak (cap-input): cap charges to V_m, ripple ΔV=I/(f·C).', key_takeaways: ['Full-wave has half the ripple of half-wave at same load', 'Peak rectifier is the front-end of every linear and SMPS', 'Ripple ΔV=I_load/(f·C)'], formulas: [{ label: 'Half-wave average', latex: 'V_{\\text{avg}} = \\dfrac{V_m}{\\pi}' }, { label: 'Full-wave average', latex: 'V_{\\text{avg}} = \\dfrac{2V_m}{\\pi}' }, { label: 'Peak rectifier ripple', latex: '\\Delta V = \\dfrac{I_{\\text{load}}}{f\\,C}' }], falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Av+80+96+80+240+0+0+1+60+0+0+0.5%0Ad+80+96+176+96+0%0Ad+176+96+272+96+0%0Ad+80+240+176+240+0%0Ad+176+240+272+240+0%0Aw+176+96+176+240+0%0Aw+272+96+272+240+0%0Ac+272+96+368+96+0+0.0001+0%0Ar+368+96+368+240+0+1000%0Aw+272+240+368+240+0%0Ag+368+240+368+272+0%0A', spice_netlist: `* Half-wave rectifier (PWL approximation of 60Hz sine, 3 cycles)
 * Note: spicey does not support SINE() sources, so we approximate
 * v(t) = 5*sin(2*pi*60*t) with 12 points per 16.667ms cycle.
@@ -532,7 +545,7 @@ R1 out 0 1k
         duration_hours: 9, difficulty: 'Intermediate',
         cs_bridge: 'BJT ↔ current-controlled current source (I_C=β·I_B). MOSFET ↔ voltage-controlled current source (I_D=f(V_GS)). Both have small-signal models that linearize them around a DC operating point — same idea as Newton’s method in optimization.',
         lessons: [
-          { id: 'p3m2l1', title: 'BJT regions: cut-off, active, saturation', type: 'reading', duration_min: 60, summary: 'Cut-off: V_BE<0.6V, I_C≈0 (off switch). Active: V_BE≈0.7V, V_CE>V_CE(sat), I_C=β·I_B (amplifier). Saturation: V_CE≈0.2V, I_C<β·I_B (on switch).', key_takeaways: ['Active region for amplification', 'Saturation for switching (on)', 'Cut-off for switching (off)'] },
+          { id: 'p3m2l1', title: 'BJT regions: cut-off, active, saturation', type: 'reading', duration_min: 60, summary: 'Cut-off: V_BE<0.6V, I_C≈0 (off switch). Active: V_BE≈0.7V, V_CE>V_CE(sat), I_C=β·I_B (amplifier). Saturation: V_CE≈0.2V, I_C<β·I_B (on switch).', key_takeaways: ['Active region for amplification', 'Saturation for switching (on)', 'Cut-off for switching (off)'] , has_3d_model: true, model_component: 'transistor'},
           { id: 'p3m2l2', title: 'Four-resistor bias network', type: 'reading', duration_min: 75, summary: 'R1/R2 divider sets V_B. V_E=V_B−0.7. I_E≈I_C=V_E/R_E. V_C=V_CC−I_C·R_C. Rule: divider current 10× base current for β stability.', key_takeaways: ['Bias to a stable Q point in active region', 'Emitter resistor provides negative feedback (stabilizes I_C against β variation)', 'Bypass R_E with cap for AC gain without losing DC stability'], has_heavy_spice: true, heavy_spice_starter: `* Common-emitter amplifier
 V1 VCC 0 12
 R1 VCC b 50k
@@ -600,7 +613,7 @@ Rout int out 75
 .ends
 .tran 10u 5m
 .print tran v(in) v(out)
-.end` },
+.end` , has_3d_model: true, model_component: 'ic'},
           { id: 'p3m4l2', title: 'Integrator and differentiator', type: 'reading', duration_min: 60, summary: 'Replace R_f with C: integrator, V_o=−(1/RC)·∫V_in dt. Replace R_1 with C: differentiator, V_o=−RC·dV_in/dt. Integrator is everywhere (PID, active filters, charge amps). Differentiator is noise-amplifying, rarely used pure.', key_takeaways: ['Integrator = analog computer integration', 'Differentiator amplifies noise — usually filtered', 'Both are the basis of active filters'] },
           { id: 'p3m4l3', title: 'Real op-amp non-idealities', type: 'reading', duration_min: 60, summary: 'Finite open-loop gain (10⁵–10⁶). GBW (1–10 MHz typical). Slew rate (V/μs). Input offset voltage (1–10 mV). Input bias current. Noise. The two that bite most: GBW and slew rate.', key_takeaways: ['GBW=f_t / A_cl (closed-loop bandwidth)', 'Slew rate limits large-signal bandwidth: f_max=SR/(2π·V_peak)', 'Always check GBW and slew rate for your application'] },
         ],
@@ -635,7 +648,7 @@ Rout int out 75
         duration_hours: 6, difficulty: 'Intermediate',
         lessons: [
           { id: 'p3m6l1', title: 'Barkhausen criterion and three oscillators', type: 'reading', duration_min: 60, summary: '|Aβ|=1 and ∠Aβ=0° (or 360°). Wien bridge: RC bandpass + neg feedback R_f/R_1=2. Phase-shift: three RC HP sections give 180°, inverting amp gives the rest. Colpitts/Hartley: LC tank for RF.', key_takeaways: ['Barkhausen: loop gain magnitude 1, phase 0°', 'Start with |Aβ|>1 so noise can build up; nonlinearity limits', 'Wien bridge for clean audio sine; LC for RF'] },
-          { id: 'p3m6l2', title: 'The 555 timer', type: 'reading', duration_min: 60, summary: '8-pin oscillator/timer IC since 1972. Astable: f=1.44/((R_1+2R_2)·C), duty=(R_1+R_2)/(R_1+2R_2). Monostable: T=1.1·R·C. The go-to for cheap clocks, PWM, debouncers, tone gens.', key_takeaways: ['555 is the most popular IC ever', 'Astable: f=1.44/((R_1+2R_2)·C)', 'Monostable: T=1.1·R·C'] },
+          { id: 'p3m6l2', title: 'The 555 timer', type: 'reading', duration_min: 60, summary: '8-pin oscillator/timer IC since 1972. Astable: f=1.44/((R_1+2R_2)·C), duty=(R_1+R_2)/(R_1+2R_2). Monostable: T=1.1·R·C. The go-to for cheap clocks, PWM, debouncers, tone gens.', key_takeaways: ['555 is the most popular IC ever', 'Astable: f=1.44/((R_1+2R_2)·C)', 'Monostable: T=1.1·R·C'] , has_wokwi_elements: true, has_3d_model: true, model_component: 'ic'},
         ],
         projects: [
           { id: 'p3m6pr1', title: 'Bench: Variable Wien Bridge Sine Source', goal: 'Build 100Hz–10kHz sine source with <1% THD.', tools: ['TL072', 'dual-gang pot', 'JFET for AGC', 'caps', 'resistors'], steps: ['Wien bridge with dual-gang pot for freq control', 'JFET for AGC (amplitude stabilization)', 'Verify THD with sound-card spectrum analyzer (REW or RightMark)', 'Should be <1% across 100Hz–10kHz'], pass_criteria: 'THD < 1% from 100 Hz to 10 kHz.', difficulty: 'Intermediate', estimated_hours: 3 },
@@ -722,7 +735,7 @@ module mux4(
 );
     assign out = in[sel];
 endmodule
-` },
+` , has_3d_model: true, model_component: 'ic'},
           { id: 'p4m2l2', title: 'Combinational hazards', type: 'reading', duration_min: 45, summary: 'Static-1 hazard: output should stay 1 but momentarily drops to 0 due to unequal path delays. Fix: add consensus term (extra product term covering the hazardous transition).', key_takeaways: ['Hazards rarely matter in synchronous designs (clock masks them)', 'Hazards bite hard in asynchronous logic and clock-domain crossings', 'Fix with consensus term or synchronous design'] },
         ],
         projects: [
@@ -739,7 +752,7 @@ endmodule
         duration_hours: 7, difficulty: 'Intermediate',
         cs_bridge: 'Flip-flop ↔ register in a CPU. D flop is 1-bit register. Shift register is a queue of flops. Counter is a register that increments. Register file is a flop bank — exactly the register file in a CPU. Only new: setup/hold/metastability.',
         lessons: [
-          { id: 'p4m3l1', title: 'Four flip-flop types and their use', type: 'reading', duration_min: 60, summary: 'D (universal — most logic uses D), T (counters), JK (general-purpose legacy), SR (basic latch, rarely used standalone). D flop samples input on clock edge and holds until next.', key_takeaways: ['D flop is the universal sequential element', 'JK is the legacy general-purpose flop', 'SR forbidden when S=R=1'], wavedrom: `{ signal: [\n  { name: 'clk', wave: 'p.........' },\n  { name: 'D',   wave: '0.1.0.1.0.' },\n  { name: 'Q',   wave: '0..1.0.1.0', node: '.......a' }\n],\n  head: { text: 'D flip-flop: Q takes D on the rising edge of clk' },\n  foot: { text: 'Setup and hold must be respected around the rising edge.' } }` },
+          { id: 'p4m3l1', title: 'Four flip-flop types and their use', type: 'reading', duration_min: 60, summary: 'D (universal — most logic uses D), T (counters), JK (general-purpose legacy), SR (basic latch, rarely used standalone). D flop samples input on clock edge and holds until next.', key_takeaways: ['D flop is the universal sequential element', 'JK is the legacy general-purpose flop', 'SR forbidden when S=R=1'], wavedrom: `{ signal: [\n  { name: 'clk', wave: 'p.........' },\n  { name: 'D',   wave: '0.1.0.1.0.' },\n  { name: 'Q',   wave: '0..1.0.1.0', node: '.......a' }\n],\n  head: { text: 'D flip-flop: Q takes D on the rising edge of clk' },\n  foot: { text: 'Setup and hold must be respected around the rising edge.' } }` , has_wokwi_elements: true},
           { id: 'p4m3l2', title: 'Setup, hold, metastability', type: 'reading', duration_min: 75, summary: 't_su: input stable for t_su before edge. t_h: stable for t_h after. Violate → metastable (output hovers between 0 and 1 for unbounded time). Two-flop synchronizer reduces failure probability to MTBF of billions of years.', key_takeaways: ['Setup/hold violations cause metastability', 'Metastability is unavoidable in clock-domain crossings', 'Two-flop synchronizer: MTBF of billions of years'], has_verilog: true, verilog_starter: `// D flip-flop — the simplest sequential element.
 // This is the exact flop whose setup/hold window we are studying.
 // Hit Synthesize, then click the d button in the circuit view and
@@ -871,7 +884,7 @@ endmodule
         duration_hours: 9, difficulty: 'Intermediate',
         cs_bridge: 'MCU ↔ tiny computer with memory-mapped I/O. Each peripheral is a set of memory-mapped registers; you write device drivers by reading and writing those registers. Arduino abstracts this; STM32 makes you deal with it directly — closer to embedded Linux driver development.',
         lessons: [
-          { id: 'p4m6l1', title: 'Arduino abstraction and its limits', type: 'reading', duration_min: 60, summary: 'pinMode, digitalWrite, analogRead, etc. wrap AVR register writes. digitalWrite takes ~5 μs because of pin-number lookup. For sub-μs timing, bypass the abstraction.', key_takeaways: ['Arduino is great for prototyping', 'Abstraction hides timing — digitalWrite is slow (~5 μs)', 'For tight timing, write registers directly'] },
+          { id: 'p4m6l1', title: 'Arduino abstraction and its limits', type: 'reading', duration_min: 60, summary: 'pinMode, digitalWrite, analogRead, etc. wrap AVR register writes. digitalWrite takes ~5 μs because of pin-number lookup. For sub-μs timing, bypass the abstraction.', key_takeaways: ['Arduino is great for prototyping', 'Abstraction hides timing — digitalWrite is slow (~5 μs)', 'For tight timing, write registers directly'] , wokwi_url: 'https://wokwi.com/projects/328014521436533262', has_wokwi_elements: true},
           { id: 'p4m6l2', title: 'STM32 — the real-world MCU', type: 'reading', duration_min: 75, summary: 'ARM Cortex-M cores. F103 (cheap, Blue Pill), F446 (168 MHz, FPU, Nucleo), H7 (480 MHz). STM32CubeIDE for config + code. HAL for portability, LL for performance, bare-metal for max.', key_takeaways: ['STM32 is the workhorse of modern embedded', 'CubeMX graphical config generates initialization code', 'HAL is portable but slow; LL is fast but vendor-specific'] },
           { id: 'p4m6l3', title: 'Clock trees and low-power modes', type: 'reading', duration_min: 60, summary: 'HSE/HSI → PLL → AHB → APB1/APB2 → peripherals. Each peripheral has prescaler. Low-power: Sleep, Stop, Standby gate clock to idle peripherals. Battery devices spend most time in Stop.', key_takeaways: ['Clock tree config is first step of any STM32 project', 'Mistakes here → wrong UART baud, broken SPI timing', 'Stop mode: ~10 μA, wake on interrupt in μs'] },
         ],
@@ -889,7 +902,7 @@ endmodule
       { id: 'p4m7', title: 'Interrupts, Timers, ADC, DAC, PWM', description: 'NVIC with 16 priority levels. Timers: up/down/up-down, compare, capture, PWM. ADC: SAR, 1-5 MSPS. PWM: duty=CCR/ARR.',
         duration_hours: 9, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p4m7l1', title: 'Interrupts and NVIC', type: 'reading', duration_min: 60, summary: 'Vector table maps sources to handlers. CPU saves state, jumps, restores. ARM Cortex-M NVIC: 16 priority levels, higher preempts lower. Rule: handlers short (μs, not ms). Long work → flag + process in main loop.', key_takeaways: ['Handlers must be short — microseconds, not milliseconds', 'NVIC supports nested preemption', 'Long work: set flag in handler, process in main loop'] },
+          { id: 'p4m7l1', title: 'Interrupts and NVIC', type: 'reading', duration_min: 60, summary: 'Vector table maps sources to handlers. CPU saves state, jumps, restores. ARM Cortex-M NVIC: 16 priority levels, higher preempts lower. Rule: handlers short (μs, not ms). Long work → flag + process in main loop.', key_takeaways: ['Handlers must be short — microseconds, not milliseconds', 'NVIC supports nested preemption', 'Long work: set flag in handler, process in main loop'] , wokwi_url: 'https://wokwi.com/projects/255116253193679131'},
           { id: 'p4m7l2', title: 'Timers and PWM', type: 'reading', duration_min: 75, summary: 'Timer = counter + clock. Count up/down/up-down. Interrupts on overflow/compare/capture. PWM: f=f_timer/(prescaler·ARR), duty=CCR/ARR, resolution=log₂(ARR) bits.', key_takeaways: ['PWM frequency = f_timer / (prescaler · ARR)', 'Duty cycle = CCR / ARR', 'Resolution = log₂(ARR) bits'] },
           { id: 'p4m7l3', title: 'ADCs and sampling', type: 'reading', duration_min: 60, summary: 'SAR ADC: n-bit needs n clock cycles. STM32 ADCs: 1-5 MSPS, 12-bit. Anti-alias filter required (low-pass at f_s/2). Sample-and-hold cap charges through source impedance — high-Z source needs buffer or longer sample time.', key_takeaways: ['Anti-alias filter is non-negotiable', 'Sample-and-hold needs low source impedance', 'Oversampling + decimation relaxes analog filter requirements'] },
         ],
@@ -924,7 +937,7 @@ endmodule
       { id: 'p4m9', title: 'ESP32 and Wireless Connectivity', description: 'Dual-core Xtensa 240MHz with WiFi + BT. ESP-IDF (FreeRTOS-based) or Arduino-ESP32. OTA updates. Deep sleep.',
         duration_hours: 7, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p4m9l1', title: 'ESP32 architecture and WiFi stack', type: 'reading', duration_min: 60, summary: 'Dual-core Xtensa LX6 @ 240MHz, WiFi + BT, lots of peripherals, ULP coprocessor. WiFi stack is a FreeRTOS task. Patterns: HTTP client/server, MQTT, WebSocket.', key_takeaways: ['ESP32 is the de-facto standard for cheap IoT', 'WiFi stack runs as FreeRTOS task', 'ESP-IDF is more powerful than Arduino-ESP32'] },
+          { id: 'p4m9l1', title: 'ESP32 architecture and WiFi stack', type: 'reading', duration_min: 60, summary: 'Dual-core Xtensa LX6 @ 240MHz, WiFi + BT, lots of peripherals, ULP coprocessor. WiFi stack is a FreeRTOS task. Patterns: HTTP client/server, MQTT, WebSocket.', key_takeaways: ['ESP32 is the de-facto standard for cheap IoT', 'WiFi stack runs as FreeRTOS task', 'ESP-IDF is more powerful than Arduino-ESP32'] , wokwi_url: 'https://wokwi.com/projects/327320285947308499'},
           { id: 'p4m9l2', title: 'OTA updates and power management', type: 'reading', duration_min: 60, summary: 'OTA: download new firmware over HTTPS to unused partition, verify, swap boot partition, reboot. Dual-bank flash makes it safe. Deep sleep: 10 μA, wake on timer or GPIO.', key_takeaways: ['OTA uses dual-bank flash for safe updates', 'Deep sleep is essential for battery devices', 'Compute battery life: I_avg = (I_active·t_active + I_sleep·t_sleep) / T'] },
         ],
         projects: [
@@ -1116,7 +1129,9 @@ endmodule
       },
       { id: 'p6m10', title: 'Phase 6 Capstone: Line-Following Robot', description: 'Differential-drive robot with 5-IR sensor array, PID on line position, ESP32 + L298N. Tune K_p, K_i, K_d on bench; test on curving track.',
         duration_hours: 16, difficulty: 'Advanced',
-        lessons: [],
+        lessons: [
+          { id: 'p6m10l1', title: 'Capstone overview: closed-loop line-following robot', type: 'project', duration_min: 90, summary: 'Architecture of the line-following robot: 5-IR reflective sensor array → weighted-average line-position estimate → PID controller → differential-drive motors via L298N. ESP32 runs the control loop at 100 Hz. Tune K_p first (robot follows but oscillates), add K_d (kills oscillation), add K_i if steady-state offset remains.', key_takeaways: ['Sense → estimate → control → actuate — the canonical feedback loop', 'Weighted-average of 5 IR sensors gives a continuous line-position estimate from discrete readings', 'PID on line error: K_p for speed, K_d for damping, K_i for steady-state accuracy', 'Differential drive: Δv = K·e, so v_L and v_R differ by the control output'], wokwi_url: 'https://wokwi.com/projects/255116253193679131' },
+        ],
         projects: [
           { id: 'p6m10pr1', title: 'Phase 6 Capstone: Closed-Loop Line-Following Robot', goal: 'Build robot that follows black line at 1 m/s.', tools: ['differential-drive chassis', '2 DC motors with encoder', 'caster', 'ESP32', 'L298N', 'Pololu QTRX-MD-05A 5-IR array'], steps: ['Mechanical: 6cm wheels, 15cm wheelbase', 'Sensors: 5-IR reflective array, weighted average for line position estimate', 'Controller: PID on line position error. K_p first, add K_d when oscillating, add K_i if SS offset', 'Kinematics: differential drive. Δv=K·e. v_L, v_R → (v, ω)', 'Test: straight track first, then curves of decreasing radius'], pass_criteria: 'Robot follows 1 m/s on standard track without losing line.', difficulty: 'Advanced', estimated_hours: 16 },
         ],

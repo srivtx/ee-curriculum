@@ -1,6 +1,7 @@
 'use client';
 
 import * as React from 'react';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import {
   CheckCircle2,
@@ -32,11 +33,27 @@ import { VerilogPlayground } from './VerilogPlayground';
 import { KiCanvasEmbed } from './KiCanvasEmbed';
 import { WebAudioScope } from './WebAudioScope';
 import { IQEngineEmbed } from './IQEngineEmbed';
+import { WokwiEmbed } from './WokwiEmbed';
+import { WokwiElementsDemo } from './WokwiElementsDemo';
 import { cn } from '@/lib/utils';
 import {
   getLessonFeatures,
   type FeatureMeta,
 } from './lessonFeatures';
+
+// Heavy 3D viewer — three.js + @react-three/fiber + @react-three/drei. Loaded
+// lazily and only on the client so it never bloats the initial bundle.
+const ComponentViewer3D = dynamic(
+  () => import('./ComponentViewer3D').then((m) => m.ComponentViewer3D),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[360px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading 3D model…
+      </div>
+    ),
+  }
+);
 
 export interface LessonDrawerPayload {
   lesson: Lesson;
@@ -458,6 +475,30 @@ function FullPageLesson({
                 </p>
               </div>
             </Section>
+
+            {/* 3D Model viewer (React Three Fiber) */}
+            {lesson.has_3d_model && lesson.model_component && (
+              <Section id="section-3d-model" eyebrow="3D Model">
+                <ComponentViewer3D component={lesson.model_component} />
+              </Section>
+            )}
+
+            {/* Wokwi live microcontroller simulation */}
+            {lesson.wokwi_url && (
+              <Section
+                id="section-wokwi"
+                eyebrow="Microcontroller Simulation"
+              >
+                <WokwiEmbed projectUrl={lesson.wokwi_url} />
+              </Section>
+            )}
+
+            {/* Interactive Wokwi LED + pushbutton demo */}
+            {lesson.has_wokwi_elements && (
+              <Section id="section-wokwi-elements" eyebrow="Interactive Demo">
+                <WokwiElementsDemo />
+              </Section>
+            )}
 
             {/* Circuit note (legacy has_circuit flag) */}
             {lesson.has_circuit && (
