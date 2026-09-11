@@ -35,6 +35,7 @@ import { WebAudioScope } from './WebAudioScope';
 import { IQEngineEmbed } from './IQEngineEmbed';
 import { WokwiEmbed } from './WokwiEmbed';
 import { WokwiElementsDemo } from './WokwiElementsDemo';
+import { CircuitVerseEmbed } from './CircuitVerseEmbed';
 import { cn } from '@/lib/utils';
 import {
   getLessonFeatures,
@@ -50,6 +51,36 @@ const ComponentViewer3D = dynamic(
     loading: () => (
       <div className="flex h-[360px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
         Loading 3D model…
+      </div>
+    ),
+  }
+);
+
+// Virtual breadboard — 2D SVG breadboard (palette + holes + wires + LED
+// glow). Loaded lazily and only on the client so the component code only
+// ships when a lesson with `has_breadboard` is opened.
+const VirtualBreadboard = dynamic(
+  () => import('./VirtualBreadboard').then((m) => m.VirtualBreadboard),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[520px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading virtual breadboard…
+      </div>
+    ),
+  }
+);
+
+// tscircuit viewer — Schematic / PCB / 3D Board tabs + code panel + iframe
+// to tscircuit.com/editor. The iframe + tabs add some weight, so loaded
+// lazily and only on the client (a lesson with `has_tscircuit` is opened).
+const TscircuitViewer = dynamic(
+  () => import('./TscircuitViewer').then((m) => m.TscircuitViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[520px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading tscircuit viewer…
       </div>
     ),
   }
@@ -497,6 +528,36 @@ function FullPageLesson({
             {lesson.has_wokwi_elements && (
               <Section id="section-wokwi-elements" eyebrow="Interactive Demo">
                 <WokwiElementsDemo />
+              </Section>
+            )}
+
+            {/* Virtual Breadboard (2D SVG · place · wire · light up) */}
+            {lesson.has_breadboard && (
+              <Section
+                id="section-breadboard"
+                eyebrow="Virtual Breadboard (place · wire · light up)"
+              >
+                <VirtualBreadboard />
+              </Section>
+            )}
+
+            {/* tscircuit viewer — schematic + PCB + 3D board tabs */}
+            {lesson.has_tscircuit && (
+              <Section
+                id="section-tscircuit"
+                eyebrow="tscircuit (schematic · PCB · 3D board)"
+              >
+                <TscircuitViewer code={lesson.tscircuit_code} />
+              </Section>
+            )}
+
+            {/* CircuitVerse — embedded digital logic simulator */}
+            {lesson.circuitverse_url !== undefined && (
+              <Section
+                id="section-circuitverse"
+                eyebrow="Digital Circuit Simulator (CircuitVerse)"
+              >
+                <CircuitVerseEmbed circuitUrl={lesson.circuitverse_url} />
               </Section>
             )}
 

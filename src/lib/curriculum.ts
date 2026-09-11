@@ -57,6 +57,12 @@ export interface Lesson {
     | 'diode'
     | 'ic'
     | 'breadboard';
+  // ── Tier 1 interactive feature (v2.3 — virtual breadboard) ────────────
+  has_breadboard?: boolean;        // Show the 3D virtual breadboard (drag, place, wire, light up)
+  // ── Tier 1 interactive features (v2.4 — tscircuit + CircuitVerse) ─────
+  has_tscircuit?: boolean;         // Show the tscircuit viewer (schematic + PCB + 3D board tabs)
+  tscircuit_code?: string;         // Pre-filled tscircuit React source for TscircuitViewer
+  circuitverse_url?: string;       // CircuitVerse embed URL for digital logic simulation
 }
 
 export interface Project {
@@ -182,7 +188,7 @@ export const CURRICULUM: Phase[] = [
         duration_hours: 7,
         difficulty: 'Foundation',
         lessons: [
-          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch', has_3d_model: true, model_component: 'breadboard' },
+          { id: 'p0m4l1', title: 'LTspice + KiCad: SPICE sim + PCB design', type: 'exercise', duration_min: 60, summary: 'Install LTspice and KiCad. Hello-worlds: RC low-pass transient sim; same RC as schematic + ERC + netlist export.', key_takeaways: ['LTspice is the analog SPICE simulator of record', 'KiCad handles schematic → PCB → manufacturing files'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch', has_3d_model: true, model_component: 'breadboard', has_breadboard: true },
           { id: 'p0m4l2', title: 'Arduino + ESP32 + STM32: three MCU families', type: 'exercise', duration_min: 90, summary: 'Arduino Uno (intro), ESP32 devkit (wireless), STM32 Nucleo (real MCU). Hello-worlds: blink, WiFi hello, GPIO toggle.', key_takeaways: ['Arduino abstracts away register-level details', 'ESP32 adds WiFi/BLE and FreeRTOS', 'STM32 is closer to bare-metal embedded Linux'] },
           { id: 'p0m4l3', title: 'Python (NumPy/SciPy) + Octave: math tools', type: 'exercise', duration_min: 60, summary: 'Python with NumPy/SciPy/matplotlib/control. Octave as MATLAB clone. Hello-worlds: sine + FFT plot; solve linear system.', key_takeaways: ['Python leverages your CS skills for DSP/control/analysis', 'Octave gives MATLAB compatibility for EE literature'] },
           { id: 'p0m4l4', title: 'Vivado + Magic + GNU Radio: FPGA, VLSI, SDR', type: 'exercise', duration_min: 90, summary: 'Vivado WebPACK (FPGA), Magic VLSI (IC layout), GNU Radio (SDR). Hello-worlds: 4-bit counter synth; NMOS layout+DRC; source→LP→sink flowgraph.', key_takeaways: ['Vivado WebPACK is free for Artix-7', 'Magic is the open-source VLSI layout editor', 'GNU Radio is the SDR visual programming environment'] },
@@ -218,7 +224,7 @@ export const CURRICULUM: Phase[] = [
         duration_hours: 5, difficulty: 'Foundation',
         cs_bridge: 'Charge ↔ packet, current ↔ packet rate, voltage ↔ pressure, power ↔ rate of energy delivery, energy ↔ total work. Same vocabulary as network engineering — just different units.',
         lessons: [
-          { id: 'p1m1l1', title: 'The five quantities and their units', type: 'reading', duration_min: 45, summary: 'Q (C), I (A=C/s), V (V=J/C), P (W=J/s=VA), W (J=Ws). The entire vocabulary of circuit analysis.', key_takeaways: ['Memorize units cold: C, A, V, W, J', 'Power is the rate of energy delivery', 'Energy is the integral of power over time'], formulas: [{ label: 'Ohm\u2019s law', latex: 'V = I\\,R' }, { label: 'Power (three forms)', latex: 'P = V\\,I = I^{2}R = \\dfrac{V^{2}}{R}' }] , has_3d_model: true, model_component: 'resistor'},
+          { id: 'p1m1l1', title: 'The five quantities and their units', type: 'reading', duration_min: 45, summary: 'Q (C), I (A=C/s), V (V=J/C), P (W=J/s=VA), W (J=Ws). The entire vocabulary of circuit analysis.', key_takeaways: ['Memorize units cold: C, A, V, W, J', 'Power is the rate of energy delivery', 'Energy is the integral of power over time'], formulas: [{ label: 'Ohm\u2019s law', latex: 'V = I\\,R' }, { label: 'Power (three forms)', latex: 'P = V\\,I = I^{2}R = \\dfrac{V^{2}}{R}' }] , has_3d_model: true, model_component: 'resistor', has_breadboard: true },
           { id: 'p1m1l2', title: 'Passive sign convention and reference directions', type: 'reading', duration_min: 60, summary: 'For any device, label + and − terminals. Current enters +. Then p=v·i is power absorbed. Negative p means the device delivers power. Reference directions are arbitrary; the math corrects you.', key_takeaways: ['Reference directions are guesses; the math corrects you', 'p>0 means absorbing, p<0 means delivering', 'Sum of p over all elements = 0 (Tellegen)'] },
           { id: 'p1m1l3', title: 'Energy storage in caps and inductors', type: 'reading', duration_min: 45, summary: 'W_C=½CV², W_L=½LI². These storage terms are the bridge to transient analysis in Module 1.6.', key_takeaways: ['Capacitor stores energy in electric field', 'Inductor stores energy in magnetic field', 'Both storage terms are quadratic in the state variable'] },
         ],
@@ -247,7 +253,7 @@ R2 nA 0 2k
 R3 nA nB 4k
 R4 nB 0 1k
 .op
-.end`, falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Av+320+96+320+176+0+0+40+5+0+0+0.5%0Ar+320+176+416+176+0+1000%0Ar+416+176+416+256+0+2000%0Ag+416+256+416+288+0%0Ag+320+176+320+208+0%0A' },
+.end`, falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Av+320+96+320+176+0+0+40+5+0+0+0.5%0Ar+320+176+416+176+0+1000%0Ar+416+176+416+256+0+2000%0Ag+416+256+416+288+0%0Ag+320+176+320+208+0%0A', has_breadboard: true },
         ],
         projects: [
           { id: 'p1m2pr1', title: 'LTspice + Bench: 4-Node Network', goal: 'Solve a 4-node circuit three ways — by hand, by LTspice, on the bench — and reconcile all three answers.', tools: ['LTspice', 'breadboard', 'DMM', 'resistors'], steps: ['By hand: nodal analysis of the 4-node circuit (5 min)', 'LTspice: build the same circuit, run .op, record node voltages', 'Bench: build with 5% resistors, measure with DMM', 'Reconcile: explain any discrepancy (5% tolerance should account for most)'], pass_criteria: 'All three answers agree within worst-case tolerance bounds.', difficulty: 'Foundation', estimated_hours: 2 },
@@ -509,7 +515,7 @@ C1 out 0 1u\
       { id: 'p3m1', title: 'Diodes: Rectifiers, Clippers, Clampers', description: 'Shockley equation I=I_S·(e^(V/V_T)−1). Half-wave, full-wave bridge, peak rectifier. Zener voltage reference.',
         duration_hours: 6, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p3m1l1', title: 'The diode I-V curve and Shockley equation', type: 'reading', duration_min: 60, summary: 'I=I_S·(e^(V/(nV_T))−1), V_T=kT/q≈26mV at room temp. Forward drop ~0.7V (Si), 0.3V (Schottky). Reverse leakage I_S typically 10⁻¹⁵ to 10⁻¹² A.', key_takeaways: ['Shockley equation is exponential in V', 'V_T=26mV at room temperature', 'Real forward drop ~0.7V (Si) due to exponential steepness'] , has_3d_model: true, model_component: 'diode'},
+          { id: 'p3m1l1', title: 'The diode I-V curve and Shockley equation', type: 'reading', duration_min: 60, summary: 'I=I_S·(e^(V/(nV_T))−1), V_T=kT/q≈26mV at room temp. Forward drop ~0.7V (Si), 0.3V (Schottky). Reverse leakage I_S typically 10⁻¹⁵ to 10⁻¹² A.', key_takeaways: ['Shockley equation is exponential in V', 'V_T=26mV at room temperature', 'Real forward drop ~0.7V (Si) due to exponential steepness'] , has_3d_model: true, model_component: 'diode', has_breadboard: true },
           { id: 'p3m1l2', title: 'Three rectifier topologies', type: 'reading', duration_min: 75, summary: 'Half-wave: 1 diode, V_avg=V_m/π, ripple freq=line freq. Full-wave bridge: 4 diodes, V_avg=2V_m/π, ripple freq=2×line. Peak (cap-input): cap charges to V_m, ripple ΔV=I/(f·C).', key_takeaways: ['Full-wave has half the ripple of half-wave at same load', 'Peak rectifier is the front-end of every linear and SMPS', 'Ripple ΔV=I_load/(f·C)'], formulas: [{ label: 'Half-wave average', latex: 'V_{\\text{avg}} = \\dfrac{V_m}{\\pi}' }, { label: 'Full-wave average', latex: 'V_{\\text{avg}} = \\dfrac{2V_m}{\\pi}' }, { label: 'Peak rectifier ripple', latex: '\\Delta V = \\dfrac{I_{\\text{load}}}{f\\,C}' }], falstad_url: 'https://www.falstad.com/circuit/circuitjs.html?cct=$+1+0.000005+10.20027730826997+50+5+50%0Av+80+96+80+240+0+0+1+60+0+0+0.5%0Ad+80+96+176+96+0%0Ad+176+96+272+96+0%0Ad+80+240+176+240+0%0Ad+176+240+272+240+0%0Aw+176+96+176+240+0%0Aw+272+96+272+240+0%0Ac+272+96+368+96+0+0.0001+0%0Ar+368+96+368+240+0+1000%0Aw+272+240+368+240+0%0Ag+368+240+368+272+0%0A', spice_netlist: `* Half-wave rectifier (PWL approximation of 60Hz sine, 3 cycles)
 * Note: spicey does not support SINE() sources, so we approximate
 * v(t) = 5*sin(2*pi*60*t) with 12 points per 16.667ms cycle.
@@ -528,7 +534,7 @@ R1 out 0 1k
 .model 1N4148 D(Is=2.52n N=1.752 Cjo=4p M=0.4 Bv=100 Ibv=100u)
 .tran 100u 50m
 .print tran v(in) v(out) i(V1)
-.end` },
+.end`, has_breadboard: true },
           { id: 'p3m1l3', title: 'Clippers, clampers, and Zener references', type: 'reading', duration_min: 45, summary: 'Clippers limit voltage swing (input protection). Clampers add DC offset (DC restore after AC coupling). Zener diodes operate in reverse breakdown safely — stable voltage reference.', key_takeaways: ['Zener reverse breakdown is well-controlled', 'Every linear regulator uses a Zener or bandgap reference', 'Schottky for low-drop rectification, Si for general purpose'] },
         ],
         projects: [
@@ -679,7 +685,27 @@ Rout int out 75
       { id: 'p3m8', title: 'Phase 3 Capstone: Audio Power Amplifier', description: 'Three-stage class-AB: diff pair input, CE voltage-amp with Miller comp, class-AB output. 20W into 8Ω, 20Hz–20kHz, THD<1%.',
         duration_hours: 12, difficulty: 'Intermediate',
         lessons: [
-          { id: 'p3m8l1', title: 'Class-AB audio amplifier: topology walkthrough', type: 'reading', duration_min: 45, summary: 'Three-stage class-AB topology: (1) differential input pair for low offset and high CMRR, (2) common-emitter voltage-amp with Miller compensation capacitor for dominant pole, (3) class-AB output stage (Darlington or MOSFET follower) with bias network for quiescent current. Feedback closes the loop and sets the closed-loop gain. The KiCad schematic below shows a representative example of this topology — pan and zoom in the KiCanvas viewer.', key_takeaways: ['Three-stage topology: diff pair → VA → class-AB output', 'Miller comp capacitor creates the dominant pole for stability', 'Class-AB bias network sets quiescent current to avoid crossover distortion', 'Closed-loop gain = 1 + R_f/R_in'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch' },
+          { id: 'p3m8l1', title: 'Class-AB audio amplifier: topology walkthrough', type: 'reading', duration_min: 45, summary: 'Three-stage class-AB topology: (1) differential input pair for low offset and high CMRR, (2) common-emitter voltage-amp with Miller compensation capacitor for dominant pole, (3) class-AB output stage (Darlington or MOSFET follower) with bias network for quiescent current. Feedback closes the loop and sets the closed-loop gain. The KiCad schematic below shows a representative example of this topology — pan and zoom in the KiCanvas viewer.', key_takeaways: ['Three-stage topology: diff pair → VA → class-AB output', 'Miller comp capacitor creates the dominant pole for stability', 'Class-AB bias network sets quiescent current to avoid crossover distortion', 'Closed-loop gain = 1 + R_f/R_in'], kicanvas_url: 'https://raw.githubusercontent.com/wntrblm/Guava/main/bom/test.kicad_sch', has_tscircuit: true, tscircuit_code: `// Class-AB audio amplifier — three-stage topology.
+// (1) Diff pair input → (2) common-emitter VA with Miller comp →
+// (3) class-AB output stage. This tscircuit starter shows the small-signal
+// equivalent: input coupling cap → Rin → Rf (sets gain = 1 + Rf/Rin) →
+// 8Ω load. Switch to the PCB and 3D Board tabs to lay it out.
+import { Circuit, Resistor, Capacitor, PowerSource, Ground } from "@tscircuit/react-fiber"
+
+export default function AudioAmp() {
+  return (
+    <Circuit>
+      <PowerSource voltage={25} name="VCC" />
+      <Capacitor capacitance="1uF" footprint="0805" name="Cin" />
+      <Resistor resistance="1k" footprint="0805" name="Rin" />
+      <Resistor resistance="22k" footprint="0805" name="Rf" />
+      <Capacitor capacitance="47pF" footprint="0805" name="Cmiller" />
+      <Resistor resistance="8" footprint="0805" name="Rload" />
+      <Ground />
+    </Circuit>
+  )
+}
+` },
         ],
         projects: [
           { id: 'p3m8pr1', title: 'Audio Power Amplifier (Class-AB)', goal: 'Design and build complete audio power amp: 20W into 8Ω, 20Hz–20kHz, THD<1%.', tools: ['KiCad', 'BJTs (NPN/PNP power)', 'op-amp', 'resistors', 'caps', 'heatsink', 'PCB (JLCPCB)'], steps: ['Three-stage: (1) differential input pair for low offset, (2) common-emitter voltage-amp with Miller comp, (3) class-AB output stage (Darlington or MOSFET follower)', 'V_CC=±25V rails, quiescent 20mA in output stage', 'Feedback: closed-loop gain=1+R_f/R_in=23 (28dB), input sensitivity 700mV RMS for full output', 'Schematic in KiCad, order PCB from JLCPCB (~$10 for 5)', 'Solder, test: drive with Wien bridge sine, measure THD vs freq and level, bandwidth, output impedance'], pass_criteria: '20W into 8Ω, bandwidth 20Hz–20kHz (±1dB), THD<1% at 1W.', difficulty: 'Intermediate', estimated_hours: 12 },
@@ -708,7 +734,7 @@ Rout int out 75
         duration_hours: 5, difficulty: 'Foundation',
         cs_bridge: 'Boolean algebra ↔ bitwise ops in C. AND, OR, NOT, XOR are the same operators. De Morgan is universal. K-maps are a visual trick for minimizing SOP — algorithmic special case of Quine-McCluskey.',
         lessons: [
-          { id: 'p4m1l1', title: 'Boolean algebra and De Morgan', type: 'reading', duration_min: 60, summary: 'AND, OR, NOT, XOR. De Morgan: ¬(A∧B)=¬A∨¬B. SOP = OR of ANDs (DNF). POS = AND of ORs (CNF). Both implementable in two-level logic.', key_takeaways: ['De Morgan laws are universal', 'SOP/POS are two-level implementations', 'Minimization reduces gate count and delay'] },
+          { id: 'p4m1l1', title: 'Boolean algebra and De Morgan', type: 'reading', duration_min: 60, summary: 'AND, OR, NOT, XOR. De Morgan: ¬(A∧B)=¬A∨¬B. SOP = OR of ANDs (DNF). POS = AND of ORs (CNF). Both implementable in two-level logic.', key_takeaways: ['De Morgan laws are universal', 'SOP/POS are two-level implementations', 'Minimization reduces gate count and delay'], circuitverse_url: 'https://circuitverse.org/users/186476/projects/gates-dwg-f8f9e302-8dfc-4554-a24d-2a0340ee6b9f/simulator/embed' },
           { id: 'p4m1l2', title: 'K-map minimization', type: 'reading', duration_min: 60, summary: '2D grid of minterms with Gray code ordering. Adjacent cells differ in one variable. Group 1s in power-of-2 rectangles. Fewer groups, larger groups = fewer literals.', key_takeaways: ['K-maps work to 4 variables by hand', '5+ variables: use Quine-McCluskey or Espresso', 'Modern synthesizers (Yosys, ABC) do this automatically'] },
         ],
         projects: [
@@ -735,7 +761,7 @@ module mux4(
 );
     assign out = in[sel];
 endmodule
-` , has_3d_model: true, model_component: 'ic'},
+` , has_3d_model: true, model_component: 'ic', circuitverse_url: 'https://circuitverse.org/users/28699/projects/the-japanese-plexer/simulator/embed'},
           { id: 'p4m2l2', title: 'Combinational hazards', type: 'reading', duration_min: 45, summary: 'Static-1 hazard: output should stay 1 but momentarily drops to 0 due to unequal path delays. Fix: add consensus term (extra product term covering the hazardous transition).', key_takeaways: ['Hazards rarely matter in synchronous designs (clock masks them)', 'Hazards bite hard in asynchronous logic and clock-domain crossings', 'Fix with consensus term or synchronous design'] },
         ],
         projects: [
@@ -752,7 +778,7 @@ endmodule
         duration_hours: 7, difficulty: 'Intermediate',
         cs_bridge: 'Flip-flop ↔ register in a CPU. D flop is 1-bit register. Shift register is a queue of flops. Counter is a register that increments. Register file is a flop bank — exactly the register file in a CPU. Only new: setup/hold/metastability.',
         lessons: [
-          { id: 'p4m3l1', title: 'Four flip-flop types and their use', type: 'reading', duration_min: 60, summary: 'D (universal — most logic uses D), T (counters), JK (general-purpose legacy), SR (basic latch, rarely used standalone). D flop samples input on clock edge and holds until next.', key_takeaways: ['D flop is the universal sequential element', 'JK is the legacy general-purpose flop', 'SR forbidden when S=R=1'], wavedrom: `{ signal: [\n  { name: 'clk', wave: 'p.........' },\n  { name: 'D',   wave: '0.1.0.1.0.' },\n  { name: 'Q',   wave: '0..1.0.1.0', node: '.......a' }\n],\n  head: { text: 'D flip-flop: Q takes D on the rising edge of clk' },\n  foot: { text: 'Setup and hold must be respected around the rising edge.' } }` , has_wokwi_elements: true},
+          { id: 'p4m3l1', title: 'Four flip-flop types and their use', type: 'reading', duration_min: 60, summary: 'D (universal — most logic uses D), T (counters), JK (general-purpose legacy), SR (basic latch, rarely used standalone). D flop samples input on clock edge and holds until next.', key_takeaways: ['D flop is the universal sequential element', 'JK is the legacy general-purpose flop', 'SR forbidden when S=R=1'], wavedrom: `{ signal: [\n  { name: 'clk', wave: 'p.........' },\n  { name: 'D',   wave: '0.1.0.1.0.' },\n  { name: 'Q',   wave: '0..1.0.1.0', node: '.......a' }\n],\n  head: { text: 'D flip-flop: Q takes D on the rising edge of clk' },\n  foot: { text: 'Setup and hold must be respected around the rising edge.' } }` , has_wokwi_elements: true, has_breadboard: true, circuitverse_url: 'https://circuitverse.org/users/186428/projects/counter-68d9a0ea-190b-4b3b-9d99-170d423ae304/simulator/embed' },
           { id: 'p4m3l2', title: 'Setup, hold, metastability', type: 'reading', duration_min: 75, summary: 't_su: input stable for t_su before edge. t_h: stable for t_h after. Violate → metastable (output hovers between 0 and 1 for unbounded time). Two-flop synchronizer reduces failure probability to MTBF of billions of years.', key_takeaways: ['Setup/hold violations cause metastability', 'Metastability is unavoidable in clock-domain crossings', 'Two-flop synchronizer: MTBF of billions of years'], has_verilog: true, verilog_starter: `// D flip-flop — the simplest sequential element.
 // This is the exact flop whose setup/hold window we are studying.
 // Hit Synthesize, then click the d button in the circuit view and
@@ -1294,7 +1320,25 @@ Rload out 0 2.5
       },
       { id: 'p9m2', title: 'CMOS Layout and Fabrication Flow', description: 'Layers: n-well, diffusion, poly, contacts, metal1-15. Design rules (min width/spacing/enclosure). 80 mask layers, 600-800 steps at 5nm.',
         duration_hours: 7, difficulty: 'Intermediate',
-        lessons: [{ id: 'p9m2l1', title: 'Layout layers and fabrication flow', type: 'reading', duration_min: 90, summary: 'Layout is the geometric description of every layer of the chip — n-well, p+ and n+ diffusion, polysilicon gates, contacts, and the 8-15 layers of metal that wire everything together. Foundries publish design rules (minimum width, spacing, enclosure) that capture what their lithography can reliably print, and a layout that violates them will fail DRC and never get fabricated. The fabrication flow itself is a sequence of repeating steps: substrate preparation, photolithography (pattern a photoresist with UV through a reticle), etch (remove material where the resist is open), ion implantation (dope the silicon), deposition (lay down new films), and chemical-mechanical polishing (CMP, planarize the surface for the next layer). A modern 5nm process uses roughly 80 mask layers and 600-800 process steps end-to-end, takes 2-3 months in the fab, and requires a facility that costs $15-20 billion to build — which is why only a handful of companies (TSMC, Samsung, Intel) operate at the leading edge.', key_takeaways: ['Layout = geometry of every layer; foundry design rules encode what lithography can print', 'Fab flow is repeating photolithography → etch → implant → deposition → CMP', 'Modern 5nm: ~80 masks, 600-800 steps, $15-20B fab cost — only a few firms can play', 'DRC clean is non-negotiable — a single violation means the fab rejects your GDS'] }],
+        lessons: [{ id: 'p9m2l1', title: 'Layout layers and fabrication flow', type: 'reading', duration_min: 90, summary: 'Layout is the geometric description of every layer of the chip — n-well, p+ and n+ diffusion, polysilicon gates, contacts, and the 8-15 layers of metal that wire everything together. Foundries publish design rules (minimum width, spacing, enclosure) that capture what their lithography can reliably print, and a layout that violates them will fail DRC and never get fabricated. The fabrication flow itself is a sequence of repeating steps: substrate preparation, photolithography (pattern a photoresist with UV through a reticle), etch (remove material where the resist is open), ion implantation (dope the silicon), deposition (lay down new films), and chemical-mechanical polishing (CMP, planarize the surface for the next layer). A modern 5nm process uses roughly 80 mask layers and 600-800 process steps end-to-end, takes 2-3 months in the fab, and requires a facility that costs $15-20 billion to build — which is why only a handful of companies (TSMC, Samsung, Intel) operate at the leading edge.', key_takeaways: ['Layout = geometry of every layer; foundry design rules encode what lithography can print', 'Fab flow is repeating photolithography → etch → implant → deposition → CMP', 'Modern 5nm: ~80 masks, 600-800 steps, $15-20B fab cost — only a few firms can play', 'DRC clean is non-negotiable — a single violation means the fab rejects your GDS'], has_tscircuit: true, tscircuit_code: `// CMOS inverter — the fundamental building block of digital VLSI.
+// PMOS pull-up network + NMOS pull-down network, topologically dual.
+// (tscircuit's primitive set is analog/PCB-focused — this starter shows
+//  the equivalent pull-up/pull-down resistor network, since MOSFET
+//  primitives aren't yet in the public DSL. Switch to the PCB and 3D
+//  Board tabs to see the layout — that's the focus of this lesson.)
+import { Circuit, Resistor, PowerSource, Ground } from "@tscircuit/react-fiber"
+
+export default function CmosInverter() {
+  return (
+    <Circuit>
+      <PowerSource voltage={5} name="VDD" />
+      <Resistor resistance="10k" footprint="0805" name="R_pullup" />
+      <Resistor resistance="10k" footprint="0805" name="R_pulldown" />
+      <Ground />
+    </Circuit>
+  )
+}
+` }],
         projects: [], checkpoints: [],
       },
       { id: 'p9m3', title: 'Combinational CMOS Design and Gate Sizing', description: 'Pull-up PMOS network, pull-down NMOS network — duals. NAND/NOR/AOI/OAI. Logical effort for sizing.',
@@ -1325,7 +1369,30 @@ Rload out 0 2.5
       },
       { id: 'p9m8', title: 'Phase 9 Capstone: Pipelined Adder + Custom Inverter', description: 'Part A: 32-bit carry-lookahead adder in Verilog, pipelined to 4 stages, Artix-7, target 200 MHz. Part B: 2-input NAND in Magic, DRC clean, extract to SPICE.',
         duration_hours: 16, difficulty: 'Advanced',
-        lessons: [],
+        lessons: [{ id: 'p9m8l1', title: 'Capstone overview: pipelined adder + custom inverter', type: 'reading', duration_min: 30, summary: 'Part A: 32-bit carry-lookahead adder in Verilog, pipelined to 4 stages, synthesized for Artix-7 at 200 MHz Fmax. Pipeline registers cut the critical path between CLA blocks — STA must be hold-clean at all PVT corners. Part B: 2-input NAND laid out in Magic, DRC clean, extracted to SPICE to compare layout parasitics vs schematic-only delays. The tscircuit viewer below shows the PCB-view workflow you\'ll use to document the board-level integration — for the actual adder logic, use the Verilog HDL Playground above; for the NAND layout, use Magic VLSI locally.', key_takeaways: ['Part A: 32-bit CLA pipelined to 4 stages, Artix-7, target 200 MHz Fmax', 'Part B: 2-input NAND in Magic — DRC clean, extract to SPICE, compare layout vs schematic', 'Pipeline registers cut critical path — STA must be hold-clean at all corners', 'tscircuit renders schematic + PCB + 3D board — use it to document the board integration'], has_tscircuit: true, tscircuit_code: `// Pipelined adder capstone — board-level integration view.
+// The actual 32-bit CLA logic lives in Verilog (see the HDL Playground
+// above). This tscircuit starter shows the PCB-view workflow: input
+// header -> clock oscillator -> 4 green status LEDs (one per pipeline
+// stage) -> output header. Switch to PCB / 3D Board tabs to see layout.
+import { Circuit, Resistor, Led, PowerSource, Ground } from "@tscircuit/react-fiber"
+
+export default function PipelinedAdderBoard() {
+  return (
+    <Circuit>
+      <PowerSource voltage={5} name="VCC" />
+      <Resistor resistance="330" footprint="0805" name="R1" />
+      <Resistor resistance="330" footprint="0805" name="R2" />
+      <Resistor resistance="330" footprint="0805" name="R3" />
+      <Resistor resistance="330" footprint="0805" name="R4" />
+      <Led color="green" footprint="0805" name="stage1_led" />
+      <Led color="green" footprint="0805" name="stage2_led" />
+      <Led color="green" footprint="0805" name="stage3_led" />
+      <Led color="green" footprint="0805" name="stage4_led" />
+      <Ground />
+    </Circuit>
+  )
+}
+` }],
         projects: [
           { id: 'p9m8pr1', title: 'Phase 9 Capstone: FPGA Pipelined Adder + Magic Inverter', goal: 'Part A: pipelined 32-bit CLA adder on FPGA. Part B: NAND gate layout in Magic.', tools: ['Vivado', 'Artix-7 board', 'Magic VLSI', 'ngspice'], steps: ['Part A: implement 32-bit carry-lookahead adder in Verilog, pipeline to 4 stages, synthesize for Artix-7, target 200 MHz Fmax. STA. Onboard: drive from counter, display on 7-seg.', 'Part B: layout 2-input NAND in Magic, DRC clean, extract to SPICE, simulate VTC and propagation delay. Compare to schematic-only. Document layout area in λ².'], pass_criteria: 'Part A: 200 MHz Fmax, hold clean at all corners. Part B: DRC clean, extracted sim matches schematic.', difficulty: 'Advanced', estimated_hours: 16 },
         ],

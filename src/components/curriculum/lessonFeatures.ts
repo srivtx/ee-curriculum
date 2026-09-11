@@ -26,6 +26,9 @@ import {
   Box,
   Microchip,
   MousePointerClick,
+  LayoutGrid,
+  Layers,
+  Binary,
 } from 'lucide-react';
 import type { Lesson } from '@/lib/curriculum';
 
@@ -45,7 +48,10 @@ export type FeatureKey =
   | 'webserial'
   | 'wokwi'
   | 'wokwi_elements'
-  | 'model_3d';
+  | 'model_3d'
+  | 'breadboard'
+  | 'tscircuit'
+  | 'circuitverse';
 
 export interface FeatureMeta {
   key: FeatureKey;
@@ -193,6 +199,30 @@ export const FEATURE_META: Record<FeatureKey, FeatureMeta> = {
     tier: 'active',
     anchor: 'section-3d-model',
   },
+  breadboard: {
+    key: 'breadboard',
+    short: 'BB',
+    label: 'Virtual breadboard (drag · wire · light up)',
+    icon: LayoutGrid,
+    tier: 'active',
+    anchor: 'section-breadboard',
+  },
+  tscircuit: {
+    key: 'tscircuit',
+    short: 'TS',
+    label: 'tscircuit (schematic + PCB + 3D board)',
+    icon: Layers,
+    tier: 'active',
+    anchor: 'section-tscircuit',
+  },
+  circuitverse: {
+    key: 'circuitverse',
+    short: 'CV',
+    label: 'CircuitVerse digital logic sim',
+    icon: Binary,
+    tier: 'active',
+    anchor: 'section-circuitverse',
+  },
 };
 
 /** Display order: hands-on first, then passive viewers, hardware last. */
@@ -207,6 +237,9 @@ const FEATURE_ORDER: FeatureKey[] = [
   'wokwi',
   'wokwi_elements',
   'model_3d',
+  'breadboard',
+  'tscircuit',
+  'circuitverse',
   'cs_bridge',
   'wavedrom',
   'katex',
@@ -240,6 +273,11 @@ export function getLessonFeatures(
   if (lesson.wokwi_url) present.push('wokwi');
   if (lesson.has_wokwi_elements) present.push('wokwi_elements');
   if (lesson.has_3d_model) present.push('model_3d');
+  if (lesson.has_breadboard) present.push('breadboard');
+  if (lesson.has_tscircuit) present.push('tscircuit');
+  // CircuitVerse uses `!== undefined` so an empty-string (homepage fallback)
+  // still triggers the embed, mirroring the LessonDrawer check.
+  if (lesson.circuitverse_url !== undefined) present.push('circuitverse');
   // WebSerial is global (floating FAB), not per-lesson. We surface it on
   // lessons where it's particularly relevant (any lesson with a has_circuit
   // flag or any playground) — see lessonSupportsWebSerial below.
@@ -262,7 +300,10 @@ export function lessonSupportsWebSerial(lesson: Lesson): boolean {
       lesson.has_verilog ||
       lesson.kicanvas_url ||
       lesson.wokwi_url ||
-      lesson.has_wokwi_elements
+      lesson.has_wokwi_elements ||
+      lesson.has_breadboard ||
+      lesson.has_tscircuit ||
+      lesson.circuitverse_url !== undefined
   );
 }
 
