@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes';
-import { Moon, Sun, Github, FileDown } from 'lucide-react';
+import { Moon, Sun, Github, FileDown, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ProgressIndicator } from './ProgressIndicator';
@@ -22,10 +22,12 @@ export function Header({
   view,
   onView,
   overallPct,
+  onOpenSearch,
 }: {
   view: ViewKey;
   onView: (v: ViewKey) => void;
   overallPct: number;
+  onOpenSearch: () => void;
 }) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
@@ -122,6 +124,18 @@ export function Header({
           >
             <Github className="h-4 w-4" />
           </Link>
+        </Button>
+
+        {/* Search trigger — visible on all breakpoints. Clicking opens the
+            Cmd+K palette; on desktop we also show the ⌘K hint pill. */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full"
+          aria-label="Search (Cmd+K)"
+          onClick={onOpenSearch}
+        >
+          <Search className="h-4 w-4" />
         </Button>
 
         {/* Theme toggle — always visible */}

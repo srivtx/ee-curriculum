@@ -1,7 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { CURRICULUM, CURRICULUM_STATS, type Lesson, type Module, type Phase } from '@/lib/curriculum';
+import {
+  CURRICULUM_STATS,
+  type Lesson,
+} from '@/lib/curriculum';
+import {
+  LESSON_BY_ID,
+  getNextLesson,
+} from '@/lib/curriculumIndex';
 import { useProgress } from '@/hooks/useProgress';
 import { Header, type ViewKey } from '@/components/curriculum/Header';
 import { Footer } from '@/components/curriculum/Footer';
@@ -10,52 +17,61 @@ import { DashboardView } from '@/components/curriculum/DashboardView';
 import { ProjectsView } from '@/components/curriculum/ProjectsView';
 import { CheckpointsView } from '@/components/curriculum/CheckpointsView';
 import { SerialPanel } from '@/components/curriculum/SerialPanel';
+import { SearchPalette } from '@/components/curriculum/SearchPalette';
 import {
   LessonDrawer,
   type LessonDrawerPayload,
 } from '@/components/curriculum/LessonDrawer';
 
-// Build a lookup so when a lesson is opened we can fetch its parent module & phase.
-interface LessonContext {
-  module: Module;
-  phase: Phase;
-}
-const LESSON_INDEX: Map<string, LessonContext> = (() => {
-  const m = new Map<string, LessonContext>();
-  for (const phase of CURRICULUM) {
-    for (const mod of phase.modules) {
-      for (const lesson of mod.lessons) {
-        m.set(lesson.id, { module: mod, phase });
-      }
-    }
-  }
-  return m;
-})();
-
 export default function Home() {
   const [view, setView] = React.useState<ViewKey>('curriculum');
-  const { state } = useProgress();
+  const { state, setLastLesson } = useProgress();
 
   // Lesson drawer state
   const [drawerOpen, setDrawerOpen] = React.useState(false);
   const [drawerPayload, setDrawerPayload] =
     React.useState<LessonDrawerPayload | null>(null);
 
+  // Search palette state
+  const [searchOpen, setSearchOpen] = React.useState(false);
+
   const overallPct =
     CURRICULUM_STATS.lessons > 0
       ? (state.completedLessons.length / CURRICULUM_STATS.lessons) * 100
       : 0;
 
-  const handleOpenLesson = React.useCallback((lesson: Lesson) => {
-    const ctx = LESSON_INDEX.get(lesson.id);
-    setDrawerPayload({
-      lesson,
-      module: ctx?.module,
-      phaseTitle: ctx?.phase.title,
-      moduleTitle: ctx?.module?.title,
-    });
-    setDrawerOpen(true);
-  }, []);
+  const handleOpenLesson = React.useCallback(
+    (lesson: Lesson) => {
+      const ctx = LESSON_BY_ID.get(lesson.id);
+      setDrawerPayload({
+        lesson,
+        module: ctx?.module,
+        phaseTitle: ctx?.phase.title,
+        moduleTitle: ctx?.module?.title,
+      });
+      setDrawerOpen(true);
+      setLastLesson(lesson.id);
+    },
+    [setLastLesson]
+  );
+
+  // "Next lesson" — called by the LessonDrawer footer. Closes the current
+  // drawer, opens the next lesson in curriculum order (if any).
+  const handleOpenNextLesson = React.useCallback(
+    (currentLessonId: string) => {
+      const next = getNextLesson(currentLessonId);
+      if (!next) return; // last lesson — drawer handles this state itself
+      setDrawerPayload({
+        lesson: next.lesson,
+        module: next.module,
+        phaseTitle: next.phase.title,
+        moduleTitle: next.module.title,
+      });
+      setLastLesson(next.lesson.id);
+      // Keep drawerOpen=true; the LessonDrawer resets scroll on lesson-id change.
+    },
+    [setLastLesson]
+  );
 
   // Switch view + scroll to top
   const handleViewChange = React.useCallback((v: ViewKey) => {
@@ -65,15 +81,41 @@ export default function Home() {
     }
   }, []);
 
+  // Global keyboard shortcut: ⌘K (macOS) / Ctrl+K (everywhere else) opens
+  // the search palette. We attach a single window listener and ignore the
+  // event when the target is an editable element the user is mid-edit in
+  // (textareas inside playgrounds, etc.) — except that Cmd+K / Ctrl+K is
+  // almost never a typing conflict, so we still honor it.
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground">
-      <Header view={view} onView={handleViewChange} overallPct={overallPct} />
+      <Header
+        view={view}
+        onView={handleViewChange}
+        overallPct={overallPct}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
 
       <main className="flex-1">
         {view === 'curriculum' && (
           <CurriculumView onOpenLesson={handleOpenLesson} />
         )}
-        {view === 'dashboard' && <DashboardView onNavigate={handleViewChange} />}
+        {view === 'dashboard' && (
+          <DashboardView
+            onNavigate={handleViewChange}
+            onOpenLesson={handleOpenLesson}
+          />
+        )}
         {view === 'projects' && <ProjectsView />}
         {view === 'checkpoints' && <CheckpointsView />}
       </main>
@@ -84,9 +126,17 @@ export default function Home() {
         payload={drawerPayload}
         open={drawerOpen}
         onOpenChange={setDrawerOpen}
+        onOpenNextLesson={handleOpenNextLesson}
       />
 
       <SerialPanel />
+
+      <SearchPalette
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        onOpenLesson={handleOpenLesson}
+        onNavigate={handleViewChange}
+      />
     </div>
   );
 }

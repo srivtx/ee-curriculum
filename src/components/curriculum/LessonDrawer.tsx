@@ -9,9 +9,12 @@ import {
   Lightbulb,
   ArrowDown,
   ArrowLeft,
+  ArrowRight,
+  PartyPopper,
   X,
 } from 'lucide-react';
 import type { Lesson, Module } from '@/lib/curriculum';
+import { getNextLesson } from '@/lib/curriculumIndex';
 import { useProgress } from '@/hooks/useProgress';
 import {
   DIFFICULTY_STYLES,
@@ -58,10 +61,13 @@ export function LessonDrawer({
   payload,
   open,
   onOpenChange,
+  onOpenNextLesson,
 }: {
   payload: LessonDrawerPayload | null;
   open: boolean;
   onOpenChange: (v: boolean) => void;
+  /** Open the lesson that follows the currently-displayed one. */
+  onOpenNextLesson: (currentLessonId: string) => void;
 }) {
   // ESC key closes the overlay.
   React.useEffect(() => {
@@ -102,6 +108,7 @@ export function LessonDrawer({
     <FullPageLesson
       payload={payload}
       onOpenChange={onOpenChange}
+      onOpenNextLesson={onOpenNextLesson}
       scrollRef={scrollRef}
     />
   );
@@ -110,10 +117,12 @@ export function LessonDrawer({
 function FullPageLesson({
   payload,
   onOpenChange,
+  onOpenNextLesson,
   scrollRef,
 }: {
   payload: LessonDrawerPayload;
   onOpenChange: (v: boolean) => void;
+  onOpenNextLesson: (currentLessonId: string) => void;
   scrollRef: React.RefObject<HTMLDivElement | null>;
 }) {
   const { lesson, module, phaseTitle, moduleTitle } = payload;
@@ -531,11 +540,76 @@ function FullPageLesson({
               </Button>
             </div>
 
+            {/* "Next lesson →" — opens the lesson that follows this one in
+                curriculum order (next lesson in the same module, or the
+                first lesson of the next module if we're at the end of this
+                one). If this is the last lesson in the curriculum, show a
+                celebratory end-of-curriculum message instead. */}
+            <NextLessonSection
+              currentLessonId={lesson.id}
+              onOpenNext={() => onOpenNextLesson(lesson.id)}
+            />
+
             <div className="h-4" />
           </div>
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * Footer block for the lesson view — either a "Next lesson →" button (the
+ * default) or a celebratory "You've reached the end!" card if this is the
+ * last lesson in the curriculum.
+ */
+function NextLessonSection({
+  currentLessonId,
+  onOpenNext,
+}: {
+  currentLessonId: string;
+  onOpenNext: () => void;
+}) {
+  const next = React.useMemo(
+    () => getNextLesson(currentLessonId),
+    [currentLessonId]
+  );
+
+  if (!next) {
+    return (
+      <section className="mt-4 rounded-sm border border-accent/30 bg-accent-soft/20 px-4 py-4 text-center">
+        <PartyPopper className="mx-auto mb-1 h-5 w-5 text-accent" aria-hidden />
+        <div className="text-sm text-ink">You&apos;ve reached the end! 🎉</div>
+        <p className="mt-0.5 text-xs text-body-mid">
+          That was the last lesson in the curriculum. Pick another lesson from
+          the list, or revisit one you&apos;ve already completed.
+        </p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mt-4 rounded-sm border border-hairline bg-canvas-card px-4 py-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <div className="eyebrow text-[11px] text-body-mid">Next lesson</div>
+          <div className="mt-0.5 truncate text-sm text-ink">
+            {next.lesson.title}
+          </div>
+          <div className="truncate text-[11px] text-body-mid">
+            {next.phase.title} · {next.module.title}
+          </div>
+        </div>
+        <Button
+          variant="default"
+          onClick={onOpenNext}
+          className="shrink-0 gap-1.5 rounded-full bg-accent text-canvas hover:bg-accent/90"
+        >
+          Next lesson
+          <ArrowRight className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+    </section>
   );
 }
 

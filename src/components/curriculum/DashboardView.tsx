@@ -36,12 +36,15 @@ import {
   Usb,
   Cable,
   ArrowRight,
+  PlayCircle,
 } from 'lucide-react';
-import { CURRICULUM, CURRICULUM_STATS } from '@/lib/curriculum';
+import { CURRICULUM, CURRICULUM_STATS, type Lesson } from '@/lib/curriculum';
+import { FLAT_LESSONS, LESSON_BY_ID } from '@/lib/curriculumIndex';
 import { useProgress, checkpointKey } from '@/hooks/useProgress';
 import { formatHours, formatWeeks } from './helpers';
 import { cn } from '@/lib/utils';
 import type { ViewKey } from './Header';
+import { ProgressManager } from './ProgressManager';
 import {
   getCurriculumFeatureStats,
   getLessonFeatures,
@@ -51,8 +54,10 @@ import {
 
 export function DashboardView({
   onNavigate,
+  onOpenLesson,
 }: {
   onNavigate: (v: ViewKey) => void;
+  onOpenLesson: (lesson: Lesson) => void;
 }) {
   const { state, logHours, reset, loaded } = useProgress();
 
@@ -150,6 +155,16 @@ export function DashboardView({
           </div>
         </div>
       </section>
+
+      {/* Continue where you left off — prominent card above the KPI tiles.
+          Reads `lastLessonId` from the persisted progress; falls back to the
+          very first lesson ("Phase 0 → Calculus refresher") when the user
+          hasn't opened any lesson yet. */}
+      <ContinueCard
+        lastLessonId={state.lastLessonId}
+        loaded={loaded}
+        onOpenLesson={onOpenLesson}
+      />
 
       {/* KPI tiles */}
       <section className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -365,13 +380,15 @@ export function DashboardView({
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base font-normal text-ink">
               <Award className="h-4 w-4 text-accent" />
-              Reset
+              Progress data
             </CardTitle>
             <CardDescription className="text-body-mid">
-              Wipe all saved progress from this browser.
+              Back up your progress to a file, restore it on another browser,
+              or wipe it entirely.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
+            <ProgressManager />
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
@@ -406,6 +423,95 @@ export function DashboardView({
         </Card>
       </section>
     </div>
+  );
+}
+
+/**
+ * "Continue where you left off" — prominent card at the top of the dashboard.
+ *
+ * Reads the `lastLessonId` from the persisted progress state and shows the
+ * matching lesson (with its module + phase context). If the user has never
+ * opened a lesson, we fall back to the very first lesson in the curriculum
+ * ("Phase 0 → Calculus refresher") and present it as the recommended
+ * starting point.
+ *
+ * The "Continue" (or "Start") button calls `onOpenLesson`, which opens the
+ * LessonDrawer for that lesson.
+ */
+function ContinueCard({
+  lastLessonId,
+  loaded,
+  onOpenLesson,
+}: {
+  lastLessonId: string | null;
+  loaded: boolean;
+  onOpenLesson: (lesson: Lesson) => void;
+}) {
+  // Look up the last-opened lesson; fall back to the first lesson of the
+  // curriculum. `loaded` gates the render so we don't briefly show the
+  // fallback before localStorage has hydrated (would cause a flicker from
+  // "Start with Phase 0 → Calculus refresher" to "Continue: <real lesson>").
+  const entry = React.useMemo(() => {
+    if (!loaded) return null;
+    if (lastLessonId) {
+      const hit = LESSON_BY_ID.get(lastLessonId);
+      if (hit) return hit;
+    }
+    return FLAT_LESSONS[0] ?? null;
+  }, [lastLessonId, loaded]);
+
+  if (!entry) {
+    // No curriculum loaded — shouldn't happen, but render nothing rather
+    // than crash.
+    return null;
+  }
+
+  const { lesson, module, phase } = entry;
+  const hasLast = !!lastLessonId && !!LESSON_BY_ID.get(lastLessonId);
+
+  return (
+    <section className="mb-6">
+      <Card className="overflow-hidden rounded-sm border border-accent/30 bg-canvas-card">
+        <div
+          aria-hidden
+          className="h-0.5 w-full"
+          style={{ backgroundColor: 'var(--accent)' }}
+        />
+        <CardContent className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex min-w-0 items-start gap-3">
+            <span
+              className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-accent/30 text-accent"
+              aria-hidden
+            >
+              <PlayCircle className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <div className="eyebrow text-[11px] text-accent">
+                {hasLast ? 'Continue where you left off' : 'Start here'}
+              </div>
+              <h2 className="mt-1 truncate text-base font-normal text-ink sm:text-lg">
+                {lesson.title}
+              </h2>
+              <p className="mt-0.5 truncate text-xs text-body-mid">
+                {phase.title} · {module.title}
+              </p>
+              {hasLast && (
+                <p className="mt-1 line-clamp-2 max-w-2xl text-[11px] text-body-mid">
+                  {lesson.summary}
+                </p>
+              )}
+            </div>
+          </div>
+          <Button
+            onClick={() => onOpenLesson(lesson)}
+            className="shrink-0 gap-1.5 rounded-full bg-accent text-canvas hover:bg-accent/90"
+          >
+            {hasLast ? 'Continue' : 'Start with Phase 0'}
+            <ArrowRight className="h-3.5 w-3.5" />
+          </Button>
+        </CardContent>
+      </Card>
+    </section>
   );
 }
 

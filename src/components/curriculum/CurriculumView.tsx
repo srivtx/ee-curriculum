@@ -99,6 +99,15 @@ export function CurriculumView({
         </div>
       </section>
 
+      {/* Reading progress indicator — a more prominent, larger progress bar
+          than the voxel strip in the hero. Different from the header progress
+          bar: this one is sized to be the dominant progress signal on the
+          curriculum page. Sits between the hero and the feature filter chips. */}
+      <ReadingProgressBanner
+        done={state.completedLessons.length}
+        total={CURRICULUM_STATS.lessons}
+      />
+
       {/* Interactive features filter chips — horizontally scrollable on mobile
           so all chips stay reachable without pushing the "Clear" / count
           off-screen. */}
@@ -184,5 +193,62 @@ export function CurriculumView({
         </Accordion>
       </section>
     </div>
+  );
+}
+
+/**
+ * Reading-progress banner — Design System v3 task web-missing-features.
+ *
+ * A large, prominent progress bar showing overall curriculum completion.
+ * Distinct from the hero voxel strip (which is a small decorative strip)
+ * and from the header progress indicator (which is a compact 32-block bar
+ * in the top nav). This banner is sized to be the dominant progress signal
+ * on the curriculum page.
+ */
+function ReadingProgressBanner({
+  done,
+  total,
+}: {
+  done: number;
+  total: number;
+}) {
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  const clamped = Math.max(0, Math.min(100, pct));
+  return (
+    <section className="mt-5 rounded-sm border border-hairline bg-canvas-card p-4 sm:p-5">
+      <div className="mb-2 flex items-baseline justify-between gap-2">
+        <div className="flex items-baseline gap-2">
+          <span className="eyebrow text-[11px] text-body-mid">
+            Reading progress
+          </span>
+          <span className="text-sm text-ink">
+            <span className="ee-mono tabular-nums text-accent">{done}</span>
+            <span className="text-body-mid"> of </span>
+            <span className="ee-mono tabular-nums">{total}</span>
+            <span className="text-body-mid"> lessons complete</span>
+          </span>
+        </div>
+        <span className="ee-mono text-sm tabular-nums text-accent">
+          {Math.round(clamped)}%
+        </span>
+      </div>
+      {/* Thin, full-width green progress bar — phosphor accent on the
+          canvas-mid track. The height (h-2) is deliberately larger than the
+          hero voxel strip (h-2 per block but only 1.5px wide) so this reads
+          as the primary progress signal. */}
+      <div
+        className="h-2 w-full overflow-hidden rounded-full bg-canvas-mid"
+        role="progressbar"
+        aria-valuenow={Math.round(clamped)}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-label={`Curriculum reading progress: ${done} of ${total} lessons complete`}
+      >
+        <div
+          className="h-full rounded-full transition-[width] duration-500 ease-out"
+          style={{ width: `${clamped}%`, backgroundColor: 'var(--accent)' }}
+        />
+      </div>
+    </section>
   );
 }

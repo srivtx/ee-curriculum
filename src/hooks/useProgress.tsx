@@ -19,6 +19,8 @@ export interface ProgressState {
   gotItCheckpoints: string[];
   needReviewCheckpoints: string[];
   hoursByPhase: Record<string, number>;
+  /** Last lesson the user opened — powers "Continue where you left off". */
+  lastLessonId: string | null;
 }
 
 const STORAGE_KEY = 'ee-curriculum-progress-v1';
@@ -29,6 +31,7 @@ const EMPTY: ProgressState = {
   gotItCheckpoints: [],
   needReviewCheckpoints: [],
   hoursByPhase: {},
+  lastLessonId: null,
 };
 
 // ---- Context ------------------------------------------------------------
@@ -41,6 +44,10 @@ interface ProgressContextValue {
   setCheckpoint: (key: string, status: 'got_it' | 'need_review' | 'clear') => void;
   checkpointStatus: (key: string) => 'got_it' | 'need_review' | null;
   logHours: (phaseId: string, hours: number) => void;
+  /** Record the lesson the user just opened (powers "Continue where you left off"). */
+  setLastLesson: (id: string) => void;
+  /** Replace the entire progress state — used by the import flow. */
+  importState: (s: ProgressState) => void;
   reset: () => void;
   loaded: boolean;
 }
@@ -59,6 +66,7 @@ function load(): ProgressState {
       gotItCheckpoints: Array.isArray(parsed.gotItCheckpoints) ? parsed.gotItCheckpoints : [],
       needReviewCheckpoints: Array.isArray(parsed.needReviewCheckpoints) ? parsed.needReviewCheckpoints : [],
       hoursByPhase: parsed.hoursByPhase && typeof parsed.hoursByPhase === 'object' ? parsed.hoursByPhase : {},
+      lastLessonId: typeof parsed.lastLessonId === 'string' ? parsed.lastLessonId : null,
     };
   } catch {
     return EMPTY;
@@ -126,6 +134,16 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
         ...s,
         hoursByPhase: { ...s.hoursByPhase, [phaseId]: Math.max(0, hours) },
       })),
+    setLastLesson: (id) =>
+      setState((s) => ({ ...s, lastLessonId: id })),
+    importState: (next) => setState(() => ({
+      completedLessons: Array.isArray(next.completedLessons) ? next.completedLessons : [],
+      completedProjects: Array.isArray(next.completedProjects) ? next.completedProjects : [],
+      gotItCheckpoints: Array.isArray(next.gotItCheckpoints) ? next.gotItCheckpoints : [],
+      needReviewCheckpoints: Array.isArray(next.needReviewCheckpoints) ? next.needReviewCheckpoints : [],
+      hoursByPhase: next.hoursByPhase && typeof next.hoursByPhase === 'object' ? next.hoursByPhase : {},
+      lastLessonId: typeof next.lastLessonId === 'string' ? next.lastLessonId : null,
+    })),
     reset: () => setState(EMPTY),
   }), [state, loaded]);
 
