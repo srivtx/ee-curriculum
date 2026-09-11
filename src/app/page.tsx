@@ -1,28 +1,167 @@
 'use client';
 
 import * as React from 'react';
-import { TscircuitViewer } from '@/components/curriculum/TscircuitViewer';
-import { CircuitVerseEmbed } from '@/components/curriculum/CircuitVerseEmbed';
-import { LESSON_BY_ID } from '@/lib/curriculumIndex';
+import {
+  CURRICULUM_STATS,
+  type Lesson,
+} from '@/lib/curriculum';
+import {
+  LESSON_BY_ID,
+  getNextLesson,
+} from '@/lib/curriculumIndex';
+import { useProgress } from '@/hooks/useProgress';
+import { Header, type ViewKey } from '@/components/curriculum/Header';
+import { Footer } from '@/components/curriculum/Footer';
+import { CurriculumView } from '@/components/curriculum/CurriculumView';
+import { DashboardView } from '@/components/curriculum/DashboardView';
+import { ProjectsView } from '@/components/curriculum/ProjectsView';
+import { CheckpointsView } from '@/components/curriculum/CheckpointsView';
+import { LabsView } from '@/components/curriculum/LabsView';
+import { PlaygroundView } from '@/components/curriculum/PlaygroundView';
+import { SerialPanel } from '@/components/curriculum/SerialPanel';
+import { SearchPalette } from '@/components/curriculum/SearchPalette';
+import {
+  LessonDrawer,
+  type LessonDrawerPayload,
+} from '@/components/curriculum/LessonDrawer';
 
 export default function Home() {
-  const tscircuitLesson = LESSON_BY_ID.get('p9m2l1')?.lesson;
-  const cvLesson = LESSON_BY_ID.get('p4m1l1')?.lesson;
+  const [view, setView] = React.useState<ViewKey>('curriculum');
+  const { state, setLastLesson } = useProgress();
+
+  // Lesson drawer state
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
+  const [drawerPayload, setDrawerPayload] =
+    React.useState<LessonDrawerPayload | null>(null);
+
+  // Search palette state
+  const [searchOpen, setSearchOpen] = React.useState(false);
+
+  // Labs view state — id of the currently-open lab, or null for the list.
+  const [labsView, setLabsView] = React.useState<string | null>(null);
+  // Playground view state — id of the currently-open tool, or null for the list.
+  const [playgroundView, setPlaygroundView] = React.useState<string | null>(null);
+
+  const overallPct =
+    CURRICULUM_STATS.lessons > 0
+      ? (state.completedLessons.length / CURRICULUM_STATS.lessons) * 100
+      : 0;
+
+  const handleOpenLesson = React.useCallback(
+    (lesson: Lesson) => {
+      const ctx = LESSON_BY_ID.get(lesson.id);
+      setDrawerPayload({
+        lesson,
+        module: ctx?.module,
+        phaseTitle: ctx?.phase.title,
+        moduleTitle: ctx?.module?.title,
+      });
+      setDrawerOpen(true);
+      setLastLesson(lesson.id);
+    },
+    [setLastLesson]
+  );
+
+  // "Next lesson" — called by the LessonDrawer footer. Closes the current
+  // drawer, opens the next lesson in curriculum order (if any).
+  const handleOpenNextLesson = React.useCallback(
+    (currentLessonId: string) => {
+      const next = getNextLesson(currentLessonId);
+      if (!next) return; // last lesson — drawer handles this state itself
+      setDrawerPayload({
+        lesson: next.lesson,
+        module: next.module,
+        phaseTitle: next.phase.title,
+        moduleTitle: next.module.title,
+      });
+      setLastLesson(next.lesson.id);
+      // Keep drawerOpen=true; the LessonDrawer resets scroll on lesson-id change.
+    },
+    [setLastLesson]
+  );
+
+  // Switch view + scroll to top. Also closes any open lab/playground overlay
+  // so the user lands on the section's list view, not a stale detail page.
+  const handleViewChange = React.useCallback((v: ViewKey) => {
+    setView(v);
+    setLabsView(null);
+    setPlaygroundView(null);
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Global keyboard shortcut: ⌘K (macOS) / Ctrl+K (everywhere else) opens
+  // the search palette. We attach a single window listener and ignore the
+  // event when the target is an editable element the user is mid-edit in
+  // (textareas inside playgrounds, etc.) — except that Cmd+K / Ctrl+K is
+  // almost never a typing conflict, so we still honor it.
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((v) => !v);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   return (
-    <div className="min-h-screen bg-canvas p-6 text-ink">
-      <h1 className="text-xl mb-4">tscircuit + CircuitVerse Verification</h1>
-      <section className="mb-8">
-        <h2 className="text-base mb-2">
-          tscircuit viewer (p9m2l1 — CMOS inverter)
-        </h2>
-        <TscircuitViewer code={tscircuitLesson?.tscircuit_code} />
-      </section>
-      <section>
-        <h2 className="text-base mb-2">
-          CircuitVerse embed (p4m1l1 — Boolean algebra)
-        </h2>
-        <CircuitVerseEmbed circuitUrl={cvLesson?.circuitverse_url} />
-      </section>
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <Header
+        view={view}
+        onView={handleViewChange}
+        overallPct={overallPct}
+        onOpenSearch={() => setSearchOpen(true)}
+      />
+
+      <main className="flex-1">
+        {view === 'curriculum' && (
+          <CurriculumView onOpenLesson={handleOpenLesson} />
+        )}
+        {view === 'dashboard' && (
+          <DashboardView
+            onNavigate={handleViewChange}
+            onOpenLesson={handleOpenLesson}
+          />
+        )}
+        {view === 'projects' && <ProjectsView />}
+        {view === 'checkpoints' && <CheckpointsView />}
+        {view === 'labs' && (
+          <LabsView
+            activeLabId={labsView}
+            onOpenLab={(id) => setLabsView(id)}
+            onCloseLab={() => setLabsView(null)}
+            onNavigateToCurriculum={() => handleViewChange('curriculum')}
+          />
+        )}
+        {view === 'playground' && (
+          <PlaygroundView
+            activeToolId={playgroundView}
+            onOpenTool={(id) => setPlaygroundView(id)}
+            onCloseTool={() => setPlaygroundView(null)}
+          />
+        )}
+      </main>
+
+      <Footer />
+
+      <LessonDrawer
+        payload={drawerPayload}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+        onOpenNextLesson={handleOpenNextLesson}
+      />
+
+      <SerialPanel />
+
+      <SearchPalette
+        open={searchOpen}
+        onOpenChange={setSearchOpen}
+        onOpenLesson={handleOpenLesson}
+        onNavigate={handleViewChange}
+      />
     </div>
   );
 }

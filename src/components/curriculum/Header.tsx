@@ -9,11 +9,19 @@ import { cn } from '@/lib/utils';
 import { ProgressIndicator } from './ProgressIndicator';
 import { EEMonogram } from './EEMonogram';
 
-export type ViewKey = 'dashboard' | 'curriculum' | 'projects' | 'checkpoints';
+export type ViewKey =
+  | 'dashboard'
+  | 'curriculum'
+  | 'labs'
+  | 'playground'
+  | 'projects'
+  | 'checkpoints';
 
 const NAV: { key: ViewKey; label: string }[] = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'curriculum', label: 'Curriculum' },
+  { key: 'labs', label: 'Labs' },
+  { key: 'playground', label: 'Playground' },
   { key: 'projects', label: 'Projects' },
   { key: 'checkpoints', label: 'Checkpoints' },
 ];
