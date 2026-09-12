@@ -3,6 +3,7 @@
 import * as React from 'react';
 import { ExternalLink, Cpu, AlertTriangle, RotateCw, Play, Square } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ArduinoUnoSVG, ESP32DevKitSVG, LEDSVG, ResistorSVG } from './RealisticComponents';
 
 export interface WokwiEmbedProps {
   /**
@@ -310,41 +311,84 @@ void loop() {
       <div className="grid gap-0 lg:grid-cols-2">
         {/* Circuit panel */}
         <div className="border-b border-hairline bg-canvas p-6 lg:border-b-0 lg:border-r">
-          <div className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-body-mid">
+          <div className="mb-3 text-sm font-medium text-body-mid">
             Circuit
           </div>
-          {/* Visual circuit representation */}
-          <div className="flex flex-col items-center gap-6 py-4">
-            {/* Arduino board representation */}
-            <div className="rounded-lg border-2 border-accent/40 bg-accent/5 px-8 py-4 text-center">
-              <div className="text-xs font-mono text-accent">ARDUINO UNO</div>
-              <div className="mt-1 text-[10px] text-body-mid">pin 13</div>
-            </div>
+          {/* Realistic board + LED circuit */}
+          <div className="flex flex-col items-center gap-4 py-4">
+            {/* Arduino or ESP32 board — realistic SVG */}
+            {demo === 'esp32-wifi' ? (
+              <div className="flex flex-col items-center gap-2">
+                <ESP32DevKitSVG ledOn={running} />
+                <span className="text-xs text-body-mid">ESP32 DevKit V1</span>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <ArduinoUnoSVG ledOn={ledState} />
+                <span className="text-xs text-body-mid">Arduino Uno R3</span>
+              </div>
+            )}
 
-            {/* Wire from Arduino to LED */}
-            <div className={cn('h-8 w-0.5', ledState ? 'bg-accent' : 'bg-hairline')} />
-
-            {/* LED */}
-            <div className="flex flex-col items-center gap-2">
-              <div
-                className={cn(
-                  'h-16 w-16 rounded-full border-4 transition-all duration-150',
-                  ledState
-                    ? 'border-accent bg-accent shadow-[0_0_40px_8px_rgba(127,255,159,0.6)]'
-                    : 'border-hairline bg-canvas-card'
-                )}
-              >
-                <div className="flex h-full items-center justify-center text-[10px] font-mono">
-                  {ledState ? 'ON' : 'OFF'}
+            {/* LED + Resistor on a mini breadboard */}
+            {(demo === 'arduino-blink' || demo === 'esp32-wifi') && (
+              <div className="flex items-end gap-3">
+                <div className="flex flex-col items-center gap-1">
+                  <LEDSVG color="#7FFF9F" on={ledState} size={50} />
+                  <span className="text-[10px] text-body-mid">LED</span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <ResistorSVG value="220Ω" size={60} />
+                  <span className="text-[10px] text-body-mid">220Ω</span>
                 </div>
               </div>
-              <div className="text-[10px] text-body-mid">LED</div>
-            </div>
+            )}
 
-            {/* Wire to ground */}
-            <div className="h-8 w-0.5 bg-hairline" />
-            <div className="rounded border border-hairline px-4 py-1 text-[10px] font-mono text-body-mid">
-              GND
+            {/* Robot sensor visualization */}
+            {demo === 'robot-sensors' && (
+              <div className="flex flex-col items-center gap-3 w-full">
+                {/* IR sensor array */}
+                <div className="flex gap-2">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex flex-col items-center gap-1">
+                      <div className={cn(
+                        'h-6 w-6 rounded border-2',
+                        running && i === 2 ? 'border-accent bg-accent' : 'border-hairline bg-canvas-card'
+                      )} />
+                      <span className="text-[8px] text-body-mid">IR{i}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Motor visualization */}
+                <div className="flex gap-8">
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={cn(
+                      'h-10 w-10 rounded-full border-2',
+                      running ? 'border-accent bg-accent/20' : 'border-hairline'
+                    )} style={running ? { animation: 'spin 1s linear infinite' } : undefined}>
+                      <div className="h-full w-full rounded-full border-2 border-dashed border-accent/40" />
+                    </div>
+                    <span className="text-[9px] text-body-mid">Left</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-1">
+                    <div className={cn(
+                      'h-10 w-10 rounded-full border-2',
+                      running ? 'border-accent bg-accent/20' : 'border-hairline'
+                    )} style={running ? { animation: 'spin 1s linear infinite' } : undefined}>
+                      <div className="h-full w-full rounded-full border-2 border-dashed border-accent/40" />
+                    </div>
+                    <span className="text-[9px] text-body-mid">Right</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Wires connecting board to LED */}
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-body-mid">pin 13</span>
+              <div className={cn('h-0.5 w-8', ledState ? 'bg-accent' : 'bg-hairline')} />
+              <span className="text-[10px] text-body-mid">→</span>
+              <div className={cn('h-0.5 w-8', ledState ? 'bg-accent' : 'bg-hairline')} />
+              <span className="text-[10px] text-body-mid">GND</span>
             </div>
           </div>
 
