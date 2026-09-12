@@ -178,6 +178,7 @@ export function LabToolEmbed({
         <WokwiEmbed
           projectUrl={config?.wokwiProject}
           title={headerTitle}
+          fallbackDemo={config?.fallbackDemo as any || 'arduino-blink'}
         />
       );
       break;

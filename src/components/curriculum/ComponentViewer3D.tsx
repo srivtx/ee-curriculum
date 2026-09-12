@@ -441,22 +441,55 @@ function Scene({ component }: { component: ComponentType }) {
   );
 }
 
-export function ComponentViewer3D({ component, height = 360 }: ComponentViewer3DProps) {
-  const info = MODEL_INFO[component];
+export function ComponentViewer3D({ component: initialComponent, height = 400, showGallery = true }: ComponentViewer3DProps & { showGallery?: boolean }) {
+  const [selected, setSelected] = React.useState<ComponentType>(initialComponent);
+  const info = MODEL_INFO[selected];
+
+  // Keep the selected component in sync with the prop when it changes externally
+  React.useEffect(() => {
+    setSelected(initialComponent);
+  }, [initialComponent]);
+
+  const allComponents = Object.keys(MODEL_INFO) as ComponentType[];
+
   return (
     <div className="overflow-hidden rounded-sm border border-accent/30 bg-canvas">
-      {/* Header strip — matches the FalstadEmbed / KiCanvasEmbed visual rhythm. */}
+      {/* Header strip */}
       <div className="flex items-center gap-2 border-b border-hairline bg-accent/5 px-3 py-2">
         <Box className="h-4 w-4 text-accent" aria-hidden />
         <span className="text-xs font-semibold uppercase tracking-wider text-accent">
-          3D Model · {info.name}
+          3D Model Gallery
         </span>
         <span className="text-[10px] text-body-mid">
-          (React Three Fiber · drag to rotate)
+          (drag to rotate · scroll to zoom)
         </span>
       </div>
 
-      {/* Canvas — dark background matching the v3 design system canvas color. */}
+      {/* Component selector — horizontal scroll of all components */}
+      {showGallery && (
+        <div className="ee-scroll flex gap-1.5 overflow-x-auto border-b border-hairline bg-canvas-soft px-3 py-2">
+          {allComponents.map((comp) => {
+            const compInfo = MODEL_INFO[comp];
+            const isSelected = comp === selected;
+            return (
+              <button
+                key={comp}
+                onClick={() => setSelected(comp)}
+                className={cn(
+                  'inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors',
+                  isSelected
+                    ? 'border-accent bg-accent text-canvas font-medium'
+                    : 'border-hairline text-body-mid hover:border-accent/40 hover:text-ink'
+                )}
+              >
+                {compInfo.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Canvas */}
       <div
         className="relative w-full"
         style={{ height: `${height}px`, background: '#0a0a0a' }}
@@ -464,14 +497,13 @@ export function ComponentViewer3D({ component, height = 360 }: ComponentViewer3D
         <Canvas
           shadows
           dpr={[1, 2]}
-          camera={{ position: [4, 3, MODEL_INFO[component].cameraDistance], fov: 45 }}
+          camera={{ position: [4, 3, MODEL_INFO[selected].cameraDistance], fov: 45 }}
           gl={{ antialias: true, alpha: false }}
         >
           <color attach="background" args={['#0a0a0a']} />
-          <Scene component={component} />
+          <Scene component={selected} />
         </Canvas>
 
-        {/* Interaction hint — bottom-right overlay */}
         <div
           className={cn(
             'pointer-events-none absolute bottom-2 right-2',

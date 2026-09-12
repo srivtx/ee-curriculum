@@ -515,12 +515,17 @@ function FullPageLesson({
             )}
 
             {/* Wokwi live microcontroller simulation */}
-            {lesson.wokwi_url && (
+            {lesson.wokwi_url !== undefined && (
               <Section
                 id="section-wokwi"
                 eyebrow="Microcontroller Simulation"
               >
-                <WokwiEmbed projectUrl={lesson.wokwi_url} />
+                <WokwiEmbed
+                  projectUrl={lesson.wokwi_url || undefined}
+                  fallbackDemo={lesson.id?.startsWith('p4m9') ? 'esp32-wifi' :
+                                lesson.id?.startsWith('p6m10') ? 'robot-sensors' :
+                                'arduino-blink'}
+                />
               </Section>
             )}
 

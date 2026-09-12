@@ -429,7 +429,7 @@ function LabDetail({
       <div ref={scrollRef} className="ee-scroll absolute inset-0 overflow-y-auto">
         {/* Sticky header */}
         <div className="sticky top-0 z-10 border-b border-hairline bg-canvas/85 backdrop-blur-md">
-          <div className="mx-auto flex max-w-4xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
+          <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
             <div className="flex min-w-0 items-center gap-2 sm:gap-3">
               <Button
                 variant="ghost"
@@ -487,7 +487,7 @@ function LabDetail({
         </div>
 
         {/* Content column */}
-        <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
           {/* Header */}
           <header className="mb-6">
             <div className="eyebrow flex flex-wrap items-center gap-2 text-[11px] text-body-mid">

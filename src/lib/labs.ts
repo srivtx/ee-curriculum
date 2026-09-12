@@ -140,7 +140,7 @@ export const LABS: Lab[] = [
         expected: 'The LED on pin 13 blinks once per second.',
         tip: 'Wokwi runs real Arduino firmware. This is not a toy — it is the same code that runs on real hardware.',
         tool: 'wokwi',
-        toolConfig: { wokwiProject: 'https://wokwi.com/projects/328014521436533262' },
+        toolConfig: { fallbackDemo: 'arduino-blink' },
       },
       {
         id: 'lab-02-s2',
@@ -276,7 +276,7 @@ C1 out 0 1u
         expected: 'The ESP32 connects to the simulated WiFi and starts the web server.',
         tip: 'Wokwi simulates the ESP32 WiFi stack. The serial monitor shows connection status.',
         tool: 'wokwi',
-        toolConfig: { wokwiProject: 'https://wokwi.com/projects/327320285947308499' },
+        toolConfig: { fallbackDemo: 'esp32-wifi' },
       },
       {
         id: 'lab-04-s2',
@@ -348,7 +348,7 @@ C1 out 0 1u
         instruction: 'The Wokwi simulator below shows the robot on a test track. Click "Start Simulation" to see it run with the default code.',
         expected: 'The robot follows the line, turning left and right to stay on track.',
         tool: 'wokwi',
-        toolConfig: { wokwiProject: 'https://wokwi.com/projects/255116253193679131' },
+        toolConfig: { fallbackDemo: 'robot-sensors' },
       },
       {
         id: 'lab-05-s3',
