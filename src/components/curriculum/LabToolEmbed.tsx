@@ -19,6 +19,9 @@ import {
   Radio,
   Grid3x3,
   Workflow,
+  Waves,
+  Zap,
+  Waypoints,
 } from 'lucide-react';
 import type { LabTool, LabStep } from '@/lib/labs';
 import { WokwiEmbed } from './WokwiEmbed';
@@ -129,6 +132,41 @@ const LogicAnalyzer = dynamic(
   }
 );
 
+// ── v2.7 RF/EM + FSM + power-systems sims ────────────────────────────────────
+// AntennaPattern pulls Plotly; the other three are pure SVG. All loaded
+// lazily on the client only.
+const TransmissionLineSim = dynamic(
+  () => import('./TransmissionLineSim').then((m) => m.TransmissionLineSim),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading transmission line simulator…" />,
+  }
+);
+
+const AntennaPattern = dynamic(
+  () => import('./AntennaPattern').then((m) => m.AntennaPattern),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading antenna pattern viewer…" />,
+  }
+);
+
+const StateMachineEditor = dynamic(
+  () => import('./StateMachineEditor').then((m) => m.StateMachineEditor),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading FSM editor…" />,
+  }
+);
+
+const PowerFlowSim = dynamic(
+  () => import('./PowerFlowSim').then((m) => m.PowerFlowSim),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading power flow simulator…" />,
+  }
+);
+
 // ── Tool metadata (label + icon), used for the header strip on each embed. ──
 export const TOOL_META: Record<
   LabTool,
@@ -153,6 +191,10 @@ export const TOOL_META: Record<
   nyquist: { label: 'Nyquist Plot', icon: Crosshair },
   kmap: { label: 'Karnaugh Map', icon: Grid3x3 },
   logic_analyzer: { label: 'Logic Analyzer', icon: Workflow },
+  transline: { label: 'Transmission Line', icon: Waves },
+  antenna: { label: 'Antenna Pattern', icon: Radio },
+  fsm: { label: 'FSM Editor', icon: Waypoints },
+  powerflow: { label: 'Power Flow', icon: Zap },
 };
 
 // ── Default Falstad URL — the empty editor (loads the applet; the user picks
@@ -335,6 +377,18 @@ export function LabToolEmbed({
       break;
     case 'logic_analyzer':
       content = <LogicAnalyzer lessonTitle={headerTitle} />;
+      break;
+    case 'transline':
+      content = <TransmissionLineSim lessonTitle={headerTitle} />;
+      break;
+    case 'antenna':
+      content = <AntennaPattern lessonTitle={headerTitle} />;
+      break;
+    case 'fsm':
+      content = <StateMachineEditor lessonTitle={headerTitle} />;
+      break;
+    case 'powerflow':
+      content = <PowerFlowSim lessonTitle={headerTitle} />;
       break;
     case 'hardware':
       content = (

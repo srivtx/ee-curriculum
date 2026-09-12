@@ -190,6 +190,58 @@ const LogicAnalyzer = dynamic(
   }
 );
 
+// ── v2.7 RF/EM + FSM + power-systems interactive engines ────────────────────
+// TransmissionLineSim and PowerFlowSim are pure SVG; AntennaPattern pulls
+// Plotly; StateMachineEditor is pure SVG. All four are loaded lazily so they
+// never touch the initial lesson bundle.
+const TransmissionLineSim = dynamic(
+  () => import('./TransmissionLineSim').then((m) => m.TransmissionLineSim),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading transmission line simulator…
+      </div>
+    ),
+  }
+);
+
+const AntennaPattern = dynamic(
+  () => import('./AntennaPattern').then((m) => m.AntennaPattern),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading antenna pattern viewer…
+      </div>
+    ),
+  }
+);
+
+const StateMachineEditor = dynamic(
+  () => import('./StateMachineEditor').then((m) => m.StateMachineEditor),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading FSM editor…
+      </div>
+    ),
+  }
+);
+
+const PowerFlowSim = dynamic(
+  () => import('./PowerFlowSim').then((m) => m.PowerFlowSim),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading power flow simulator…
+      </div>
+    ),
+  }
+);
+
 export interface LessonDrawerPayload {
   lesson: Lesson;
   module?: Module;
@@ -747,6 +799,46 @@ function FullPageLesson({
                 eyebrow="Logic Analyzer (8 channels)"
               >
                 <LogicAnalyzer lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Transmission line — wave propagation + SWR */}
+            {lesson.has_transline && (
+              <Section
+                id="section-transline"
+                eyebrow="Transmission Line Simulator (RF)"
+              >
+                <TransmissionLineSim lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Antenna radiation pattern viewer */}
+            {lesson.has_antenna && (
+              <Section
+                id="section-antenna"
+                eyebrow="Antenna Radiation Pattern Viewer"
+              >
+                <AntennaPattern lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* FSM editor + simulator */}
+            {lesson.has_fsm && (
+              <Section
+                id="section-fsm"
+                eyebrow="FSM Editor & Simulator"
+              >
+                <StateMachineEditor lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Power flow simulator — 5-bus power system */}
+            {lesson.has_powerflow && (
+              <Section
+                id="section-powerflow"
+                eyebrow="Power Flow Simulator (5-bus)"
+              >
+                <PowerFlowSim lessonTitle={lesson.title} />
               </Section>
             )}
 

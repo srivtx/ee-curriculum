@@ -24,6 +24,9 @@ import {
   Radio,
   Grid3x3,
   Workflow,
+  Waves,
+  Zap,
+  Waypoints,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -71,6 +74,9 @@ const ICONS: Record<string, LucideIcon> = {
   Radio,
   Grid3x3,
   Workflow,
+  Waves,
+  Zap,
+  Waypoints,
 };
 
 /** Static wrapper so the looked-up icon renders as a stable component

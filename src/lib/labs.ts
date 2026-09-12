@@ -3,7 +3,7 @@
 // Labs reference curriculum phases (prerequisites) and use interactive features.
 
 export type LabDifficulty = 'Beginner' | 'Intermediate' | 'Advanced';
-export type LabTool = 'breadboard' | 'wokwi' | 'spice' | 'verilog' | '3d-model' | 'bode' | 'scope' | 'falstad' | 'tscircuit' | 'circuitverse' | 'hardware' | 'smith' | 'phasor' | 'pwm' | 'adc_dac' | 'root_locus' | 'nyquist' | 'kmap' | 'logic_analyzer';
+export type LabTool = 'breadboard' | 'wokwi' | 'spice' | 'verilog' | '3d-model' | 'bode' | 'scope' | 'falstad' | 'tscircuit' | 'circuitverse' | 'hardware' | 'smith' | 'phasor' | 'pwm' | 'adc_dac' | 'root_locus' | 'nyquist' | 'kmap' | 'logic_analyzer' | 'transline' | 'antenna' | 'fsm' | 'powerflow';
 export type LabStatus = 'not-started' | 'in-progress' | 'completed';
 
 export interface LabStep {
@@ -897,6 +897,106 @@ export const PLAYGROUND_TOOLS: PlaygroundTool[] = [
       'Set a trigger on CS (D1) falling edge — the display re-aligns so the transaction starts at the red T marker',
       'Switch to Manual mode and click waveform cells to draw your own pattern',
       'Use the timebase buttons (Zoom In / Zoom Out) to spread out or compress the view',
+    ],
+  },
+  {
+    id: 'pg-transline',
+    name: 'Transmission Line Simulator',
+    description: 'Watch a wave travel down a transmission line, reflect off a mismatched load, and form a standing-wave pattern. Adjust Z_s, Z_0, Z_L, frequency, and line length (1–10 wavelengths). See Γ, SWR, return loss, V_max/V_min, and |Z_in| live. Try short / open / matched loads to see total reflection vs. the flat-envelope matched case.',
+    icon: 'Radio',
+    tool: 'transline',
+    difficulty: 'Advanced',
+    whatYouCanDo: [
+      'Set source impedance Z_s, line impedance Z_0, and load impedance Z_L with sliders',
+      'Sweep frequency (100 MHz – 30 GHz) and line length (1–10 wavelengths) live',
+      'Watch the incident (green), reflected (amber), and total (white) voltage waves animate along the line',
+      'See the standing-wave envelope |V(z)| with V_max and V_min markers below the animation',
+      'Read Γ magnitude and phase, SWR, return loss, and |Z_in| at the source',
+      'Try Short / Open / Matched presets to see the canonical reflection cases',
+    ],
+    tutorialSteps: [
+      'Default: Z_0=50Ω, Z_L=100Ω, 1 GHz, 4λ long — see the standing wave with periodic V_max/V_min',
+      'Click "Match Z_L=Z_0" — the envelope flattens to 1.0 and SWR drops to 1:1',
+      'Click "Short" (Z_L=0) — |Γ|=1, SWR→∞, envelope touches zero every λ/4',
+      'Click "Open" (Z_L=∞) — same |Γ|=1 but the V_max and V_min positions swap (180° phase shift)',
+      'Sweep the frequency slider — wavelength changes, so the number of standing-wave peaks in the line changes',
+      'Sweep the line length slider — the input impedance |Z_in| changes as you add or remove quarter-wavelengths',
+    ],
+  },
+  {
+    id: 'pg-antenna',
+    name: 'Antenna Radiation Patterns',
+    description: 'Polar radiation-pattern viewer for 5 canonical antennas: isotropic, half-wave dipole, quarter-wave monopole, 3-element Yagi, and patch. Toggle patterns on/off to overlay them for direct comparison. Read peak gain (dBi), beamwidth (°), and front-to-back ratio (dB). Side-view SVG shows the physical antenna layout.',
+    icon: 'Radio',
+    tool: 'antenna',
+    difficulty: 'Intermediate',
+    whatYouCanDo: [
+      'Toggle isotropic / dipole / monopole / Yagi / patch patterns on and off',
+      'Overlay multiple patterns on one polar plot (dB scale, dBi radial axis) for direct comparison',
+      'Read peak gain (dBi), beamwidth (°), and front-to-back ratio (dB) for the primary antenna',
+      'See a side-view SVG of each antenna (point source, dipole rods, monopole on ground plane, Yagi boom + elements, patch + substrate)',
+      'Compare the omnidirectional dipole donut vs the directional Yagi main lobe + back lobe',
+      'Quick-comparison table of all 5 antennas (gain + beamwidth)',
+    ],
+    tutorialSteps: [
+      'Default: dipole pattern visible — the figure-8 in the E-plane',
+      'Toggle "Yagi" on to overlay — see the focused main lobe and small back lobe (9.5 dBi vs 2.15 dBi)',
+      'Toggle "Patch" on — see the broadside lobe perpendicular to the patch',
+      'Toggle "Monopole" — same as dipole but only the upper hemisphere (ground plane reflection)',
+      'Click an antenna twice to hide it; the first visible one is the "primary" (readouts + side view)',
+      'Notice that more gain always means more directionality — gain comes from focusing the beam',
+    ],
+  },
+  {
+    id: 'pg-fsm',
+    name: 'FSM Editor & Simulator',
+    description: 'Interactive finite-state-machine editor. Add states by clicking the canvas, draw transitions by clicking source then target, label transitions with input symbols. Shift+click to set the initial state, double-click to toggle accepting. Simulate by entering an input string and stepping through. Presets: traffic light, vending machine (75¢), and a 101-sequence detector. Live transition-table export.',
+    icon: 'Workflow',
+    tool: 'fsm',
+    difficulty: 'Intermediate',
+    whatYouCanDo: [
+      'Add states by clicking the empty SVG canvas',
+      'Draw transitions between states by clicking source then target',
+      'Label each transition with an input symbol ("1", "0", "reset", "timer", etc.)',
+      'Set the initial state (Shift+click or "Set initial" button) and mark accepting states (double-click)',
+      'Enter an input string and click "Step" to advance one symbol at a time, or "Run" to execute the whole string',
+      'Load presets: traffic light controller, vending machine, sequence detector for "101"',
+      'See the state transition table auto-generated below the canvas',
+    ],
+    tutorialSteps: [
+      'Pick the "Sequence detector (101)" preset — see 4 states with the S3 accepting state double-ringed',
+      'Click "Run" with the default input "1 1 0 1 0 1" — the FSM should reach S3 on the final symbol',
+      'Click "Step" instead to walk one symbol at a time and watch the current state turn green',
+      'Try modifying the input string and Run again to see different paths',
+      'Click empty canvas to add a new state, then "Start transition from here" and click a target state',
+      'Edit transition labels inline (in the right-hand list) to change what input triggers each transition',
+      'The transition table at the bottom is what you would hand off to a synthesis tool to generate the gate-level circuit',
+    ],
+  },
+  {
+    id: 'pg-powerflow',
+    name: 'Power Flow Simulator (5-bus)',
+    description: 'Interactive 5-bus power-system simulator: slack + generator + 3 load buses connected by 7 transmission lines. Adjust generation and load with sliders; see line MW flows (arrows), bus voltages (color-coded green/amber/red), and line losses (I²R). Click any line to trip it and watch power redistribute — or watch a load bus go dark when islanded. DC power-flow solver + Gauss-Seidel voltage update.',
+    icon: 'Zap',
+    tool: 'powerflow',
+    difficulty: 'Advanced',
+    whatYouCanDo: [
+      'Adjust generation at the generator bus (0–200 MW) and load at each of the 3 load buses (0–150 MW)',
+      'Adjust AVR voltage setpoints on slack and gen buses (0.95–1.08 pu)',
+      'See live line flows as arrows with MW magnitude labels',
+      'See bus voltages color-coded: green ≥0.97, amber 0.93–0.97, red <0.93',
+      'See line loading (capacity %) and per-line I²R losses',
+      'Click any line to trip it — power redistributes or a load bus gets islanded (DARK)',
+      'Read total generation, total load, total losses, and system frequency (50/60 Hz) with imbalance drift',
+    ],
+    tutorialSteps: [
+      'Default: 5 buses, 7 lines, Gen=100 MW, loads 50+60+40 MW — system balanced, slack picks up the rest',
+      'Click the line between Gen and Load B (the rightmost middle line) — power reroutes through Load A and Load C',
+      'Push Load B slider up to 100 MW — watch the Load A → Load B line turn amber (≥80%) then red (overloaded)',
+      'Notice bus voltages on the remote loads drop as you push more power through the same lines (I²R losses)',
+      'Trip enough lines and a load bus goes "ISLANDED" — voltage drops to 0, no power flows',
+      'Toggle 50 Hz vs 60 Hz nominal frequency; watch the live frequency drift with the gen–load imbalance',
+      'Click "Reset system" to restore all lines and defaults',
     ],
   },
 ];

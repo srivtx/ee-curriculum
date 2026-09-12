@@ -34,6 +34,7 @@ import {
   Crosshair,
   Grid3x3,
   Workflow,
+  Waypoints,
 } from 'lucide-react';
 import type { Lesson } from '@/lib/curriculum';
 
@@ -64,7 +65,11 @@ export type FeatureKey =
   | 'root_locus'
   | 'nyquist'
   | 'kmap'
-  | 'logic_analyzer';
+  | 'logic_analyzer'
+  | 'transline'
+  | 'antenna'
+  | 'fsm'
+  | 'powerflow';
 
 export interface FeatureMeta {
   key: FeatureKey;
@@ -300,6 +305,38 @@ export const FEATURE_META: Record<FeatureKey, FeatureMeta> = {
     tier: 'active',
     anchor: 'section-logic-analyzer',
   },
+  transline: {
+    key: 'transline',
+    short: 'TXLINE',
+    label: 'Transmission line wave + SWR sim',
+    icon: Waves,
+    tier: 'active',
+    anchor: 'section-transline',
+  },
+  antenna: {
+    key: 'antenna',
+    short: 'ANT',
+    label: 'Antenna radiation pattern viewer',
+    icon: Radio,
+    tier: 'active',
+    anchor: 'section-antenna',
+  },
+  fsm: {
+    key: 'fsm',
+    short: 'FSM',
+    label: 'FSM editor + simulator',
+    icon: Waypoints,
+    tier: 'active',
+    anchor: 'section-fsm',
+  },
+  powerflow: {
+    key: 'powerflow',
+    short: 'PWR',
+    label: '5-bus power flow simulator',
+    icon: Zap,
+    tier: 'active',
+    anchor: 'section-powerflow',
+  },
 };
 
 /** Display order: hands-on first, then passive viewers, hardware last. */
@@ -325,6 +362,10 @@ const FEATURE_ORDER: FeatureKey[] = [
   'nyquist',
   'kmap',
   'logic_analyzer',
+  'transline',
+  'antenna',
+  'fsm',
+  'powerflow',
   'cs_bridge',
   'wavedrom',
   'katex',
@@ -371,6 +412,10 @@ export function getLessonFeatures(
   if (lesson.has_nyquist) present.push('nyquist');
   if (lesson.has_kmap) present.push('kmap');
   if (lesson.has_logic_analyzer) present.push('logic_analyzer');
+  if (lesson.has_transline) present.push('transline');
+  if (lesson.has_antenna) present.push('antenna');
+  if (lesson.has_fsm) present.push('fsm');
+  if (lesson.has_powerflow) present.push('powerflow');
   // WebSerial is global (floating FAB), not per-lesson. We surface it on
   // lessons where it's particularly relevant (any lesson with a has_circuit
   // flag or any playground) — see lessonSupportsWebSerial below.
@@ -404,7 +449,11 @@ export function lessonSupportsWebSerial(lesson: Lesson): boolean {
       lesson.has_root_locus ||
       lesson.has_nyquist ||
       lesson.has_kmap ||
-      lesson.has_logic_analyzer
+      lesson.has_logic_analyzer ||
+      lesson.has_transline ||
+      lesson.has_antenna ||
+      lesson.has_fsm ||
+      lesson.has_powerflow
   );
 }
 
