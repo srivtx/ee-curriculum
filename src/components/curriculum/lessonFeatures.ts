@@ -29,6 +29,11 @@ import {
   LayoutGrid,
   Layers,
   Binary,
+  Gauge,
+  MoveUpRight,
+  Crosshair,
+  Grid3x3,
+  Workflow,
 } from 'lucide-react';
 import type { Lesson } from '@/lib/curriculum';
 
@@ -51,7 +56,15 @@ export type FeatureKey =
   | 'model_3d'
   | 'breadboard'
   | 'tscircuit'
-  | 'circuitverse';
+  | 'circuitverse'
+  | 'smith'
+  | 'phasor'
+  | 'pwm'
+  | 'adc_dac'
+  | 'root_locus'
+  | 'nyquist'
+  | 'kmap'
+  | 'logic_analyzer';
 
 export interface FeatureMeta {
   key: FeatureKey;
@@ -223,6 +236,70 @@ export const FEATURE_META: Record<FeatureKey, FeatureMeta> = {
     tier: 'active',
     anchor: 'section-circuitverse',
   },
+  smith: {
+    key: 'smith',
+    short: 'SMITH',
+    label: 'Smith chart (RF impedance matching)',
+    icon: Crosshair,
+    tier: 'active',
+    anchor: 'section-smith',
+  },
+  phasor: {
+    key: 'phasor',
+    short: 'PHASOR',
+    label: 'Phasor diagram (AC analysis)',
+    icon: MoveUpRight,
+    tier: 'active',
+    anchor: 'section-phasor',
+  },
+  pwm: {
+    key: 'pwm',
+    short: 'PWM',
+    label: 'PWM visualizer (power electronics)',
+    icon: Gauge,
+    tier: 'active',
+    anchor: 'section-pwm',
+  },
+  adc_dac: {
+    key: 'adc_dac',
+    short: 'ADC',
+    label: 'ADC/DAC sampling visualizer',
+    icon: Binary,
+    tier: 'active',
+    anchor: 'section-adc-dac',
+  },
+  root_locus: {
+    key: 'root_locus',
+    short: 'RLOCUS',
+    label: 'Root locus plot (control systems)',
+    icon: Radio,
+    tier: 'active',
+    anchor: 'section-root-locus',
+  },
+  nyquist: {
+    key: 'nyquist',
+    short: 'NYQUIST',
+    label: 'Nyquist plot (control stability)',
+    icon: Crosshair,
+    tier: 'active',
+    anchor: 'section-nyquist',
+  },
+  kmap: {
+    key: 'kmap',
+    short: 'KMAP',
+    label: 'Karnaugh map solver',
+    icon: Grid3x3,
+    tier: 'active',
+    anchor: 'section-kmap',
+  },
+  logic_analyzer: {
+    key: 'logic_analyzer',
+    short: 'LA',
+    label: 'Logic analyzer (8 channels)',
+    icon: Workflow,
+    tier: 'active',
+    anchor: 'section-logic-analyzer',
+  },
 };
 
 /** Display order: hands-on first, then passive viewers, hardware last. */
@@ -240,6 +317,14 @@ const FEATURE_ORDER: FeatureKey[] = [
   'breadboard',
   'tscircuit',
   'circuitverse',
+  'smith',
+  'phasor',
+  'pwm',
+  'adc_dac',
+  'root_locus',
+  'nyquist',
+  'kmap',
+  'logic_analyzer',
   'cs_bridge',
   'wavedrom',
   'katex',
@@ -278,6 +363,14 @@ export function getLessonFeatures(
   // CircuitVerse uses `!== undefined` so an empty-string (homepage fallback)
   // still triggers the embed, mirroring the LessonDrawer check.
   if (lesson.circuitverse_url !== undefined) present.push('circuitverse');
+  if (lesson.has_smith) present.push('smith');
+  if (lesson.has_phasor) present.push('phasor');
+  if (lesson.has_pwm) present.push('pwm');
+  if (lesson.has_adc_dac) present.push('adc_dac');
+  if (lesson.has_root_locus) present.push('root_locus');
+  if (lesson.has_nyquist) present.push('nyquist');
+  if (lesson.has_kmap) present.push('kmap');
+  if (lesson.has_logic_analyzer) present.push('logic_analyzer');
   // WebSerial is global (floating FAB), not per-lesson. We surface it on
   // lessons where it's particularly relevant (any lesson with a has_circuit
   // flag or any playground) — see lessonSupportsWebSerial below.
@@ -303,7 +396,15 @@ export function lessonSupportsWebSerial(lesson: Lesson): boolean {
       lesson.has_wokwi_elements ||
       lesson.has_breadboard ||
       lesson.has_tscircuit ||
-      lesson.circuitverse_url !== undefined
+      lesson.circuitverse_url !== undefined ||
+      lesson.has_smith ||
+      lesson.has_phasor ||
+      lesson.has_pwm ||
+      lesson.has_adc_dac ||
+      lesson.has_root_locus ||
+      lesson.has_nyquist ||
+      lesson.has_kmap ||
+      lesson.has_logic_analyzer
   );
 }
 

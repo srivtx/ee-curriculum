@@ -17,6 +17,13 @@ import {
   Cog,
   GraduationCap,
   Check,
+  Crosshair,
+  MoveUpRight,
+  Gauge,
+  Binary,
+  Radio,
+  Grid3x3,
+  Workflow,
   type LucideIcon,
 } from 'lucide-react';
 import {
@@ -57,6 +64,13 @@ const ICONS: Record<string, LucideIcon> = {
   LineChart,
   AudioLines,
   Wrench,
+  Crosshair,
+  MoveUpRight,
+  Gauge,
+  Binary,
+  Radio,
+  Grid3x3,
+  Workflow,
 };
 
 /** Static wrapper so the looked-up icon renders as a stable component

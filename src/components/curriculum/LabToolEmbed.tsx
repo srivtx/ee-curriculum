@@ -12,6 +12,13 @@ import {
   ExternalLink,
   Wrench,
   Cog,
+  Crosshair,
+  MoveUpRight,
+  Gauge,
+  Binary,
+  Radio,
+  Grid3x3,
+  Workflow,
 } from 'lucide-react';
 import type { LabTool, LabStep } from '@/lib/labs';
 import { WokwiEmbed } from './WokwiEmbed';
@@ -52,6 +59,76 @@ const TscircuitViewer = dynamic(
   }
 );
 
+// ── Plotly + heavy-SVG sims (v2.5: RF / AC / power / mixed-signal) ──────────
+// Each is a sizable JS chunk (Plotly for SmithChart; the rest are pure SVG).
+// All are loaded lazily on the client only.
+const SmithChart = dynamic(
+  () => import('./SmithChart').then((m) => m.SmithChart),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading Smith chart…" />,
+  }
+);
+
+const PhasorDiagram = dynamic(
+  () => import('./PhasorDiagram').then((m) => m.PhasorDiagram),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading phasor diagram…" />,
+  }
+);
+
+const PWMVisualizer = dynamic(
+  () => import('./PWMVisualizer').then((m) => m.PWMVisualizer),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading PWM visualizer…" />,
+  }
+);
+
+const ADCDACVisualizer = dynamic(
+  () => import('./ADCDACVisualizer').then((m) => m.ADCDACVisualizer),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading ADC/DAC visualizer…" />,
+  }
+);
+
+// ── v2.6 control-systems + digital-logic sims ──────────────────────────────
+// RootLocus and Nyquist pull Plotly (~1.2 MB); K-map and Logic Analyzer are
+// pure SVG. All are loaded lazily on the client only.
+const RootLocusPlot = dynamic(
+  () => import('./RootLocusPlot').then((m) => m.RootLocusPlot),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading root locus plot…" />,
+  }
+);
+
+const NyquistPlot = dynamic(
+  () => import('./NyquistPlot').then((m) => m.NyquistPlot),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading Nyquist plot…" />,
+  }
+);
+
+const KarnaughMap = dynamic(
+  () => import('./KarnaughMap').then((m) => m.KarnaughMap),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading Karnaugh map…" />,
+  }
+);
+
+const LogicAnalyzer = dynamic(
+  () => import('./LogicAnalyzer').then((m) => m.LogicAnalyzer),
+  {
+    ssr: false,
+    loading: () => <ToolLoading label="Loading logic analyzer…" />,
+  }
+);
+
 // ── Tool metadata (label + icon), used for the header strip on each embed. ──
 export const TOOL_META: Record<
   LabTool,
@@ -68,6 +145,14 @@ export const TOOL_META: Record<
   circuitverse: { label: 'CircuitVerse', icon: Cpu },
   tscircuit: { label: 'tscircuit', icon: CircuitBoard },
   hardware: { label: 'Real Hardware', icon: Wrench },
+  smith: { label: 'Smith Chart', icon: Crosshair },
+  phasor: { label: 'Phasor Diagram', icon: MoveUpRight },
+  pwm: { label: 'PWM Visualizer', icon: Gauge },
+  adc_dac: { label: 'ADC / DAC', icon: Binary },
+  root_locus: { label: 'Root Locus Plot', icon: Radio },
+  nyquist: { label: 'Nyquist Plot', icon: Crosshair },
+  kmap: { label: 'Karnaugh Map', icon: Grid3x3 },
+  logic_analyzer: { label: 'Logic Analyzer', icon: Workflow },
 };
 
 // ── Default Falstad URL — the empty editor (loads the applet; the user picks
@@ -226,6 +311,30 @@ export function LabToolEmbed({
       break;
     case 'tscircuit':
       content = <TscircuitViewer />;
+      break;
+    case 'smith':
+      content = <SmithChart lessonTitle={headerTitle} />;
+      break;
+    case 'phasor':
+      content = <PhasorDiagram lessonTitle={headerTitle} />;
+      break;
+    case 'pwm':
+      content = <PWMVisualizer lessonTitle={headerTitle} />;
+      break;
+    case 'adc_dac':
+      content = <ADCDACVisualizer lessonTitle={headerTitle} />;
+      break;
+    case 'root_locus':
+      content = <RootLocusPlot lessonTitle={headerTitle} />;
+      break;
+    case 'nyquist':
+      content = <NyquistPlot lessonTitle={headerTitle} />;
+      break;
+    case 'kmap':
+      content = <KarnaughMap lessonTitle={headerTitle} />;
+      break;
+    case 'logic_analyzer':
+      content = <LogicAnalyzer lessonTitle={headerTitle} />;
       break;
     case 'hardware':
       content = (

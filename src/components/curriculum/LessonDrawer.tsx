@@ -86,6 +86,110 @@ const TscircuitViewer = dynamic(
   }
 );
 
+// ── v2.5 RF / AC / power / mixed-signal interactive engines ─────────────────
+// Each is a sizable client-only bundle (SmithChart pulls Plotly; the others
+// are pure SVG but still 200–600 lines). All four are loaded lazily so they
+// never touch the initial lesson bundle.
+const SmithChart = dynamic(
+  () => import('./SmithChart').then((m) => m.SmithChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading Smith chart…
+      </div>
+    ),
+  }
+);
+
+const PhasorDiagram = dynamic(
+  () => import('./PhasorDiagram').then((m) => m.PhasorDiagram),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[520px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading phasor diagram…
+      </div>
+    ),
+  }
+);
+
+const PWMVisualizer = dynamic(
+  () => import('./PWMVisualizer').then((m) => m.PWMVisualizer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[520px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading PWM visualizer…
+      </div>
+    ),
+  }
+);
+
+const ADCDACVisualizer = dynamic(
+  () => import('./ADCDACVisualizer').then((m) => m.ADCDACVisualizer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[440px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading ADC/DAC visualizer…
+      </div>
+    ),
+  }
+);
+
+// ── v2.6 control-systems + digital-logic interactive engines ───────────────
+// Each is a sizable client-only bundle (RootLocus + Nyquist pull Plotly; the
+// K-map + Logic Analyzer are pure SVG but still 400-700 lines). All four are
+// loaded lazily so they never touch the initial lesson bundle.
+const RootLocusPlot = dynamic(
+  () => import('./RootLocusPlot').then((m) => m.RootLocusPlot),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading root locus plot…
+      </div>
+    ),
+  }
+);
+
+const NyquistPlot = dynamic(
+  () => import('./NyquistPlot').then((m) => m.NyquistPlot),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[640px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading Nyquist plot…
+      </div>
+    ),
+  }
+);
+
+const KarnaughMap = dynamic(
+  () => import('./KarnaughMap').then((m) => m.KarnaughMap),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[560px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading Karnaugh map…
+      </div>
+    ),
+  }
+);
+
+const LogicAnalyzer = dynamic(
+  () => import('./LogicAnalyzer').then((m) => m.LogicAnalyzer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-[520px] items-center justify-center rounded-sm border border-accent/30 bg-canvas-card text-xs text-body-mid">
+        Loading logic analyzer…
+      </div>
+    ),
+  }
+);
+
 export interface LessonDrawerPayload {
   lesson: Lesson;
   module?: Module;
@@ -563,6 +667,86 @@ function FullPageLesson({
                 eyebrow="Digital Circuit Simulator (CircuitVerse)"
               >
                 <CircuitVerseEmbed circuitUrl={lesson.circuitverse_url} />
+              </Section>
+            )}
+
+            {/* Smith chart — interactive RF impedance matching */}
+            {lesson.has_smith && (
+              <Section
+                id="section-smith"
+                eyebrow="Smith Chart (RF impedance matching)"
+              >
+                <SmithChart lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Phasor diagram — AC analysis with rotating phasors */}
+            {lesson.has_phasor && (
+              <Section
+                id="section-phasor"
+                eyebrow="Phasor Diagram (AC analysis)"
+              >
+                <PhasorDiagram lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* PWM visualizer — power electronics */}
+            {lesson.has_pwm && (
+              <Section
+                id="section-pwm"
+                eyebrow="PWM Visualizer (power electronics)"
+              >
+                <PWMVisualizer lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* ADC/DAC sampling visualizer — mixed-signal */}
+            {lesson.has_adc_dac && (
+              <Section
+                id="section-adc-dac"
+                eyebrow="ADC / DAC Sampling Visualizer"
+              >
+                <ADCDACVisualizer lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Root locus plot — control systems */}
+            {lesson.has_root_locus && (
+              <Section
+                id="section-root-locus"
+                eyebrow="Root Locus Plot (control systems)"
+              >
+                <RootLocusPlot lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Nyquist plot — control stability */}
+            {lesson.has_nyquist && (
+              <Section
+                id="section-nyquist"
+                eyebrow="Nyquist Plot (control stability)"
+              >
+                <NyquistPlot lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Karnaugh map — Boolean logic minimization */}
+            {lesson.has_kmap && (
+              <Section
+                id="section-kmap"
+                eyebrow="Karnaugh Map Solver"
+              >
+                <KarnaughMap lessonTitle={lesson.title} />
+              </Section>
+            )}
+
+            {/* Logic analyzer — digital signals */}
+            {lesson.has_logic_analyzer && (
+              <Section
+                id="section-logic-analyzer"
+                eyebrow="Logic Analyzer (8 channels)"
+              >
+                <LogicAnalyzer lessonTitle={lesson.title} />
               </Section>
             )}
 
