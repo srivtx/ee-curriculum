@@ -5,15 +5,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/curriculum/theme-provider";
 import { ProgressProvider } from "@/hooks/useProgress";
 
-// Design System v3 §5.4 — four fonts, each exposed as a CSS variable on <body>.
-//   --font-inter    → body (Inter, variable axis, w400 only in the design)
-//   --font-jetbrains → captions / labels / code (JetBrains Mono, variable axis)
-//   --font-serif    → accent serif (Source Serif 4, variable axis + italic)
-//   --font-pixel    → phase numbers ONLY (Press Start 2P, w400 — not variable)
+// Fonts — Inter with multiple weights for proper hierarchy (not just 400)
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: "400",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 

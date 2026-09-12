@@ -181,19 +181,37 @@ function ResistorModel() {
   );
 }
 
-/** Electrolytic capacitor — blue cylinder can with a silver stripe + 2 leads. */
+/** Electrolytic capacitor — cylindrical can with cathode stripe and 2 leads.
+ *  Real electrolytic caps: aluminum can, blue/black sleeve, silver/white stripe
+ *  marking the negative (cathode) terminal. The stripe has "-" marks on it.
+ *  Long lead = anode (+), short lead = cathode (-). */
 function CapacitorModel() {
   return (
     <group>
-      {/* Body — vertical cylinder */}
-      <mesh geometry={CYL(1, 1, 3)} material={MAT.capBody} />
-      {/* Top — slightly recessed with a pressure-relief cross cut (just a darker disc) */}
-      <mesh geometry={CYL(0.85, 0.85, 0.05)} material={MAT.darkPlastic} position={[0, 1.51, 0]} />
-      {/* Silver cathode stripe down one side */}
-      <mesh geometry={CYL(1.01, 1.01, 2.4)} material={MAT.capStripe} position={[0.65, 0, 0]} rotation={[0, 0, 0]} />
-      {/* Two leads at the bottom */}
-      <mesh geometry={CYL(0.06, 0.06, 2)} material={MAT.lead} position={[-0.4, -2.5, 0]} />
-      <mesh geometry={CYL(0.06, 0.06, 2)} material={MAT.lead} position={[0.4, -2.5, 0]} />
+      {/* Main body — cylindrical can, blue sleeve */}
+      <mesh geometry={CYL(0.9, 0.9, 2.8)} material={MAT.capBody} />
+
+      {/* Top — crimped aluminum with pressure-relief cross (K-shaped vent) */}
+      <mesh geometry={CYL(0.88, 0.88, 0.04)} material={MAT.darkPlastic} position={[0, 1.42, 0]} />
+
+      {/* Cathode stripe — a curved band on one side of the cylinder.
+          Real caps have a white/silver stripe with "-" marks running down the side.
+          We approximate with a thin curved box positioned on the surface. */}
+      <mesh position={[0.7, 0, 0]} rotation={[0, 0, 0]}>
+        <boxGeometry args={[0.15, 2.4, 0.1]} />
+        <meshStandardMaterial color="#c8c8c8" metalness={0.6} roughness={0.3} />
+      </mesh>
+
+      {/* Value marking — a small darker band where "100µF 25V" would be printed */}
+      <mesh position={[-0.5, 0.3, 0.65]}>
+        <boxGeometry args={[0.8, 0.3, 0.05]} />
+        <meshStandardMaterial color="#1a1a3a" metalness={0.1} roughness={0.8} />
+      </mesh>
+
+      {/* Two leads at the bottom — asymmetric length (real electrolytic caps
+          have the negative lead shorter) */}
+      <mesh geometry={CYL(0.05, 0.05, 2.2)} material={MAT.lead} position={[-0.35, -2.4, 0]} />
+      <mesh geometry={CYL(0.05, 0.05, 1.6)} material={MAT.lead} position={[0.35, -2.1, 0]} />
     </group>
   );
 }

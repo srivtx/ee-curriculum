@@ -525,6 +525,232 @@ endmodule`,
       },
     ],
   },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // LAB 8 — RF Impedance Matching with Smith Chart
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'lab-08-smith-chart-matching',
+    title: 'RF Impedance Matching',
+    subtitle: 'Use the Smith Chart to match an antenna to 50Ω',
+    description: 'Learn RF impedance matching the way RF engineers do it — with a Smith Chart. Start with a mismatched antenna (Z_L = 100 + j50Ω) and design a matching network using series/shunt inductors and capacitors to bring it to 50Ω. See the reflection coefficient drop and the SWR approach 1.',
+    difficulty: 'Advanced',
+    estimated_hours: 2.5,
+    tools: ['breadboard'],
+    prerequisites: ['p8'],
+    relatedLessons: ['p8m5l1', 'p8m5l2'],
+    whatYoullBuild: 'A working impedance matching network that brings SWR from 2.5 down to under 1.5.',
+    whatNotToDo: [
+      'Do not forget that the Smith Chart is normalized — divide by Z_0 before plotting.',
+      'Do not mix up series and shunt elements — series moves along constant-R circles, shunt along constant-G circles.',
+      'Do not expect a perfect match (SWR=1) in practice — parasitics limit you to SWR < 1.2.',
+    ],
+    progressKey: 'lab-08',
+    steps: [
+      {
+        id: 'lab-08-s1',
+        title: 'Understand the mismatch',
+        instruction: 'The Smith Chart below shows your antenna impedance Z_L = 100 + j50Ω plotted as a point. The center of the chart is 50Ω (perfect match). The distance from center is the reflection coefficient |Γ|. The SWR is shown.',
+        expected: 'You see a point away from center, with SWR > 2.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-08-s2',
+        title: 'Add a series inductor',
+        instruction: 'Click "Add series L" to add a series inductor. Adjust its value. Watch the point move along a constant-resistance circle. The goal is to move the point to the 50Ω circle (the horizontal line through center).',
+        expected: 'The point moves along a circle. SWR decreases slightly.',
+      },
+      {
+        id: 'lab-08-s3',
+        title: 'Add a shunt capacitor',
+        instruction: 'Now click "Add shunt C" to add a shunt capacitor. This moves the point along a constant-conductance circle toward the center.',
+        expected: 'The point moves toward center. SWR drops below 1.5.',
+      },
+      {
+        id: 'lab-08-s4',
+        title: 'Fine-tune the values',
+        instruction: 'Adjust the L and C values until the point is as close to center as possible. Target: SWR < 1.2, |Γ| < 0.1.',
+        expected: 'SWR < 1.2, return loss > 20 dB.',
+      },
+      {
+        id: 'lab-08-s5',
+        title: 'Verify the match',
+        instruction: 'Check the matching network schematic. You should see: source → series L → shunt C → antenna. This is an L-network, the simplest RF matching topology.',
+        expected: 'Schematic shows the L-network. Γ and SWR are minimized.',
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // LAB 9 — Control System Design with Root Locus
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'lab-09-root-locus-design',
+    title: 'Design a Stable Controller',
+    subtitle: 'Use root locus to find the right gain for a stable closed-loop system',
+    description: 'Design a PID controller for a DC motor using the root locus method. You will see how the closed-loop poles move as you change the gain K. Find the gain that gives the fastest response without instability. Read the damping ratio and overshoot directly from the plot.',
+    difficulty: 'Advanced',
+    estimated_hours: 3,
+    tools: ['breadboard'],
+    prerequisites: ['p6'],
+    relatedLessons: ['p6m4l1', 'p6m5l1'],
+    whatYoullBuild: 'A PID controller tuned via root locus with specified overshoot and settling time.',
+    whatNotToDo: [
+      'Do not increase K past the point where poles cross into the right-half plane — the system goes unstable.',
+      'Do not ignore the damping ratio — ζ < 0.4 means more than 25% overshoot, which may be unacceptable.',
+      'Do not forget that root locus shows the CLOSED-LOOP poles, not the open-loop poles.',
+    ],
+    progressKey: 'lab-09',
+    steps: [
+      {
+        id: 'lab-09-s1',
+        title: 'See the open-loop poles',
+        instruction: 'The root locus plot below shows the open-loop transfer function of a DC motor: G(s) = K / (s(s+1)(s+2)). The × marks are the open-loop poles at s=0, s=-1, s=-2. The ○ marks are the zeros (none in this case).',
+        expected: 'You see 3 × marks on the real axis at 0, -1, -2.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-09-s2',
+        title: 'Sweep the gain K',
+        instruction: 'Drag the K slider from 0 to 10. Watch the closed-loop poles (green dots) trace the root locus. At K=0, they start at the open-loop poles. As K increases, they move along the locus branches.',
+        expected: 'Green dots move along curved paths from the × marks.',
+      },
+      {
+        id: 'lab-09-s3',
+        title: 'Find the stability limit',
+        instruction: 'Increase K until one pair of poles crosses the imaginary axis (the vertical line at Re=0). This is the stability limit. Note the K value.',
+        expected: 'At some K value, the poles cross into the right-half plane. The system becomes unstable.',
+      },
+      {
+        id: 'lab-09-s4',
+        title: 'Find the optimal gain',
+        instruction: 'Set K so that the dominant pair of poles has ζ ≈ 0.7 (70% damping). This gives about 5% overshoot — a good balance between speed and stability. Read ζ from the display.',
+        expected: 'ζ ≈ 0.7, %OS ≈ 5%, settling time is reasonable.',
+      },
+      {
+        id: 'lab-09-s5',
+        title: 'Check the Nyquist plot',
+        instruction: 'Switch to the Nyquist plot view. Count the encirclements of -1. For this system, P=0 (no RHP open-loop poles), so N must be 0 for stability. Verify your K choice gives N=0.',
+        expected: 'No encirclements of -1. System is stable.',
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // LAB 10 — Digital Logic with K-maps
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'lab-10-kmap-logic-design',
+    title: 'Minimize Boolean Logic with K-maps',
+    subtitle: 'Design a 7-segment decoder using Karnaugh maps',
+    description: 'Use interactive Karnaugh maps to minimize Boolean expressions. You will design a 7-segment display decoder — the circuit that converts a 4-bit BCD number (0-9) into the 7 signals that light up the correct segments on a 7-segment display. See the minimized logic appear as you group cells.',
+    difficulty: 'Intermediate',
+    estimated_hours: 2,
+    tools: ['breadboard'],
+    prerequisites: ['p4'],
+    relatedLessons: ['p4m1l1', 'p4m1l2'],
+    whatYoullBuild: 'A minimized 7-segment decoder circuit derived from K-map grouping.',
+    whatNotToDo: [
+      'Do not forget that K-map edges wrap around — the top row connects to the bottom row, and left connects to right.',
+      'Do not create groups that are not powers of 2 (1, 2, 4, 8, 16) — they are not valid prime implicants.',
+      'Do not overlap groups unnecessarily — each 1 should be covered, but larger groups mean fewer terms.',
+    ],
+    progressKey: 'lab-10',
+    steps: [
+      {
+        id: 'lab-10-s1',
+        title: 'Understand the 7-segment display',
+        instruction: 'A 7-segment display has 7 LEDs labeled a-g. To display "3", segments a,b,c,d,g are ON and e,f are OFF. You need to derive the Boolean expression for each segment.',
+        expected: 'You understand which segments light up for each digit 0-9.',
+      },
+      {
+        id: 'lab-10-s2',
+        title: 'Fill in the truth table',
+        instruction: 'The K-map below is for segment "a" of the 7-segment display. Click each cell to set it to 1 (segment on) or 0 (segment off) based on the truth table. Segment "a" is ON for digits 0,2,3,5,6,7,8,9 and OFF for 1,4.',
+        expected: 'The K-map cells are filled with the correct 0/1 pattern.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-10-s3',
+        title: 'See the minimization',
+        instruction: 'The K-map automatically detects groups of adjacent 1s and highlights them in green. The minimized Boolean expression appears below. Compare it to the original sum-of-minterms.',
+        expected: 'You see green groups and a minimized SOP expression like "A + C + BD + B\'D\'".',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-10-s4',
+        title: 'Try all 7 segments',
+        instruction: 'Repeat for segments b through g. Each segment has a different K-map pattern. Notice how some segments (like "g") have simpler expressions than others.',
+        expected: 'You have minimized expressions for all 7 segments.',
+      },
+      {
+        id: 'lab-10-s5',
+        title: 'Verify with the logic analyzer',
+        instruction: 'Switch to the logic analyzer view. Set the 4-bit input to each digit 0-9 and verify the correct segments light up.',
+        expected: 'All 10 digits display correctly on the simulated 7-segment display.',
+        tool: 'breadboard',
+      },
+    ],
+  },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // LAB 11 — Transmission Line Reflections
+  // ══════════════════════════════════════════════════════════════════════
+  {
+    id: 'lab-11-transmission-line',
+    title: 'See Wave Reflections on a Transmission Line',
+    subtitle: 'Watch signals bounce back and forth when impedances don\'t match',
+    description: 'Visualize what happens when a signal travels down a transmission line and hits a mismatched load. See the reflected wave travel back, creating standing waves. Adjust the load impedance and watch the reflection coefficient change. This is why RF engineers care so much about impedance matching.',
+    difficulty: 'Advanced',
+    estimated_hours: 2,
+    tools: ['breadboard'],
+    prerequisites: ['p8'],
+    relatedLessons: ['p8m5l1', 'p8m5l2'],
+    whatYoullBuild: 'Understanding of transmission line behavior — reflections, standing waves, and impedance matching.',
+    whatNotToDo: [
+      'Do not expect zero reflection with Z_L ≠ Z_0 — mismatch always reflects.',
+      'Do not confuse SWR with reflection coefficient — SWR = (1+|Γ|)/(1-|Γ|).',
+      'Do not forget that the reflected wave has the same frequency as the incident wave.',
+    ],
+    progressKey: 'lab-11',
+    steps: [
+      {
+        id: 'lab-11-s1',
+        title: 'See the matched case',
+        instruction: 'The transmission line simulator below shows a wave traveling from source to load. Set Z_L = 50Ω (matched). The wave should be fully absorbed — no reflection.',
+        expected: 'Green wave travels to the load and disappears. No amber reflected wave. SWR = 1.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-11-s2',
+        title: 'Introduce a mismatch',
+        instruction: 'Change Z_L to 100Ω. Now the wave is partially reflected. You should see an amber wave traveling back from the load. The standing wave pattern (white envelope) shows peaks and nulls.',
+        expected: 'Amber reflected wave appears. SWR > 1. Standing wave envelope visible.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-11-s3',
+        title: 'Try a short circuit',
+        instruction: 'Set Z_L = 0Ω (short circuit). The reflection coefficient Γ = -1. The entire wave is reflected with inverted phase. The standing wave has a null at the load.',
+        expected: 'Full reflection, inverted. SWR = ∞. Null at the load.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-11-s4',
+        title: 'Try an open circuit',
+        instruction: 'Set Z_L = ∞ (open circuit). Γ = +1. The entire wave is reflected with the same phase. The standing wave has a peak (maximum voltage) at the load.',
+        expected: 'Full reflection, same phase. SWR = ∞. Peak at the load.',
+        tool: 'breadboard',
+      },
+      {
+        id: 'lab-11-s5',
+        title: 'Match the load',
+        instruction: 'Adjust Z_L back toward 50Ω. Watch the reflected wave shrink and the SWR approach 1. This is what impedance matching achieves.',
+        expected: 'Reflected wave diminishes. SWR approaches 1.',
+        tool: 'breadboard',
+      },
+    ],
+  },
 ];
 
 // ════════════════════════════════════════════════════════════════════════

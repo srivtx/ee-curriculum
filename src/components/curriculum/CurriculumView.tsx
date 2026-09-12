@@ -51,10 +51,7 @@ export function CurriculumView({
       {/* Hero */}
       <section className="voxel-grid relative overflow-hidden rounded-sm border border-hairline p-5 sm:p-6 md:p-8">
         <div className="relative z-10">
-          <div className="eyebrow text-[11px] text-accent sm:text-[14px]">
-            {'// CURRICULUM · v3.0'}
-          </div>
-          <h1 className="mt-3 max-w-3xl text-2xl font-normal tracking-[-0.3px] text-ink sm:text-3xl md:text-5xl md:tracking-[-1.0px]">
+          <h1 className="max-w-3xl text-2xl font-semibold tracking-[-0.3px] text-ink sm:text-3xl md:text-5xl md:tracking-[-1.0px]">
             Electrical Engineering,{' '}
             <span className="text-accent">for Computer Scientists</span>
           </h1>
@@ -65,13 +62,10 @@ export function CurriculumView({
             your progress.
           </p>
 
-          {/* Overall progress strip — voxel-style */}
+          {/* Overall progress strip */}
           <div className="mt-5 flex flex-col gap-2 rounded-sm border border-hairline bg-canvas-card p-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
-              <span className="eyebrow text-[11px] text-body-mid">
-                Overall progress
-              </span>
-              <span className="ee-mono text-xs text-body-mid">
+              <span className="text-sm font-medium text-body-mid">
                 {state.completedLessons.length}/{CURRICULUM_STATS.lessons} lessons ·{' '}
                 {state.completedProjects.length}/{CURRICULUM_STATS.projects} projects
               </span>
@@ -114,7 +108,7 @@ export function CurriculumView({
       <section className="mt-5 rounded-sm border border-hairline bg-canvas-card p-3 sm:p-4">
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <div className="flex shrink-0 items-center gap-1.5">
-            <span className="eyebrow text-[11px] text-body-mid">
+            <span className="text-sm font-medium text-body-mid">
               Filter by feature
             </span>
           </div>
@@ -218,17 +212,11 @@ function ReadingProgressBanner({
     <section className="mt-5 rounded-sm border border-hairline bg-canvas-card p-4 sm:p-5">
       <div className="mb-2 flex items-baseline justify-between gap-2">
         <div className="flex items-baseline gap-2">
-          <span className="eyebrow text-[11px] text-body-mid">
-            Reading progress
-          </span>
-          <span className="text-sm text-ink">
-            <span className="ee-mono tabular-nums text-accent">{done}</span>
-            <span className="text-body-mid"> of </span>
-            <span className="ee-mono tabular-nums">{total}</span>
-            <span className="text-body-mid"> lessons complete</span>
+          <span className="text-sm font-medium text-ink">
+            {done} of {total} lessons complete
           </span>
         </div>
-        <span className="ee-mono text-sm tabular-nums text-accent">
+        <span className="text-sm font-medium text-accent">
           {Math.round(clamped)}%
         </span>
       </div>

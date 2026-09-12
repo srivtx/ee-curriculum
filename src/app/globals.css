@@ -242,12 +242,12 @@
     font-family: var(--font-pixel);
     font-feature-settings: normal;
   }
-  /* Mono caption eyebrow — uppercase, positively tracked. */
+  /* Section label — clean, not uppercase, not mono. Just small muted text. */
   .eyebrow {
-    font-family: var(--font-mono);
-    text-transform: uppercase;
-    letter-spacing: 1.4px;
-    font-weight: 400;
+    font-family: var(--font-sans);
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
   }
 }
 
