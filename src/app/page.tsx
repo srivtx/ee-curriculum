@@ -20,6 +20,7 @@ import { LabsView } from '@/components/curriculum/LabsView';
 import { PlaygroundView } from '@/components/curriculum/PlaygroundView';
 import { SerialPanel } from '@/components/curriculum/SerialPanel';
 import { SearchPalette } from '@/components/curriculum/SearchPalette';
+import { MobileQuiz } from '@/components/curriculum/MobileQuiz';
 import {
   LessonDrawer,
   type LessonDrawerPayload,
@@ -27,6 +28,7 @@ import {
 
 export default function Home() {
   const [view, setView] = React.useState<ViewKey>('curriculum');
+  const [quizOpen, setQuizOpen] = React.useState(false);
   const { state, setLastLesson } = useProgress();
 
   // Lesson drawer state
@@ -162,6 +164,37 @@ export default function Home() {
         onOpenLesson={handleOpenLesson}
         onNavigate={handleViewChange}
       />
+
+      {/* Mobile quiz — floating button on mobile, overlay when open */}
+      {quizOpen && (
+        <div className="fixed inset-0 z-50 bg-canvas overflow-y-auto md:hidden">
+          <div className="sticky top-0 z-10 border-b border-hairline bg-canvas/85 backdrop-blur-md">
+            <div className="flex items-center justify-between px-4 py-3">
+              <span className="text-sm font-medium text-ink">EE Quiz</span>
+              <button
+                onClick={() => setQuizOpen(false)}
+                className="text-sm text-body-mid hover:text-ink"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+          <MobileQuiz />
+        </div>
+      )}
+
+      {/* Quiz FAB — mobile only */}
+      {!quizOpen && (
+        <button
+          onClick={() => setQuizOpen(true)}
+          className="fixed bottom-4 right-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-accent text-canvas shadow-lg md:hidden"
+          aria-label="Open quiz"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
