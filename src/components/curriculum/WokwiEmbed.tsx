@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { ExternalLink, Cpu, AlertTriangle, RotateCw, Play, Square } from 'lucide-react';
+import { ExternalLink, Cpu, AlertTriangle, RotateCw, Play, Square, Terminal, Undo2, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ArduinoUnoSVG, ESP32DevKitSVG, LEDSVG, ResistorSVG } from './RealisticComponents';
 
@@ -126,29 +126,9 @@ export function WokwiEmbed({
   );
 }
 
-/**
- * Built-in interactive demo using @wokwi/elements.
- * This always works — no external dependency on Wokwi project IDs.
- * Shows an Arduino-like LED+button demo with real code the user can read.
- */
-function BuiltInDemo({
-  demo,
-  title,
-  projectUrl,
-}: {
-  demo: 'arduino-blink' | 'esp32-wifi' | 'robot-sensors';
-  title: string;
-  projectUrl?: string;
-}) {
-  const [running, setRunning] = React.useState(false);
-  const [ledState, setLedState] = React.useState(false);
-  const [code, setCode] = React.useState('');
-  const intervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Load the appropriate demo code
-  React.useEffect(() => {
-    const demos: Record<string, string> = {
-      'arduino-blink': `// Arduino Blink — the "hello world" of embedded
+// ── Demo code snippets ──────────────────────────────────────────────────────
+const DEMO_CODE: Record<string, string> = {
+  'arduino-blink': `// Arduino Blink — the "hello world" of embedded
 // LED on pin 13 blinks at 1 Hz
 
 #define LED_PIN 13
@@ -165,7 +145,7 @@ void loop() {
   digitalWrite(LED_PIN, LOW);
   delay(500);
 }`,
-      'esp32-wifi': `// ESP32 WiFi Temperature Station
+  'esp32-wifi': `// ESP32 WiFi Temperature Station
 // Reads a simulated sensor and would serve a web page
 
 #include <WiFi.h>
@@ -204,7 +184,7 @@ void loop() {
   temperature += (random(-10, 10)) * 0.01;
   delay(100);
 }`,
-      'robot-sensors': `// Line-Following Robot — PID control
+  'robot-sensors': `// Line-Following Robot — PID control
 // 5 IR sensors → weighted average → PID → motor speed
 
 #define NUM_SENSORS 5
@@ -265,23 +245,162 @@ void loop() {
   Serial.print(" Correction: ");
   Serial.println(correction);
 }`,
-    };
-    setCode(demos[demo] || demos['arduino-blink']);
+};
+
+// ── Serial line type ────────────────────────────────────────────────────────
+interface SerialLine {
+  text: string;
+  kind: 'system' | 'out' | 'info' | 'success' | 'warn';
+}
+
+// ── Current-flow dot for the HTML wire between board and LED ────────────────
+function CurrentFlowDot({ active, width = 64 }: { active: boolean; width?: number }) {
+  if (!active) return null;
+  return (
+    <span
+      className="absolute top-1/2 left-0 h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-accent shadow-[0_0_6px_var(--accent)]"
+      style={
+        {
+          '--wire-flow-distance': `${width}px`,
+          animation: 'wire-flow 0.55s linear infinite',
+        } as React.CSSProperties
+      }
+      aria-hidden
+    />
+  );
+}
+
+/**
+ * Built-in interactive demo using @wokwi/elements.
+ * This always works — no external dependency on Wokwi project IDs.
+ * Shows an Arduino-like LED+button demo with real code the user can read.
+ */
+function BuiltInDemo({
+  demo,
+  title,
+  projectUrl,
+}: {
+  demo: 'arduino-blink' | 'esp32-wifi' | 'robot-sensors';
+  title: string;
+  projectUrl?: string;
+}) {
+  const [running, setRunning] = React.useState(false);
+  const [ledState, setLedState] = React.useState(false);
+
+  // Editable code — seeded from DEMO_CODE, user can edit; Reset restores.
+  const originalCode = DEMO_CODE[demo] || DEMO_CODE['arduino-blink'];
+  const [code, setCode] = React.useState(originalCode);
+  // Reset the editable buffer whenever the demo type changes.
+  React.useEffect(() => {
+    setCode(DEMO_CODE[demo] || DEMO_CODE['arduino-blink']);
   }, [demo]);
 
-  // Simulate the LED blink when running
+  // Serial monitor output.
+  const [serialLines, setSerialLines] = React.useState<SerialLine[]>([]);
+  const serialRef = React.useRef<HTMLDivElement | null>(null);
+
+  // Auto-scroll the serial monitor to the bottom whenever new lines arrive.
   React.useEffect(() => {
-    if (running && demo === 'arduino-blink') {
-      intervalRef.current = setInterval(() => {
-        setLedState((s) => !s);
-      }, 500);
-    } else {
-      setLedState(false);
+    if (serialRef.current) {
+      serialRef.current.scrollTop = serialRef.current.scrollHeight;
     }
+  }, [serialLines]);
+
+  // Refs that the simulation loop reads/writes so the interval closure stays
+  // stable across re-renders.
+  const ledStateRef = React.useRef(false);
+  React.useEffect(() => { ledStateRef.current = ledState; }, [ledState]);
+
+  const tickCountRef = React.useRef(0);
+
+  // ── Simulation engine ──────────────────────────────────────────────────
+  // Each demo has its own behaviour:
+  //  - arduino-blink: LED toggles every 500ms, prints "LED ON"/"LED OFF"
+  //    on each toggle. Initial line: "Arduino Blink starting..."
+  //  - esp32-wifi: LED stays on after WiFi connects. Prints "WiFi connecting..."
+  //    then dots, then "WiFi connected!" + "IP: 192.168.1.100".
+  //  - robot-sensors: motors + sensors visualised, prints PID correction.
+  React.useEffect(() => {
+    if (!running) {
+      setLedState(false);
+      return;
+    }
+
+    // Reset transient simulation state at start-of-run.
+    tickCountRef.current = 0;
+    setLedState(false);
+
+    // Seed the serial monitor with the appropriate opening line.
+    if (demo === 'arduino-blink') {
+      setSerialLines([{ text: 'Arduino Blink starting...', kind: 'system' }]);
+    } else if (demo === 'esp32-wifi') {
+      setSerialLines([{ text: 'WiFi connecting...', kind: 'system' }]);
+    } else {
+      setSerialLines([{ text: 'Robot boot — sensors online.', kind: 'system' }]);
+    }
+
+    let interval: ReturnType<typeof setInterval> | null = null;
+    let timeout: ReturnType<typeof setTimeout> | null = null;
+
+    const appendLine = (line: SerialLine) => {
+      setSerialLines((prev) => [...prev, line]);
+    };
+
+    if (demo === 'arduino-blink') {
+      // 1 Hz blink — toggle every 500ms.
+      interval = setInterval(() => {
+        const next = !ledStateRef.current;
+        ledStateRef.current = next;
+        setLedState(next);
+        appendLine({ text: next ? 'LED ON' : 'LED OFF', kind: next ? 'success' : 'out' });
+      }, 500);
+    } else if (demo === 'esp32-wifi') {
+      // WiFi handshake: 4 dots at 400ms each, then "connected" + IP.
+      let dotCount = 0;
+      interval = setInterval(() => {
+        dotCount += 1;
+        if (dotCount <= 4) {
+          appendLine({ text: '.', kind: 'out' });
+        }
+        if (dotCount === 4) {
+          appendLine({ text: 'WiFi connected!', kind: 'success' });
+          appendLine({ text: 'IP: 192.168.1.100', kind: 'info' });
+          // Light the onboard LED once connected.
+          ledStateRef.current = true;
+          setLedState(true);
+          appendLine({ text: 'HTTP server listening on :80', kind: 'system' });
+        }
+        if (dotCount > 6) {
+          // Stop ticking — WiFi is up, just serve.
+          if (interval) clearInterval(interval);
+        }
+      }, 400);
+    } else if (demo === 'robot-sensors') {
+      // Robot: every 250ms print a simulated PID correction line.
+      interval = setInterval(() => {
+        tickCountRef.current += 1;
+        const pos = (Math.sin(tickCountRef.current * 0.4) * 1.5).toFixed(2);
+        const corr = (Math.cos(tickCountRef.current * 0.4) * 35).toFixed(2);
+        appendLine({ text: `Pos: ${pos}  Correction: ${corr}`, kind: 'out' });
+      }, 250);
+    }
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      if (interval) clearInterval(interval);
+      if (timeout) clearTimeout(timeout);
     };
   }, [running, demo]);
+
+  const handleResetCode = () => {
+    setCode(originalCode);
+  };
+
+  const handleClearSerial = () => {
+    setSerialLines([]);
+  };
+
+  const isArduinoLike = demo === 'arduino-blink' || demo === 'esp32-wifi';
+  const showBoard = demo !== 'robot-sensors';
 
   return (
     <div className="overflow-hidden rounded-sm border border-accent/30 bg-canvas">
@@ -307,45 +426,42 @@ void loop() {
         )}
       </div>
 
-      {/* Two-column layout: circuit on left, code on right */}
+      {/* Two-column layout: circuit on left, code+serial on right */}
       <div className="grid gap-0 lg:grid-cols-2">
         {/* Circuit panel */}
         <div className="border-b border-hairline bg-canvas p-6 lg:border-b-0 lg:border-r">
-          <div className="mb-3 text-sm font-medium text-body-mid">
-            Circuit
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm font-medium text-body-mid">Circuit</div>
+            <div className="text-[10px] text-body-mid">
+              {demo === 'esp32-wifi' ? 'ESP32 DevKit V1' : demo === 'robot-sensors' ? 'Arduino + IR array' : 'Arduino Uno R3'}
+            </div>
           </div>
           {/* Realistic board + LED circuit */}
-          <div className="flex flex-col items-center gap-4 py-4">
-            {/* Arduino or ESP32 board — realistic SVG */}
-            {demo === 'esp32-wifi' ? (
-              <div className="flex flex-col items-center gap-2">
-                <ESP32DevKitSVG ledOn={running} />
-                <span className="text-xs text-body-mid">ESP32 DevKit V1</span>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <ArduinoUnoSVG ledOn={ledState} />
-                <span className="text-xs text-body-mid">Arduino Uno R3</span>
-              </div>
+          <div className="flex flex-col items-center gap-4 py-2">
+            {/* Arduino or ESP32 board — realistic interactive SVG */}
+            {showBoard && (
+              demo === 'esp32-wifi' ? (
+                <ESP32DevKitSVG
+                  ledOn={ledState}
+                  onPinClick={(pinId) => {
+                    // Pin clicks are surfaced in the serial monitor so the
+                    // user gets feedback that they actually did something.
+                    setSerialLines((prev) => [...prev, { text: `[pin] ${pinId} selected`, kind: 'info' }]);
+                  }}
+                />
+              ) : (
+                <ArduinoUnoSVG
+                  ledOn={ledState}
+                  onPinClick={(pinId) => {
+                    setSerialLines((prev) => [...prev, { text: `[pin] ${pinId} selected`, kind: 'info' }]);
+                  }}
+                />
+              )
             )}
 
-            {/* LED + Resistor on a mini breadboard */}
-            {(demo === 'arduino-blink' || demo === 'esp32-wifi') && (
-              <div className="flex items-end gap-3">
-                <div className="flex flex-col items-center gap-1">
-                  <LEDSVG color="#7FFF9F" on={ledState} size={50} />
-                  <span className="text-[10px] text-body-mid">LED</span>
-                </div>
-                <div className="flex flex-col items-center gap-1">
-                  <ResistorSVG value="220Ω" size={60} />
-                  <span className="text-[10px] text-body-mid">220Ω</span>
-                </div>
-              </div>
-            )}
-
-            {/* Robot sensor visualization */}
+            {/* Robot sensor visualization (no board) */}
             {demo === 'robot-sensors' && (
-              <div className="flex flex-col items-center gap-3 w-full">
+              <div className="flex w-full flex-col items-center gap-3">
                 {/* IR sensor array */}
                 <div className="flex gap-2">
                   {[0, 1, 2, 3, 4].map((i) => (
@@ -382,14 +498,58 @@ void loop() {
               </div>
             )}
 
-            {/* Wires connecting board to LED */}
-            <div className="flex items-center gap-2">
-              <span className="text-[10px] text-body-mid">pin 13</span>
-              <div className={cn('h-0.5 w-8', ledState ? 'bg-accent' : 'bg-hairline')} />
-              <span className="text-[10px] text-body-mid">→</span>
-              <div className={cn('h-0.5 w-8', ledState ? 'bg-accent' : 'bg-hairline')} />
-              <span className="text-[10px] text-body-mid">GND</span>
-            </div>
+            {/* LED + Resistor on a mini breadboard */}
+            {isArduinoLike && (
+              <div className="flex items-end gap-3">
+                <div className="flex flex-col items-center gap-1">
+                  <LEDSVG color="#7FFF9F" on={ledState} size={50} />
+                  <div className="flex items-center gap-1">
+                    <span className="text-[10px] text-body-mid">LED</span>
+                    <span className={cn(
+                      'rounded px-1 py-px text-[8px] font-bold uppercase tracking-wider',
+                      ledState ? 'bg-success/15 text-success' : 'bg-canvas-mid text-body-mid'
+                    )}>
+                      {ledState ? 'ON' : 'OFF'}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                  <ResistorSVG value="220Ω" size={60} />
+                  <span className="text-[10px] text-body-mid">220Ω</span>
+                </div>
+              </div>
+            )}
+
+            {/* Wire connecting board pin to LED — with animated current-flow dot */}
+            {isArduinoLike && (
+              <div className="flex items-center gap-1">
+                <span className="text-[10px] font-mono text-body-mid">
+                  {demo === 'esp32-wifi' ? 'GPIO2' : 'pin 13'}
+                </span>
+                <span className="relative inline-block h-0.5 w-16 bg-hairline">
+                  <span
+                    className={cn(
+                      'absolute inset-y-0 left-0 transition-colors',
+                      ledState ? 'bg-accent' : 'bg-hairline'
+                    )}
+                    style={{ width: '100%' }}
+                  />
+                  <CurrentFlowDot active={ledState} width={64} />
+                </span>
+                <span className="text-[10px] text-body-mid">→</span>
+                <span className="relative inline-block h-0.5 w-8 bg-hairline">
+                  <span
+                    className={cn(
+                      'absolute inset-y-0 left-0 transition-colors',
+                      ledState ? 'bg-accent' : 'bg-hairline'
+                    )}
+                    style={{ width: '100%' }}
+                  />
+                  <CurrentFlowDot active={ledState} width={32} />
+                </span>
+                <span className="text-[10px] font-mono text-body-mid">GND</span>
+              </div>
+            )}
           </div>
 
           {/* Run/Stop button */}
@@ -420,27 +580,107 @@ void loop() {
           {/* Status */}
           <div className="mt-3 text-center text-[11px] text-body-mid">
             {running ? (
-              <span className="text-accent">● Running — LED blinking at 1 Hz</span>
+              <span className="text-accent">
+                {demo === 'esp32-wifi'
+                  ? ledState
+                    ? '● Running — WiFi up, serving on :80'
+                    : '● Running — WiFi handshake…'
+                  : demo === 'robot-sensors'
+                    ? '● Running — PID loop at 4 Hz'
+                    : '● Running — LED blinking at 1 Hz'}
+              </span>
             ) : (
               <span>Click Run to start the simulation</span>
             )}
           </div>
         </div>
 
-        {/* Code panel */}
-        <div className="bg-canvas p-6">
-          <div className="mb-3 text-[10px] font-semibold uppercase tracking-wider text-body-mid">
-            Arduino Code
+        {/* Right column: code editor + serial monitor */}
+        <div className="flex flex-col bg-canvas">
+          {/* Code editor panel */}
+          <div className="border-b border-hairline p-6 pb-4">
+            <div className="mb-3 flex items-center gap-2">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-body-mid">
+                {demo === 'esp32-wifi' ? 'ESP32 Code' : 'Arduino Code'}
+              </span>
+              <span className="rounded bg-canvas-mid px-1.5 py-px text-[9px] text-body-mid">
+                editable
+              </span>
+              <button
+                type="button"
+                onClick={handleResetCode}
+                className="ml-auto inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] text-body-mid transition-colors hover:bg-canvas-soft hover:text-ink"
+                aria-label="Reset code to original"
+              >
+                <Undo2 className="h-3 w-3" />
+                Reset
+              </button>
+            </div>
+            <textarea
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              spellCheck={false}
+              aria-label="Microcontroller source code editor"
+              className="ee-scroll ee-mono max-h-[360px] min-h-[280px] w-full resize-y rounded-sm border border-hairline bg-canvas-card p-4 text-[11px] leading-relaxed text-ink focus:outline-none focus:ring-1 focus:ring-accent/40"
+            />
+            <div className="mt-2 text-[11px] leading-relaxed text-body-mid">
+              This is the actual {demo === 'esp32-wifi' ? 'ESP32' : 'Arduino'} C code. Edit it
+              here, then click{' '}
+              <span className="text-accent">Run Simulation</span> to see the
+              board respond. The simulator runs the original demo timing (it
+              doesn&apos;t re-compile your edits) — for full editing use{' '}
+              <span className="text-ink">Try on Wokwi</span> above.
+            </div>
           </div>
-          <pre className="ee-scroll max-h-[400px] overflow-auto rounded-sm border border-hairline bg-canvas-card p-4 text-[11px] leading-relaxed text-ink">
-            <code>{code}</code>
-          </pre>
-          <div className="mt-3 text-[11px] leading-relaxed text-body-mid">
-            This is the actual Arduino C code. On real hardware, this runs on
-            an ATmega328P microcontroller. Click{' '}
-            <span className="text-accent">Run Simulation</span> to see the
-            LED blink. The code is read-only here — for full editing, click{' '}
-            <span className="text-ink">Try on Wokwi</span> above.
+
+          {/* Serial monitor panel */}
+          <div className="p-6 pt-4">
+            <div className="mb-2 flex items-center gap-2">
+              <Terminal className="h-3.5 w-3.5 text-accent" aria-hidden />
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-body-mid">
+                Serial Monitor
+              </span>
+              <span className="rounded bg-canvas-mid px-1.5 py-px text-[9px] text-body-mid">
+                {demo === 'esp32-wifi' ? '115200 baud' : '9600 baud'}
+              </span>
+              <button
+                type="button"
+                onClick={handleClearSerial}
+                className="ml-auto inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] text-body-mid transition-colors hover:bg-canvas-soft hover:text-ink"
+                aria-label="Clear serial output"
+              >
+                <Trash2 className="h-3 w-3" />
+                Clear
+              </button>
+            </div>
+            <div
+              ref={serialRef}
+              className="ee-scroll h-40 overflow-y-auto rounded-sm border border-hairline bg-canvas-card p-2.5 font-mono text-[10px] leading-relaxed"
+              aria-live="polite"
+              aria-label="Serial output"
+            >
+              {serialLines.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-body-mid">
+                  No output yet. Click <span className="mx-1 text-accent">Run Simulation</span> to start.
+                </div>
+              ) : (
+                serialLines.map((line, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      'whitespace-pre-wrap',
+                      line.kind === 'success' && 'text-success',
+                      line.kind === 'info' && 'text-info',
+                      line.kind === 'system' && 'text-body-mid italic',
+                      line.kind === 'warn' && 'text-warning',
+                      line.kind === 'out' && 'text-body'
+                    )}
+                  >
+                    {line.text}
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
       </div>

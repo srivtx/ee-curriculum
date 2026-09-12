@@ -340,3 +340,13 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* "wire-flow" — pulses a small dot left→right along the wire between the
+   microcontroller pin and the external LED when a simulation is running.
+   Used by WokwiEmbed's built-in demo to visualise current flow. */
+@keyframes wire-flow {
+  0%   { transform: translateX(0); opacity: 0; }
+  15%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translateX(var(--wire-flow-distance, 64px)); opacity: 0; }
+}
