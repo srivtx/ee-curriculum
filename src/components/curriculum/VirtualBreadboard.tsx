@@ -56,6 +56,7 @@ import {
   CircleDot,
   Square,
   RotateCcw,
+  Undo2,
   Info,
   CheckCircle2,
   AlertTriangle,
@@ -404,54 +405,57 @@ function ComponentBody({
   const bottom = leads[1];
 
   if (comp.type === 'led') {
+    const midX = (top.x + bottom.x) / 2;
     const midY = (top.y + bottom.y) / 2;
     const r = 11;
     return (
       <g>
         {/* leads */}
-        <line x1={top.x} y1={top.y} x2={top.x} y2={midY - r} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        <line x1={bottom.x} y1={bottom.y} x2={bottom.x} y2={midY + r} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <line x1={top.x} y1={top.y} x2={midX} y2={midY - r} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <line x1={bottom.x} y1={bottom.y} x2={midX} y2={midY + r} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
         {/* + / − lead markers (anode = top +, cathode = bottom −) */}
-        <text x={top.x + 8} y={midY - r + 2} fontSize="9" fill="#dc2626" fontWeight="700" className="ee-mono">+</text>
-        <text x={bottom.x + 8} y={midY + r + 4} fontSize="9" fill="#2563eb" fontWeight="700" className="ee-mono">−</text>
+        <text x={midX + 8} y={midY - r + 2} fontSize="9" fill="#dc2626" fontWeight="700">+</text>
+        <text x={midX + 8} y={midY + r + 4} fontSize="9" fill="#2563eb" fontWeight="700">−</text>
         {/* bulb */}
         {lit && (
-          <circle cx={top.x} cy={midY} r={r + 8} fill="#7FFF9F" opacity="0.28" />
+          <circle cx={midX} cy={midY} r={r + 8} fill="#7FFF9F" opacity="0.28" />
         )}
-        <circle cx={top.x} cy={midY} r={r} fill={lit ? '#7FFF9F' : '#cbd5e1'} stroke={lit ? '#22c55e' : '#475569'} strokeWidth="1.5" />
-        <circle cx={top.x - 3} cy={midY - 3} r={3} fill={lit ? '#ffffff' : '#94a3b8'} opacity={lit ? 0.9 : 0.5} />
+        <circle cx={midX} cy={midY} r={r} fill={lit ? '#7FFF9F' : '#cbd5e1'} stroke={lit ? '#22c55e' : '#475569'} strokeWidth="1.5" />
+        <circle cx={midX - 3} cy={midY - 3} r={3} fill={lit ? '#ffffff' : '#94a3b8'} opacity={lit ? 0.9 : 0.5} />
       </g>
     );
   }
 
   if (comp.type === 'resistor') {
+    const midX = (top.x + bottom.x) / 2;
     const midY = (top.y + bottom.y) / 2;
     const h = 22;
     return (
       <g>
-        <line x1={top.x} y1={top.y} x2={top.x} y2={midY - h / 2} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        <line x1={bottom.x} y1={bottom.y} x2={bottom.x} y2={midY + h / 2} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        <rect x={top.x - 7} y={midY - h / 2} width="14" height={h} rx="3" fill="#d4b483" stroke="#8b5e34" strokeWidth="1.2" />
+        <line x1={top.x} y1={top.y} x2={midX} y2={midY - h / 2} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <line x1={bottom.x} y1={bottom.y} x2={midX} y2={midY + h / 2} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <rect x={midX - 7} y={midY - h / 2} width="14" height={h} rx="3" fill="#d4b483" stroke="#8b5e34" strokeWidth="1.2" />
         {/* color bands */}
         {['#7c2d12', '#92400e', '#b45309', '#d97706'].map((c, i) => (
-          <rect key={i} x={top.x - 7} y={midY - h / 2 + 3 + i * 4} width="14" height="2.4" fill={c} />
+          <rect key={i} x={midX - 7} y={midY - h / 2 + 3 + i * 4} width="14" height="2.4" fill={c} />
         ))}
       </g>
     );
   }
 
   if (comp.type === 'battery') {
+    const midX = (top.x + bottom.x) / 2;
     const midY = (top.y + bottom.y) / 2;
     return (
       <g>
-        <line x1={top.x} y1={top.y} x2={top.x} y2={midY - 8} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
-        <line x1={bottom.x} y1={bottom.y} x2={bottom.x} y2={midY + 8} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <line x1={top.x} y1={top.y} x2={midX} y2={midY - 8} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
+        <line x1={bottom.x} y1={bottom.y} x2={midX} y2={midY + 8} stroke="#475569" strokeWidth="2" strokeLinecap="round" />
         {/* + terminal (long line) */}
-        <line x1={top.x - 12} y1={midY - 8} x2={top.x + 12} y2={midY - 8} stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" />
+        <line x1={midX - 12} y1={midY - 8} x2={midX + 12} y2={midY - 8} stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" />
         {/* − terminal (short line) */}
-        <line x1={top.x - 7} y1={midY + 4} x2={top.x + 7} y2={midY + 4} stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
-        <text x={top.x + 14} y={midY - 5} fontSize="9" fill="#dc2626" fontWeight="700" className="ee-mono">+</text>
-        <text x={top.x + 9} y={midY + 8} fontSize="9" fill="#2563eb" fontWeight="700" className="ee-mono">−</text>
+        <line x1={midX - 7} y1={midY + 4} x2={midX + 7} y2={midY + 4} stroke="#2563eb" strokeWidth="2.5" strokeLinecap="round" />
+        <text x={midX + 14} y={midY - 5} fontSize="9" fill="#dc2626" fontWeight="700">+</text>
+        <text x={midX + 9} y={midY + 8} fontSize="9" fill="#2563eb" fontWeight="700">−</text>
       </g>
     );
   }
@@ -521,10 +525,19 @@ export function VirtualBreadboard() {
   const [wires, setWires] = useState<Wire[]>([]);
   const [selectedTool, setSelectedTool] = useState<Tool>(null);
   const [wirePending, setWirePending] = useState<string | null>(null); // first hole
+  const [pendingComponent, setPendingComponent] = useState<{
+    type: ComponentType;
+    firstHole: string;
+  } | null>(null); // first hole for 2-lead placement
   const [hoverHole, setHoverHole] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState<{ x: number; y: number } | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const toastTimer = React.useRef<number | null>(null);
+  // Append-only history of place actions for Undo. Each entry references the
+  // component or wire id that was most recently added.
+  const [history, setHistory] = useState<
+    Array<{ kind: 'component' | 'wire'; id: string }>
+  >([]);
 
   // derived state — circuit solution
   const solve: SolveResult = React.useMemo(
@@ -568,17 +581,19 @@ export function VirtualBreadboard() {
           (w.from === hid && w.to === wirePending),
       );
       if (!exists) {
-        setWires((ws) => [...ws, { id: nextId('w'), from: wirePending, to: hid }]);
+        const wire: Wire = { id: nextId('w'), from: wirePending, to: hid };
+        setWires((ws) => [...ws, wire]);
+        setHistory((h) => [...h, { kind: 'wire', id: wire.id }]);
       }
       setWirePending(null);
       return;
     }
 
-    // Component placement
-    if (selectedTool === 'led' || selectedTool === 'resistor' || selectedTool === 'battery' || selectedTool === 'button') {
-      const leads = computeLeads(selectedTool, hid);
+    // Pushbutton — one-click auto-place (2×2 block)
+    if (selectedTool === 'button') {
+      const leads = computeLeads('button', hid);
       if (!leads) {
-        flash('Not enough room here — try a hole higher up.');
+        flash('Not enough room here — try a hole higher up and to the left.');
         return;
       }
       const blocked = leads.find((h) => occupiedBy.has(h));
@@ -587,12 +602,70 @@ export function VirtualBreadboard() {
         return;
       }
       const comp: PlacedComponent = {
-        id: nextId(selectedTool),
-        type: selectedTool,
+        id: nextId('button'),
+        type: 'button',
         anchor: hid,
         leads,
       };
       setComponents((cs) => [...cs, comp]);
+      setHistory((h) => [...h, { kind: 'component', id: comp.id }]);
+      return;
+    }
+
+    // 2-lead components (LED / Resistor / Battery) — TWO-CLICK placement.
+    // First click remembers the anchor hole; second click (in a different
+    // row, within 5 rows) places the component between the two holes.
+    if (
+      selectedTool === 'led' ||
+      selectedTool === 'resistor' ||
+      selectedTool === 'battery'
+    ) {
+      if (!pendingComponent) {
+        // First click — remember the anchor hole.
+        if (occupiedBy.has(hid)) {
+          flash('That hole is already occupied.');
+          return;
+        }
+        setPendingComponent({ type: selectedTool, firstHole: hid });
+        return;
+      }
+      // Second click — validate and place.
+      if (hid === pendingComponent.firstHole) {
+        // Same hole clicked twice — cancel pending placement.
+        setPendingComponent(null);
+        return;
+      }
+      const firstRow = rowOfHole(pendingComponent.firstHole);
+      const secondRow = rowOfHole(hid);
+      if (firstRow === secondRow) {
+        flash(
+          'The two leads must be in different rows. Pick a hole in a different row.',
+        );
+        return;
+      }
+      const firstIdx = ROW_LABELS.indexOf(firstRow);
+      const secondIdx = ROW_LABELS.indexOf(secondRow);
+      if (Math.abs(firstIdx - secondIdx) > 5) {
+        flash('Those holes are too far apart. Pick a second hole within 5 rows.');
+        return;
+      }
+      if (
+        occupiedBy.has(hid) ||
+        occupiedBy.has(pendingComponent.firstHole)
+      ) {
+        flash('Those holes are already occupied.');
+        setPendingComponent(null);
+        return;
+      }
+      const comp: PlacedComponent = {
+        id: nextId(pendingComponent.type),
+        type: pendingComponent.type,
+        anchor: pendingComponent.firstHole,
+        leads: [pendingComponent.firstHole, hid],
+      };
+      setComponents((cs) => [...cs, comp]);
+      setHistory((h) => [...h, { kind: 'component', id: comp.id }]);
+      setPendingComponent(null);
       return;
     }
 
@@ -629,10 +702,37 @@ export function VirtualBreadboard() {
     );
   }
 
+  /** Undo the most recently placed component or wire. Dangling wires attached
+   * to an undone component are removed too (mirrors delete behavior). */
+  function undoLast() {
+    if (history.length === 0) {
+      flash('Nothing to undo.');
+      return;
+    }
+    const last = history[history.length - 1];
+    if (last.kind === 'component') {
+      const comp = components.find((c) => c.id === last.id);
+      if (comp) {
+        const leadSet = new Set(comp.leads);
+        setComponents((cs) => cs.filter((c) => c.id !== last.id));
+        setWires((ws) =>
+          ws.filter((w) => !leadSet.has(w.from) && !leadSet.has(w.to)),
+        );
+      }
+      flash('Removed last component.');
+    } else {
+      setWires((ws) => ws.filter((w) => w.id !== last.id));
+      flash('Removed last wire.');
+    }
+    setHistory((h) => h.slice(0, -1));
+  }
+
   function clearAll() {
     setComponents([]);
     setWires([]);
     setWirePending(null);
+    setPendingComponent(null);
+    setHistory([]);
     setSelectedTool(null);
     flash('Breadboard cleared.');
   }
@@ -645,10 +745,23 @@ export function VirtualBreadboard() {
         ? 'Click a second hole to complete the wire (click the same hole to cancel).'
         : 'Click the first hole to start a wire.';
     }
-    if (selectedTool) {
-      return `Click a hole to place the ${selectedTool}. Click it again with no tool selected to remove it.`;
+    if (pendingComponent) {
+      return `Click a second hole for the ${pendingComponent.type} (must be in a different row, within 5 rows). Click the first hole again to cancel.`;
     }
-    return 'Pick a component on the left, then click a hole. With no tool picked, click a part to delete it.';
+    if (
+      selectedTool === 'led' ||
+      selectedTool === 'resistor' ||
+      selectedTool === 'battery'
+    ) {
+      return `Click the first hole for the ${selectedTool}, then a second hole in a different row.`;
+    }
+    if (selectedTool === 'button') {
+      return 'Click a hole to place the pushbutton (it occupies a 2×2 block).';
+    }
+    if (selectedTool) {
+      return `Click a hole to place the ${selectedTool}.`;
+    }
+    return 'Pick a component on the left, then click holes to place it. With no tool picked, click a part to delete it (buttons toggle).';
   })();
 
   return (
@@ -656,10 +769,10 @@ export function VirtualBreadboard() {
       <div className="flex flex-col lg:flex-row">
         {/* ── Palette ───────────────────────────────────────────────────── */}
         <aside className="flex shrink-0 flex-row gap-2 lg:w-[200px] lg:flex-col border-b border-hairline lg:border-b-0 lg:border-r bg-canvas-soft/40 p-3">
-          <div className="eyebrow hidden lg:block text-[10px] text-body-mid mb-2">
+          <div className="hidden lg:block text-xs font-medium text-body-mid mb-2">
             Palette
           </div>
-          <div className="flex flex-row gap-2 lg:flex-col">
+          <div className="flex flex-row gap-2 lg:flex-col overflow-x-auto lg:overflow-visible -mx-1 px-1 pb-1 lg:mx-0 lg:px-0 lg:pb-0">
             {PALETTE.map((item) => {
               const active = selectedTool === item.tool;
               return (
@@ -669,10 +782,11 @@ export function VirtualBreadboard() {
                   onClick={() => {
                     setSelectedTool(active ? null : item.tool);
                     setWirePending(null);
+                    setPendingComponent(null);
                   }}
                   aria-pressed={active}
                   className={cn(
-                    'group flex flex-1 lg:flex-none items-center gap-2.5 rounded-sm border px-2.5 py-2 text-left transition-colors',
+                    'group flex flex-1 lg:flex-none items-center gap-2.5 rounded-sm border px-2.5 py-2 text-left transition-colors shrink-0 lg:shrink',
                     'border-hairline bg-canvas-card hover:border-accent/50 hover:bg-canvas-mid/40',
                     active && 'border-accent bg-accent/10 ring-1 ring-accent/40',
                   )}
@@ -692,21 +806,27 @@ export function VirtualBreadboard() {
                 </button>
               );
             })}
-          </div>
 
-          {/* deselect / cursor */}
-          <button
-            type="button"
-            onClick={() => { setSelectedTool(null); setWirePending(null); }}
-            aria-pressed={selectedTool === null}
-            className={cn(
-              'hidden lg:flex items-center gap-2 rounded-sm border border-hairline px-2.5 py-2 text-[12px] mt-1 transition-colors',
-              selectedTool === null ? 'border-accent/60 bg-accent/5 text-accent' : 'bg-canvas-card text-body-mid hover:bg-canvas-mid/40',
-            )}
-          >
-            <MousePointer2 className="h-3.5 w-3.5" />
-            Select / delete
-          </button>
+            {/* deselect / cursor — visible on all screen sizes */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedTool(null);
+                setWirePending(null);
+                setPendingComponent(null);
+              }}
+              aria-pressed={selectedTool === null}
+              className={cn(
+                'flex items-center gap-2 rounded-sm border border-hairline px-2.5 py-2 text-[12px] transition-colors shrink-0 lg:shrink lg:mt-1',
+                selectedTool === null
+                  ? 'border-accent/60 bg-accent/5 text-accent'
+                  : 'bg-canvas-card text-body-mid hover:bg-canvas-mid/40',
+              )}
+            >
+              <MousePointer2 className="h-3.5 w-3.5" />
+              <span className="whitespace-nowrap">Select / delete</span>
+            </button>
+          </div>
         </aside>
 
         {/* ── Main area ─────────────────────────────────────────────────── */}
@@ -733,7 +853,7 @@ export function VirtualBreadboard() {
 
               {/* center channel */}
               <rect x="8" y="184" width={VB_WIDTH - 16} height="16" fill="#eceae3" />
-              <text x={VB_WIDTH / 2} y="196" textAnchor="middle" fontSize="9" fill="#9ca3af" className="ee-mono" letterSpacing="2">
+              <text x={VB_WIDTH / 2} y="196" textAnchor="middle" fontSize="9" fill="#9ca3af" letterSpacing="2">
                 SVX BREADBOARD · 2D
               </text>
 
@@ -765,7 +885,6 @@ export function VirtualBreadboard() {
                   y={r.y + 3}
                   fontSize="9"
                   fill={r.kind === 'rail-plus' ? '#dc2626' : r.kind === 'rail-minus' ? '#2563eb' : '#9ca3af'}
-                  className="ee-mono"
                   textAnchor="middle"
                 >
                   {r.label}
@@ -778,7 +897,6 @@ export function VirtualBreadboard() {
                   y={r.y + 3}
                   fontSize="9"
                   fill={r.kind === 'rail-plus' ? '#dc2626' : r.kind === 'rail-minus' ? '#2563eb' : '#9ca3af'}
-                  className="ee-mono"
                   textAnchor="middle"
                 >
                   {r.label}
@@ -793,7 +911,6 @@ export function VirtualBreadboard() {
                   y={378}
                   fontSize="8"
                   fill="#9ca3af"
-                  className="ee-mono"
                   textAnchor="middle"
                 >
                   {c + 1}
@@ -810,7 +927,9 @@ export function VirtualBreadboard() {
                   const isRailMinus = r.kind === 'rail-minus';
                   const isOccupied = occupiedBy.has(id);
                   const isHover = hoverHole === id;
-                  const isPending = wirePending === id;
+                  const isPendingWire = wirePending === id;
+                  const isPendingComp = pendingComponent?.firstHole === id;
+                  const isPending = isPendingWire || isPendingComp;
 
                   let fill = '#3a3a3a';
                   let stroke = 'none';
@@ -820,24 +939,50 @@ export function VirtualBreadboard() {
                   else if (isPowered) { fill = '#dc2626'; }
                   else if (isGround) { fill = '#2563eb'; }
 
+                  const cx = holeX(c);
+                  const cy = r.y;
+                  const titleText = `hole ${r.label}${c + 1}${isOccupied ? ' (occupied)' : ''}${isPowered ? ' · POWER' : ''}${isGround ? ' · GROUND' : ''}`;
+
                   return (
-                    <circle
-                      key={id}
-                      cx={holeX(c)}
-                      cy={r.y}
-                      r={isHover && selectedTool ? r2 + 1.5 : r2}
-                      fill={fill}
-                      stroke={isPending ? '#7FFF9F' : stroke}
-                      strokeWidth={isPending ? 2 : 0}
-                      className="cursor-pointer transition-[r]"
-                      onMouseEnter={() => setHoverHole(id)}
-                      onMouseLeave={() => setHoverHole(null)}
-                      onClick={() => handleHoleClick(id)}
-                    >
-                      <title>
-                        {`hole ${r.label}${c + 1}${isOccupied ? ' (occupied)' : ''}${isPowered ? ' · POWER' : ''}${isGround ? ' · GROUND' : ''}`}
-                      </title>
-                    </circle>
+                    <g key={id}>
+                      {/* visible hole (decorative — does not capture pointer events) */}
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={isHover && selectedTool ? r2 + 1.5 : r2}
+                        fill={fill}
+                        stroke={isPending ? '#7FFF9F' : stroke}
+                        strokeWidth={isPending ? 2 : 0}
+                        style={{ pointerEvents: 'none' }}
+                      />
+                      {/* dashed ring on a pending 2-lead anchor hole */}
+                      {isPendingComp && (
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={7}
+                          fill="none"
+                          stroke="#7FFF9F"
+                          strokeWidth="1.5"
+                          strokeDasharray="2 2"
+                          opacity="0.9"
+                          style={{ pointerEvents: 'none' }}
+                        />
+                      )}
+                      {/* invisible 20px touch / click target around the hole */}
+                      <circle
+                        cx={cx}
+                        cy={cy}
+                        r={10}
+                        fill="transparent"
+                        className="cursor-pointer"
+                        onMouseEnter={() => setHoverHole(id)}
+                        onMouseLeave={() => setHoverHole(null)}
+                        onClick={() => handleHoleClick(id)}
+                      >
+                        <title>{titleText}</title>
+                      </circle>
+                    </g>
                   );
                 }),
               )}
@@ -856,6 +1001,15 @@ export function VirtualBreadboard() {
               {/* rubber-band wire preview */}
               {selectedTool === 'wire' && wirePending && mousePos && (
                 <WirePreview from={wirePending} to={mousePos} />
+              )}
+
+              {/* rubber-band 2-lead component preview */}
+              {pendingComponent && mousePos && (
+                <ComponentPreview
+                  from={pendingComponent.firstHole}
+                  to={mousePos}
+                  type={pendingComponent.type}
+                />
               )}
 
               {/* components */}
@@ -899,14 +1053,27 @@ export function VirtualBreadboard() {
 
           {/* ── Bottom bar ──────────────────────────────────────────────── */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-hairline bg-canvas-soft/40 px-3 py-2.5">
-            <button
-              type="button"
-              onClick={clearAll}
-              className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-canvas-card px-2.5 py-1.5 text-[11px] text-body hover:border-error/50 hover:text-error transition-colors"
-            >
-              <RotateCcw className="h-3.5 w-3.5" />
-              Clear
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={undoLast}
+                disabled={history.length === 0}
+                aria-label="Undo last placement"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-canvas-card px-2.5 py-1.5 text-[11px] text-body hover:border-accent/50 hover:text-accent transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-hairline disabled:hover:text-body"
+              >
+                <Undo2 className="h-3.5 w-3.5" />
+                Undo
+              </button>
+              <button
+                type="button"
+                onClick={clearAll}
+                aria-label="Clear breadboard"
+                className="inline-flex items-center gap-1.5 rounded-sm border border-hairline bg-canvas-card px-2.5 py-1.5 text-[11px] text-body hover:border-error/50 hover:text-error transition-colors"
+              >
+                <RotateCcw className="h-3.5 w-3.5" />
+                Clear
+              </button>
+            </div>
 
             <div className="flex min-w-0 flex-1 items-center gap-1.5 text-[11px] text-body-mid">
               <Info className="h-3.5 w-3.5 shrink-0 text-body-mid" />
@@ -975,6 +1142,33 @@ function WirePreview({ from, to }: { from: string; to: { x: number; y: number } 
       strokeWidth="1.5"
       strokeDasharray="4 3"
       opacity="0.7"
+    />
+  );
+}
+
+/** Rubber-band preview for a pending 2-lead component. Draws a dashed line
+ * from the anchor hole to the cursor, tinted to match the component type. */
+function ComponentPreview({
+  from,
+  to,
+  type,
+}: {
+  from: string;
+  to: { x: number; y: number };
+  type: ComponentType;
+}) {
+  const a = holePos(from);
+  const d = `M ${a.x} ${a.y} L ${to.x} ${to.y}`;
+  const color =
+    type === 'led' ? '#7FFF9F' : type === 'resistor' ? '#d4b483' : '#dc2626';
+  return (
+    <path
+      d={d}
+      fill="none"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeDasharray="4 3"
+      opacity="0.65"
     />
   );
 }
